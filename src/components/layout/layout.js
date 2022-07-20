@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 
 export default function Layout({ children }) {
     const location = useLocation();
-    console.log('current Pathname 👉️', location);
+    console.log('current Pathname 👉️', location.slice(0, 6));
     if (
         location === "/shop" ||
         location === "/about" ||

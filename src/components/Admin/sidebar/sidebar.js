@@ -74,6 +74,12 @@ export default function Sidebar() {
             </li>
             {/* Nav Item - Tables */}
             <li className="nav-item active">
+                <a className="nav-link" href="/admin/revenue">
+                    <i className="fas fa-fw fa-table" />
+                    <span>Revenue</span>
+                </a>
+            </li>
+            <li className="nav-item active">
                 <a className="nav-link" href="/admin/product">
                     <i className="fas fa-fw fa-table" />
                     <span>Product</span>

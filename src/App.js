@@ -11,12 +11,13 @@ import HomePage from './pages/HomePage/HomePage';
 import Footer from './components/Footer/Footer';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
-import Admin from './pages/Admin/Admin';
+import Product from './pages/Admin/product/product';
 import Sidebar from './components/Admin/sidebar/sidebar';
 import { useLocation } from 'react-router-dom';
 import AccountAdmin from './pages/Admin/account/account'
+import Revenue from './pages/Admin/revenue/revenue';
 
-function App() {
+function App({ Component, pageProps }) {
   let location = useLocation();
   console.log('current Pathname 👉️', location.pathname.slice(0, 6));
   return (
@@ -33,15 +34,16 @@ function App() {
             <Route path='/contact' element={<Contact />} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
-            <Route path='/admin' element={<Admin />} />
+
           </Routes>
           <Footer />
         </>) : (
         <div id='wrapper'>
           <Sidebar />
           <Routes>
-            <Route path='/admin/product' element={<Admin />} />
+            <Route path='/admin/product' element={<Product />} />
             <Route path='/admin/account' element={<AccountAdmin />} />
+            <Route path='/admin/revenue' element={<Revenue />} />
           </Routes>
         </div>
       )}
