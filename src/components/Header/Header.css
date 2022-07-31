@@ -1,0 +1,30 @@
+
+.dropdown_search {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    color: #000;
+    background-color: beige;
+    width: 95%;
+    border-radius: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+.dropdown_search li {
+    list-style-type: none;
+    height: 50px;
+    margin-bottom: 4px;
+}
+.dropdown_search li a {
+    cursor: pointer;
+    padding-left: 12px;
+}
+.dropdown_search img {
+    max-width: 70px;
+    height: 50px;
+}
+.dropdown_search span {
+    float: right;
+    margin-top: 8px;
+    margin-right: 8px;
+}
