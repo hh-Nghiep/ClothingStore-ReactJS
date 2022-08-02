@@ -44,13 +44,11 @@ export default function Shop() {
         },
     ]
 
-    const [arrProduct, setArrProduct] = useState([]);
+    const [arrProduct, setArrProduct] = useState([product]);
     const [filterPrice, setFilterPrice] = useState(0);
     const [filterCate, setFilterCate] = useState("all");
 
     const filterProduct = () => {
-        console.log("Price", filterPrice);
-        console.log("Cate", filterCate);
         let tempArr = [];
         if (filterCate === "all") {
             tempArr = renderCate;
@@ -68,13 +66,7 @@ export default function Shop() {
             })
         }
 
-        setArrProduct(tempArr)
-        console.log("temp", arrProduct) // mảng sau khi sort
-
-        // dispatch({
-        //     type: "FILTER",
-        //     size: arrProduct
-        // })
+        setArrProduct(tempArr);
     }
 
     const addCart = (item) => {
@@ -99,19 +91,6 @@ export default function Shop() {
     }
 
     useEffect(() => {
-        axios({
-            method: 'GET',
-            url: `${DOMAIN}/product`,
-            data: product
-        }).then((data) => {
-            dispatch({
-                type: "GET_ALL_PRODUCT",
-                product: data.data
-            })
-        }).catch((err) => {
-            // console.log("err")
-        })
-
         axios({
             method: 'GET',
             url: `${DOMAIN}/cate`,
@@ -139,7 +118,7 @@ export default function Shop() {
         })
 
         filterProduct();
-    }, [filterPrice, filterCate])
+    }, [filterPrice, filterCate, product])
     return (
         <Fragment>
             <div>
@@ -241,7 +220,7 @@ export default function Shop() {
                                         </div>
                                     </div>
                                 </div>
-                                {renderCate?.map((item, index) => {
+                                {arrProduct?.map((item, index) => {
                                     return (
                                         <div className="col-lg-4 col-md-6 col-sm-6 pb-1" key={index} >
                                             <div className="product-item bg-light mb-4">

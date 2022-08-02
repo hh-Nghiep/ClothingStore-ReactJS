@@ -18,22 +18,22 @@ export default function Product() {
             item: { ...item, number: 1, size: 1, sizeName: "S" }
         })
     }
+    const getProduct = async () => {
+        const response = await axios({
+            method: 'get',
+            url: `${DOMAIN}/product`,
+            data: product
+        }).then((data) => {
+            dispatch({
+                type: "GET_ALL_PRODUCT",
+                product: data.data
+            })
+        }).catch((err) => {
+            console.log("err")
+        })
+    }
     useEffect(() => {
         window.scrollTo(0, 0)
-        const getProduct = async () => {
-            const ok = await axios({
-                method: 'get',
-                url: `${DOMAIN}/product`,
-                data: product
-            }).then((data) => {
-                dispatch({
-                    type: "GET_ALL_PRODUCT",
-                    product: data.data
-                })
-            }).catch((err) => {
-                console.log("err")
-            })
-        }
         getProduct()
 
     }, [])

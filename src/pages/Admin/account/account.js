@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
+import axios from 'axios';
+import { DOMAIN } from '~/util/setting/config'
 
 export default function Account() {
     const [validated, setValidated] = useState(false);
+    const [idUser, setIdUser] = useState(1);
+    const [infoUser, setInfoUser] = useState([]);
 
     const handleSubmit = (event) => {
         const form = event.currentTarget;
@@ -14,9 +18,24 @@ export default function Account() {
             event.preventDefault();
             event.stopPropagation();
         }
-
         setValidated(true);
     };
+
+    const getInfoUser = async (id) => {
+        const response = await axios({
+            method: 'get',
+            url: `${DOMAIN}/users/${id}`,
+        }).then((data) => {
+
+        }).catch((err) => {
+            console.log("err")
+        })
+    }
+
+    useEffect(() => {
+        getInfoUser(1);
+    }, [])
+
 
     return (
         <Form noValidate validated={validated} onSubmit={handleSubmit} style={{ width: "100%", padding: "100px 40px 0 40px" }}>
