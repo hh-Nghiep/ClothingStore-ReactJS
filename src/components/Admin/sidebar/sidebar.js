@@ -1,6 +1,6 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChartPie, faBoxArchive, faUserGear, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faChartPie, faBoxArchive, faUserGear, faUser, faAlignJustify, faTruckFast } from '@fortawesome/free-solid-svg-icons'
 //import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export default function Sidebar() {
@@ -34,25 +34,37 @@ export default function Sidebar() {
             <li className="nav-item active">
                 <a className="nav-link" href="/admin/revenue">
                     <FontAwesomeIcon icon={faChartPie} />
-                    <span> Revenue</span>
+                    <span> Doanh Thu</span>
                 </a>
             </li>
             <li className="nav-item active">
                 <a className="nav-link" href="/admin/product">
                     <FontAwesomeIcon icon={faBoxArchive} />
-                    <span> Product</span>
+                    <span> Sản Phẩm</span>
+                </a>
+            </li>
+            <li className="nav-item active">
+                <a className="nav-link" href="/admin/category">
+                    <FontAwesomeIcon icon={faAlignJustify} />
+                    <span> Thể Loại</span>
+                </a>
+            </li>
+            <li className="nav-item active">
+                <a className="nav-link" href="/admin/managerUser">
+                    <FontAwesomeIcon icon={faTruckFast} />
+                    <span> Quản Lý Đơn Hàng</span>
                 </a>
             </li>
             <li className="nav-item active">
                 <a className="nav-link" href="/admin/managerUser">
                     <FontAwesomeIcon icon={faUserGear} />
-                    <span> Manager User</span>
+                    <span> Quản Lý Tài Khoản</span>
                 </a>
             </li>
             <li className="nav-item active">
                 <a className="nav-link" href="/admin/account">
                     <FontAwesomeIcon icon={faUser} />
-                    <span> Account</span>
+                    <span> Tài Khoản</span>
                 </a>
             </li>
             {/* Divider */}

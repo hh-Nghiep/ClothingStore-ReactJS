@@ -1,4 +1,5 @@
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './components/Admin/sb-admin-2.min.css'
 import Cart from './pages/Cart/Cart';
 import Header from './components/Header/Header';
@@ -16,6 +17,7 @@ import Sidebar from '~/components/Admin/sidebar/sidebar';
 import AccountAdmin from '~/pages/Admin/account/account'
 import Revenue from '~/pages/Admin/revenue/revenue';
 import ManagerUser from '~/pages/Admin/managerUser/managerUser';
+import Category from "./pages/Admin/category/category"
 import { DOMAIN } from '~/util/setting/config'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -27,7 +29,6 @@ function App() {
   const user = JSON.parse(localStorage.getItem(USER_LOGIN))
   const { product } = useSelector(state => state.ProductReducer || null);
   const location = useLocation();
-  console.log(location.pathname.slice(0, 6))
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -70,6 +71,7 @@ function App() {
           <Route path='/admin/account' element={<AccountAdmin />} />
           <Route path='/admin/revenue' element={<Revenue />} />
           <Route path='/admin/managerUser' element={<ManagerUser />} />
+          <Route path='/admin/category' element={<Category />} />
         </Routes>
       </div>)
     }

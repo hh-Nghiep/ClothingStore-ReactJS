@@ -38,6 +38,7 @@ export default function Login() {
                 })
             }
             loginValue()
+            console.log(values)
         }
     })
     return (

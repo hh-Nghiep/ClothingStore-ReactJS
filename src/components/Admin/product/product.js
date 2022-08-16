@@ -1,67 +1,160 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import InputGroup from 'react-bootstrap/InputGroup';
-import { Formik } from 'formik';
-import * as yup from 'yup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { useDispatch, useSelector } from 'react-redux'
+import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'
-import { DOMAIN } from '~/util/setting/config'
+import Table from 'react-bootstrap/Table';
+import Col from 'react-bootstrap/Col';
+import { Formik, useFormik } from 'formik'
+import * as yup from 'yup'
+import Row from 'react-bootstrap/Row';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
 
-export default function Wrapper() {
-    const { product } = useSelector(state => state.ProductReducer)
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
+
+export default function Product() {
+    const [listProduct, setListProduct] = useState([]);
+    const [nameCategory, setNameCategory] = useState();
+    const [cate, setCate] = useState([]);
 
     const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false);
 
-    const getGender = (id) => {
-        if (id === "1") {
-            return (<td>Nam</td>)
-        } else {
-            return (<td>Nữ</td>)
-        }
-    }
+    const [infoBeforUpdate, setInfoBeforUpdate] = useState();
+    const [show1, setShow1] = useState(false);
+    const handleShow1 = (item) => { setInfoBeforUpdate(item); setShow1(true) };
+    const handleClose1 = () => setShow1(false);
 
-    const getProduct = async () => {
+    const getAllCategory = async () => {
         const response = await axios({
             method: 'get',
-            url: `${DOMAIN}/product`,
-            data: product
+            url: `http://localhost:3001/cates`
         }).then((data) => {
-            dispatch({
-                type: "GET_ALL_PRODUCT",
-                product: data.data
-            })
+            setCate(data.data?.[0])
         }).catch((err) => {
             console.log("err")
         })
     }
+
+    const deleteCategory = async (maTL) => {
+        const response = await axios({
+            method: 'delete',
+            url: `http://localhost:3001/cate/delete`,
+            data: {
+                maTL: maTL
+            }
+        }).then((data) => {
+        }).catch((err) => {
+            console.log("err")
+        })
+        getAllProduct();
+    }
+
+    const getAllProduct = async () => {
+        const response = await axios({
+            method: 'get',
+            url: `http://localhost:3001/products`
+        }).then((data) => {
+            setListProduct(data.data?.[0])
+        }).catch((err) => {
+            console.log("err")
+        })
+    }
+
+    const addCategory = async () => {
+        const response = await axios({
+            method: 'post',
+            url: `http://localhost:3001/cate/add`,
+            data: {
+                tenTheLoai: nameCategory
+            }
+        }).then((data) => {
+        }).catch((err) => {
+            console.log("err")
+        })
+        handleClose();
+        getAllProduct();
+    }
+
+    const updateCategory = async () => {
+        const response = await axios({
+            method: 'post',
+            url: `http://localhost:3001/cate/update`,
+            data: {
+                tenTL: infoBeforUpdate.tenTL,
+                maTL: infoBeforUpdate.maTL
+            }
+        }).then((data) => {
+        }).catch((err) => {
+            console.log("err")
+        })
+        handleClose1();
+        getAllProduct();
+    }
+    const formatPrice = (price) => {
+        return Intl.NumberFormat('it-IT', { style: 'currency', currency: 'VND' }).format(price)
+    }
+
     useEffect(() => {
-        getProduct();
-    }, [])
+        getAllProduct();
+        getAllCategory();
+    }, [listProduct.length])
 
 
 
-    const schema = yup.object().shape({
-        firstName: yup.string().required(),
-        lastName: yup.string().required(),
-        username: yup.string().required(),
-        city: yup.string().required(),
-        state: yup.string().required(),
-        zip: yup.string().required(),
-        file: yup.mixed().required(),
-        terms: yup.bool().required().oneOf([true], 'terms must be accepted'),
-    });
+    const formik = useFormik({
+        initialValues: {
+            TenSP: "",
+            maTL: "",
+            hinhAnh: "",
+            maNV: "",
+            SLSizeS: 0,
+            SLSizeM: 0,
+            SLSizeL: 0,
+            SLSizeXL: 0,
+            SLSizeXXL: 0,
 
+            giaSizeS: 0,
+            giaSizeM: 0,
+            giaSizeL: 0,
+            giaSizeXL: 0,
+            giaSizeXXL: 0,
+            moTa: "Không có mô tả.",
+        },
+        validationSchema: yup.object({
+            TenSP: yup.string().required("Vui Lòng Điền Tên Sản Phẩm"),
+            hinhAnh: yup.string().required("Vui Lòng Điền Link Hình Ảnh"),
+            moTa: yup.string().required("Vui Lòng Điền Mô Tả Sản Phẩm"),
+            SLSizeS: yup.number().required("Vui Lòng Điền Số Lượng Size S"),
+            giaSizeS: yup.number().required("Vui Lòng Điền Giá Size S"),
+
+            SLSizeM: yup.number().required("Vui Lòng Điền Số Lượng Size M"),
+            giaSizeM: yup.number().required("Vui Lòng Điền Giá Size M"),
+
+            SLSizeL: yup.number().required("Vui Lòng Điền Số Lượng Size L"),
+            giaSizeL: yup.number().required("Vui Lòng Điền Giá Size L"),
+
+            SLSizeXL: yup.number().required("Vui Lòng Điền Số Lượng Size XL"),
+            giaSizeXL: yup.number().required("Vui Lòng Điền Giá Size XL"),
+
+            SLSizeXXL: yup.number().required("Vui Lòng Điền Số Lượng Size XXL"),
+            giaSizeXXL: yup.number().required("Vui Lòng Điền Giá Size XXL"),
+        }),
+        onSubmit: (values) => {
+            console.log("Values", values)
+            // axios({
+            //     method: 'post',
+            //     url: `http://localhost:3001/products`,
+            //     data: values
+            // }).then((data) => {
+            // }).catch((err) => {
+            //     console.log("err", err)
+            // })
+        }
+    })
     return (
         <>
             <div id="content-wrapper" className="d-flex flex-column">
@@ -69,55 +162,56 @@ export default function Wrapper() {
                     {/* Begin Page Content */}
                     <div className="container-fluid">
                         {/* Page Heading */}
-                        <h1 className="h3 mb-2 text-gray-800">Manager Product</h1>
+                        <h1 className="h3 mb-2 text-gray-800">Quản Lý Sản Phẩm</h1>
                         {/* DataTales Example */}
                         <div className="card shadow mb-4">
                             <div className="card-header py-3" style={{ marginBottom: "5px" }}>
                                 <h6 className="m-0 font-weight-bold text-primary">
-                                    DataTables Example
-                                    <Button variant="success" onClick={handleShow} style={{ position: "absolute", top: "8px", right: "10px" }}>Add Product</Button>
+                                    Tất Cả Sản Phẩm
+                                    <Button variant="success" onClick={handleShow} style={{ position: "absolute", top: "8px", right: "10px" }}>Thêm Sản Phẩm Mới</Button>
                                 </h6>
                             </div>
                             <div className="card-body">
                                 <div className="table-responsive">
-                                    <table
+                                    <Table striped bordered hover
                                         className="table table-bordered"
                                         id="dataTable"
                                         width="100%"
                                         cellSpacing={0}
+                                        style={{ color: "black" }}
                                     >
                                         <thead>
-                                            <tr>
-                                                <th>Image</th>
-                                                <th>Name</th>
-                                                <th>Price</th>
-                                                <th>Discount</th>
-                                                <th>Description</th>
-                                                <th>Gender</th>
-                                                <th>Action</th>
+                                            <tr >
+                                                <th>Mã Sản Phẩm</th>
+                                                <th>Hình Ảnh</th>
+                                                <th>Tên Sản Phẩm</th>
+                                                <th>Giá</th>
+                                                <th>Tổng Số Lượng Tồn</th>
+                                                <th>Thao Tác</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {product.map((item, index) => {
+                                            {listProduct?.map((item, index) => {
                                                 return (
                                                     <tr key={index}>
-                                                        <td><img className="img-fluid" src={item.thumbnail} alt='true' style={{ width: "200px" }} /></td>
-                                                        <td>{item.title}</td>
-                                                        <td>{item.price}</td>
-                                                        <td>{item.discount}</td>
-                                                        <td>{item.description}</td>
-                                                        {getGender(`${item.gender_ID}`)}
+                                                        <td>{item.maSP}</td>
+                                                        <td>{item.hinhAnh}</td>
+                                                        <td>{item.tenSP}</td>
+                                                        <td>{formatPrice(`${item.giaThapNhat}`)} ~ {formatPrice(`${item.giaCaoNhat}`)}</td>
+                                                        <td>{item.tongSLTon}</td>
                                                         <td>
-                                                            <FontAwesomeIcon icon={faPenToSquare} style={{ color: "green", paddingRight: "10px", cursor: "pointer" }} />
+                                                            <button onClick={() => handleShow1(item)} style={{ marginRight: "10px" }}><FontAwesomeIcon icon={faPenToSquare} style={{ color: "green", cursor: "pointer" }} /></button>
+
                                                             {' '}
-                                                            <FontAwesomeIcon icon={faTrash} style={{ color: "red", cursor: "pointer" }} />
+                                                            <button onClick={() => deleteCategory(`${item.maTL}`)} ><FontAwesomeIcon icon={faTrash} style={{ color: "red", cursor: "pointer" }} /></button>
+
                                                         </td>
                                                     </tr>
                                                 )
                                             })}
 
                                         </tbody>
-                                    </table>
+                                    </Table>
                                 </div>
                             </div>
                         </div>
@@ -126,185 +220,39 @@ export default function Wrapper() {
                 </div>
             </div>
 
-            <Modal show={show} onHide={handleClose} size={'xl'}>
+
+            <Modal show={show} onHide={handleClose} size={'xl'} fullscreen={true}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Modal heading</Modal.Title>
+                    <Modal.Title>Thêm Sản Phẩm</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Formik
-                        validationSchema={schema}
-                        onSubmit={console.log}
-                        initialValues={{
-                            firstName: 'Mark',
-                            lastName: 'Otto',
-                            username: '',
-                            city: '',
-                            state: '',
-                            zip: '',
-                            file: null,
-                            terms: false,
-                        }}
-                    >
-                        {({
-                            handleSubmit,
-                            handleChange,
-                            handleBlur,
-                            values,
-                            touched,
-                            isValid,
-                            errors,
-                        }) => (
-                            <Form noValidate onSubmit={handleSubmit}>
-                                <Row className="mb-3">
-                                    <Form.Group
-                                        as={Col}
-                                        md="4"
-                                        controlId="validationFormik101"
-                                        className="position-relative"
-                                    >
-                                        <Form.Label>First name</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="firstName"
-                                            value={values.firstName}
-                                            onChange={handleChange}
-                                            isValid={touched.firstName && !errors.firstName}
-                                        />
-                                        <Form.Control.Feedback tooltip>Looks good!</Form.Control.Feedback>
-                                    </Form.Group>
-                                    <Form.Group
-                                        as={Col}
-                                        md="4"
-                                        controlId="validationFormik102"
-                                        className="position-relative"
-                                    >
-                                        <Form.Label>Last name</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="lastName"
-                                            value={values.lastName}
-                                            onChange={handleChange}
-                                            isValid={touched.lastName && !errors.lastName}
-                                        />
+                    {/* style={{ color: "black", fontSize: "18px" }} */}
+                    <form onSubmit={formik.handleSubmit} >
+                        <Row>
+                            < Col >
+                                <Form.Label>Tên Sản Phẩm</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="tenSP"
+                                    onChange={formik.handleChange}
+                                />
+                                {formik.errors.TenSP && formik.touched.tenSP && (<p>{formik.errors.tenSP}</p>)}
+                            </Col>
+                            <Col>
+                                <Form.Label>Hình Ảnh</Form.Label>
+                                <Form.Control name="hinhAnh" onChange={formik.handleChange} />
+                                {formik.errors.hinhAnh && formik.touched.hinhAnh && (<p>{formik.errors.hinhAnh}</p>)}
+                            </Col>
+                        </Row>
 
-                                        <Form.Control.Feedback tooltip>Looks good!</Form.Control.Feedback>
-                                    </Form.Group>
-                                    <Form.Group as={Col} md="4" controlId="validationFormikUsername2">
-                                        <Form.Label>Username</Form.Label>
-                                        <InputGroup hasValidation>
-                                            <InputGroup.Text id="inputGroupPrepend">@</InputGroup.Text>
-                                            <Form.Control
-                                                type="text"
-                                                placeholder="Username"
-                                                aria-describedby="inputGroupPrepend"
-                                                name="username"
-                                                value={values.username}
-                                                onChange={handleChange}
-                                                isInvalid={!!errors.username}
-                                            />
-                                            <Form.Control.Feedback type="invalid" tooltip>
-                                                {errors.username}
-                                            </Form.Control.Feedback>
-                                        </InputGroup>
-                                    </Form.Group>
-                                </Row>
-                                <Row className="mb-3">
-                                    <Form.Group
-                                        as={Col}
-                                        md="6"
-                                        controlId="validationFormik103"
-                                        className="position-relative"
-                                    >
-                                        <Form.Label>City</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="City"
-                                            name="city"
-                                            value={values.city}
-                                            onChange={handleChange}
-                                            isInvalid={!!errors.city}
-                                        />
+                        <Button type="submit" style={{ marginTop: "15px" }} > Thêm Sản Phẩm</Button>
+                    </form>
 
-                                        <Form.Control.Feedback type="invalid" tooltip>
-                                            {errors.city}
-                                        </Form.Control.Feedback>
-                                    </Form.Group>
-                                    <Form.Group
-                                        as={Col}
-                                        md="3"
-                                        controlId="validationFormik104"
-                                        className="position-relative"
-                                    >
-                                        <Form.Label>State</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="State"
-                                            name="state"
-                                            value={values.state}
-                                            onChange={handleChange}
-                                            isInvalid={!!errors.state}
-                                        />
-                                        <Form.Control.Feedback type="invalid" tooltip>
-                                            {errors.state}
-                                        </Form.Control.Feedback>
-                                    </Form.Group>
-                                    <Form.Group
-                                        as={Col}
-                                        md="3"
-                                        controlId="validationFormik105"
-                                        className="position-relative"
-                                    >
-                                        <Form.Label>Zip</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Zip"
-                                            name="zip"
-                                            value={values.zip}
-                                            onChange={handleChange}
-                                            isInvalid={!!errors.zip}
-                                        />
-
-                                        <Form.Control.Feedback type="invalid" tooltip>
-                                            {errors.zip}
-                                        </Form.Control.Feedback>
-                                    </Form.Group>
-                                </Row>
-                                <Form.Group className="position-relative mb-3">
-                                    <Form.Label>Image</Form.Label>
-                                    <Form.Control
-                                        type="file"
-                                        required
-                                        name="file"
-                                        onChange={handleChange}
-                                        isInvalid={!!errors.file}
-                                    />
-                                    <Form.Control.Feedback type="invalid" tooltip>
-                                        {errors.file}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                                <Form.Group className="position-relative mb-3">
-                                    <Form.Check
-                                        required
-                                        name="terms"
-                                        label="Agree to terms and conditions"
-                                        onChange={handleChange}
-                                        isInvalid={!!errors.terms}
-                                        feedback={errors.terms}
-                                        feedbackType="invalid"
-                                        id="validationFormik106"
-                                        feedbackTooltip
-                                    />
-                                </Form.Group>
-                                <Button type="submit">Submit form</Button>
-                            </Form>
-                        )}
-                    </Formik>
-                </Modal.Body>
+                </Modal.Body >
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>Close</Button>
-                    <Button variant="primary" type="submit">Save Changes</Button>
+                    <Button variant="secondary" onClick={handleClose}>Huỷ</Button>
                 </Modal.Footer>
-            </Modal>
+            </Modal >
         </>
     )
 }

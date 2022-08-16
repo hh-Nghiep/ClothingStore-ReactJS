@@ -26,48 +26,49 @@ export default function Account() {
             method: 'get',
             url: `${DOMAIN}/users/${id}`,
         }).then((data) => {
-
+            setInfoUser(data.data)
         }).catch((err) => {
             console.log("err")
         })
     }
-
     useEffect(() => {
         getInfoUser(1);
+        console.log(infoUser);
     }, [])
-
 
     return (
         <Form noValidate validated={validated} onSubmit={handleSubmit} style={{ width: "100%", padding: "100px 40px 0 40px" }}>
             <Row className="mb-3">
                 <Form.Group as={Col} md="4" controlId="validationCustom01">
-                    <Form.Label>First name</Form.Label>
+                    <Form.Label>Full name</Form.Label>
                     <Form.Control
                         required
                         type="text"
-                        placeholder="First name"
-                        defaultValue="Mark"
+                        placeholder="Full name"
+                        defaultValue={infoUser.fullname}
                     />
                     <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="4" controlId="validationCustom02">
-                    <Form.Label>Last name</Form.Label>
+                    <Form.Label>User name</Form.Label>
                     <Form.Control
                         required
                         type="text"
-                        placeholder="Last name"
-                        defaultValue="Otto"
+                        placeholder="Role"
+                        defaultValue={infoUser.role_id}
+                        disabled
                     />
                     <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="4" controlId="validationCustomUsername">
-                    <Form.Label>Username</Form.Label>
+                    <Form.Label>Email</Form.Label>
                     <InputGroup hasValidation>
-                        <InputGroup.Text id="inputGroupPrepend">@</InputGroup.Text>
+                        <InputGroup.Text id="Email">@</InputGroup.Text>
                         <Form.Control
                             type="text"
-                            placeholder="Username"
+                            placeholder="Email"
                             aria-describedby="inputGroupPrepend"
+                            defaultValue={infoUser.email}
                             required
                         />
                         <Form.Control.Feedback type="invalid">
@@ -78,36 +79,28 @@ export default function Account() {
             </Row>
             <Row className="mb-3">
                 <Form.Group as={Col} md="6" controlId="validationCustom03">
-                    <Form.Label>City</Form.Label>
-                    <Form.Control type="text" placeholder="City" required />
+                    <Form.Label>Adress</Form.Label>
+                    <Form.Control type="text" defaultValue={infoUser.address} />
                     <Form.Control.Feedback type="invalid">
                         Please provide a valid city.
                     </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="3" controlId="validationCustom04">
-                    <Form.Label>State</Form.Label>
-                    <Form.Control type="text" placeholder="State" required />
+                    <Form.Label>Phone</Form.Label>
+                    <Form.Control type="text" defaultValue={infoUser.phone} required />
                     <Form.Control.Feedback type="invalid">
                         Please provide a valid state.
                     </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="3" controlId="validationCustom05">
-                    <Form.Label>Zip</Form.Label>
-                    <Form.Control type="text" placeholder="Zip" required />
+                    <Form.Label>PassWord</Form.Label>
+                    <Form.Control type="text" placeholder="PassWord" defaultValue="*********" />
                     <Form.Control.Feedback type="invalid">
                         Please provide a valid zip.
                     </Form.Control.Feedback>
                 </Form.Group>
             </Row>
-            <Form.Group className="mb-3">
-                <Form.Check
-                    required
-                    label="Agree to terms and conditions"
-                    feedback="You must agree before submitting."
-                    feedbackType="invalid"
-                />
-            </Form.Group>
-            <Button type="submit">Submit form</Button>
+            <Button type="submit">Save Info</Button>
         </Form>
     );
 }

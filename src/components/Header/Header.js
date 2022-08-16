@@ -18,8 +18,8 @@ export default function Header() {
         if (!userLogin) {
             return (
                 <Fragment>
-                    <NavLink to='/login' className="dropdown-item">Sign in</NavLink>
-                    <NavLink to='/register' className="dropdown-item">Sign up</NavLink>
+                    <NavLink to='/login' className="dropdown-item">Đăng Nhập</NavLink>
+                    <NavLink to='/register' className="dropdown-item">Đăng Ký</NavLink>
                 </Fragment>
             )
         } else {
@@ -28,7 +28,7 @@ export default function Header() {
     }
     const showSearch = () => {
     }
-      
+
     return (
         <Fragment>
             <div>
@@ -38,33 +38,16 @@ export default function Header() {
                         <div className="col-lg-6 d-none d-lg-block">
                             <div className="d-inline-flex align-items-center h-100">
                                 <NavLink className="text-body mr-3" to='/admin'>Trang ADMIN</NavLink>
-                                <a className="text-body mr-3" href='#'>Contact</a>
-                                <a className="text-body mr-3" href='#'>Help</a>
-                                <a className="text-body mr-3" href='#'>FAQs</a>
+                                <a className="text-body mr-3" href='#'>Liên Hệ</a>
+                                <a className="text-body mr-3" href='#'>Hỗ Trợ</a>
                             </div>
                         </div>
                         <div className="col-lg-6 text-center text-lg-right">
                             <div className="d-inline-flex align-items-center">
                                 <div className="btn-group">
-                                    <button type="button" className="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">{!userLogin ? "My Account" : `Chào ${userLogin.fullname}`}</button>
+                                    <button type="button" className="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">{!userLogin ? "Tài Khoản" : `Chào Nghiệp`}</button>
                                     <div className="dropdown-menu dropdown-menu-right">
                                         {handleLogin()}
-                                    </div>
-                                </div>
-                                <div className="btn-group mx-2">
-                                    <button type="button" className="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">USD</button>
-                                    <div className="dropdown-menu dropdown-menu-right">
-                                        <button className="dropdown-item" type="button">EUR</button>
-                                        <button className="dropdown-item" type="button">GBP</button>
-                                        <button className="dropdown-item" type="button">CAD</button>
-                                    </div>
-                                </div>
-                                <div className="btn-group">
-                                    <button type="button" className="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">EN</button>
-                                    <div className="dropdown-menu dropdown-menu-right">
-                                        <button className="dropdown-item" type="button">FR</button>
-                                        <button className="dropdown-item" type="button">AR</button>
-                                        <button className="dropdown-item" type="button">RU</button>
                                     </div>
                                 </div>
                             </div>
@@ -103,54 +86,54 @@ export default function Header() {
                                     <li>
                                         <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
                                         <a>123</a>
-                                        <span>123</span>  
+                                        <span>123</span>
                                     </li>
                                     <li>
                                         <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
                                         <a>123</a>
-                                        <span>123</span>  
+                                        <span>123</span>
                                     </li>
                                     <li>
                                         <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
                                         <a>123</a>
-                                        <span>123</span>  
+                                        <span>123</span>
                                     </li>
                                     <li>
                                         <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
                                         <a>123</a>
-                                        <span>123</span>  
+                                        <span>123</span>
                                     </li>
                                     <li>
                                         <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
                                         <a>123</a>
-                                        <span>123</span>  
+                                        <span>123</span>
                                     </li>
                                     <li>
                                         <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
                                         <a>123</a>
-                                        <span>123</span>  
+                                        <span>123</span>
                                     </li>
                                     <li>
                                         <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
                                         <a>123</a>
-                                        <span>123</span>  
+                                        <span>123</span>
                                     </li>
                                     <li>
                                         <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
                                         <a>123</a>
-                                        <span>123</span>  
+                                        <span>123</span>
                                     </li>
                                     <li>
                                         <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
                                         <a>123</a>
-                                        <span>123</span>  
+                                        <span>123</span>
                                     </li>
-                                </ul>                          
+                                </ul>
                             </form>
                         </div>
                         <div className="col-lg-4 col-6 text-right">
-                            <p className="m-0">Customer Service</p>
-                            <h5 className="m-0">+012 345 6789</h5>
+                            <p className="m-0">LIÊN HỆ HỖ TRỢ ZALO</p>
+                            <h5 className="m-0">+84 981 171 271</h5>
                         </div>
                     </div>
                 </div>
@@ -196,22 +179,11 @@ export default function Header() {
                                 </button>
                                 <div className="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                                     <div className="navbar-nav mr-auto py-0">
-                                        <NavLink to='/' className="nav-item nav-link active">Home</NavLink>
-                                        <NavLink to='/shop' className="nav-item nav-link">Shop</NavLink>
-                                        <div className="nav-item dropdown">
-                                            <a href="#" className="nav-link dropdown-toggle" data-toggle="dropdown">Pages <i className="fa fa-angle-down mt-1" /></a>
-                                            <div className="dropdown-menu bg-primary rounded-0 border-0 m-0">
-                                                <NavLink to='/cart' className="dropdown-item">Shopping Cart</NavLink>
-                                                <NavLink to='/checkout' className="dropdown-item">Checkout</NavLink>
-                                            </div>
-                                        </div>
-                                        <NavLink to='/contact' className="nav-item nav-link">Contact</NavLink>
+                                        <NavLink to='/' className="nav-item nav-link active">Trang Chủ</NavLink>
+                                        <NavLink to='/shop' className="nav-item nav-link">Sản Phẩm</NavLink>
+                                        <NavLink to='/contact' className="nav-item nav-link">Liên Hệ</NavLink>
                                     </div>
                                     <div className="navbar-nav ml-auto py-0 d-none d-lg-block">
-                                        <a href='#' className="btn px-0">
-                                            <i className="fas fa-heart text-primary" />
-                                            <span className="badge text-secondary border border-secondary rounded-circle" style={{ paddingBottom: 2 }}>0</span>
-                                        </a>
                                         <NavLink to='/cart' className="btn px-0 ml-3" >
                                             <i className="fas fa-shopping-cart text-primary" />
                                             <span className="badge text-secondary border border-secondary rounded-circle" style={{ paddingBottom: 2 }}>{carts.reduce((total) => {

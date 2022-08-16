@@ -61,13 +61,12 @@ export default function Cart() {
                             <table className="table table-light table-borderless table-hover text-center mb-0">
                                 <thead className="thead-dark">
                                     <tr>
-                                        <th>Products</th>
-                                        <th>Price</th>
+                                        <th>Sản Phẩm</th>
+                                        <th>Giá</th>
                                         <th>Size</th>
-                                        <th>Chọn Lại Size</th>
-                                        <th>Quantity</th>
-                                        <th>Total</th>
-                                        <th>Remove</th>
+                                        <th>Số Lượng</th>
+                                        <th>Tổng Tiền</th>
+                                        <th>Xoá</th>
                                     </tr>
                                 </thead>
                                 <tbody className="align-middle">
@@ -77,15 +76,7 @@ export default function Cart() {
                                                 <td className="align-middle"><img src={cart.thumbnail} alt='true' style={{ width: 50 }} /> {cart.title}</td>
                                                 <td className="align-middle">{cart.discount.toLocaleString()}</td>
                                                 <td className="align-middle">{cart.sizeName}</td>
-                                                <td className="form-group">
-                                                    <select onChange={handleChange} className="form-control">
-                                                        <option id={cart.id} value='1'>S</option>
-                                                        <option id={cart.id} value='2'>M</option>
-                                                        <option id={cart.id} value='3'>L</option>
-                                                        <option id={cart.id} value='4'>XL</option>
-                                                        <option id={cart.id} value='5'>XXL</option>
-                                                    </select>
-                                                </td>
+
                                                 <td className="align-middle">
                                                     <div className="input-group quantity mx-auto" style={{ width: 100 }}>
                                                         <div className="input-group-btn">

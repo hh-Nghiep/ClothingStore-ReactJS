@@ -5,8 +5,15 @@ import { useParams } from 'react-router-dom'
 import user from '~/assets/img/user.jpg'
 import Product from '~/components/Product/Product'
 import { DOMAIN } from '~/util/setting/config'
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import ToggleButton from 'react-bootstrap/ToggleButton';
 
 export default function ShopDetails() {
+    const [checked, setChecked] = useState(false);
+    const [radioValue, setRadioValue] = useState('1');
+    const [amountProduct, setAmountProduct] = useState(0);
+
     const [num, setNum] = useState(1)
     const [size, setSize] = useState(1)
     const handleNumber = (boolean) => {
@@ -20,6 +27,22 @@ export default function ShopDetails() {
             }
         }
     }
+
+    const Size = [
+        { name: 'S', id: '1' },
+        { name: 'M', id: '2' },
+        { name: 'L', id: '3' },
+        { name: 'XL', id: '4' },
+        { name: 'XXL', id: '5' },
+    ];
+
+    const Color = [
+        { name: 'Trắng', id: '1', variant: "light" },
+        { name: 'Đen', id: '2', variant: "dark" },
+        { name: 'Xám', id: '3', variant: "secondary" },
+        { name: 'Xanh', id: '4', variant: "success" },
+        { name: 'Vàng', id: '5', variant: "warning" },
+    ];
 
     const { productID } = useSelector(state => state.ProductReducer)
     const dispatch = useDispatch()
@@ -128,16 +151,33 @@ export default function ShopDetails() {
                                                 <small className="fas fa-star-half-alt" />
                                                 <small className="far fa-star" />
                                             </div>
-                                            <small className="pt-1">(99 Reviews)</small>
+                                            <small className="pt-1">(99 Views)</small>
                                         </div>
                                         <h3 className="font-weight-semi-bold mb-4">{item.discount.toLocaleString()}đ</h3>
                                         <p className="mb-4">Volup erat ipsum diam elitr rebum et dolor. Est nonumy elitr erat diam stet sit
                                             clita ea. Sanc ipsum et, labore clita lorem magna duo dolor no sea
                                             Nonumy</p>
                                         <div className="d-flex mb-3">
-                                            <strong className="text-dark mr-3">Sizes:</strong>
+                                            <strong className="text-dark mr-3" style={{ paddingTop: "5px" }}>Sizes:</strong>
                                             <form>
-                                                {item.Sizes?.map((sizes, index) => {
+                                                <ButtonGroup>
+                                                    {Size.map((item, index) => (
+                                                        <ToggleButton
+                                                            key={index}
+                                                            id={`radio-${index}`}
+                                                            type="radio"
+                                                            variant='outline-success'
+                                                            name="radio"
+                                                            value={item.value}
+                                                            checked={radioValue === item.value}
+                                                            onChange={(e) => setRadioValue(e.currentTarget.value)}
+                                                            style={{ marginRight: "10px" }}
+                                                        >
+                                                            {item.name}{' '}
+                                                        </ToggleButton>
+                                                    ))}
+                                                </ButtonGroup>
+                                                {/* {item.Sizes?.map((sizes, index) => {
                                                     return (
                                                         <div className="custom-control custom-radio custom-control-inline" key={index}>
                                                             <input onChange={handleChange} type="radio" className="custom-control-input" id={sizes.id} name="size" value={sizes.id} />
@@ -145,10 +185,19 @@ export default function ShopDetails() {
                                                             <p>{sizes.Product_Size?.amount}</p>
                                                         </div>
                                                     )
+                                                })} */}
+                                            </form>
+                                        </div>
+                                        <div className="d-flex mb-3">
+                                            <strong className="text-dark mr-3" >Color:</strong>
+                                            <form>
+                                                {Color.map((item, index) => {
+                                                    return (<><Button variant={item.variant}>{item.name}</Button>{' '}</>)
                                                 })}
                                             </form>
                                         </div>
-                                        <div className="d-flex align-items-center mb-4 pt-2">
+                                        <strong className="text-dark mr-3" >Số lượng: {amountProduct}</strong>
+                                        <div className="d-flex align-items-center mb-4 pt-2" style={{ marginTop: "15px" }}>
                                             <div className="input-group quantity mr-3" style={{ width: 130 }}>
                                                 <div className="input-group-btn">
                                                     <button onClick={() => handleNumber(false)} className="btn btn-primary btn-minus">
@@ -162,8 +211,7 @@ export default function ShopDetails() {
                                                     </button>
                                                 </div>
                                             </div>
-                                            <button onClick={() => addCart(productID)} className="btn btn-primary px-3"><i className="fa fa-shopping-cart mr-1" /> Add To
-                                                Cart</button>
+                                            <button onClick={() => addCart(productID)} className="btn btn-primary px-3"><i className="fa fa-shopping-cart mr-1" />Thêm Vào Giỏ Hàng</button>
                                         </div>
                                         <div className="d-flex pt-2">
                                             <strong className="text-dark mr-2">Share on:</strong>
