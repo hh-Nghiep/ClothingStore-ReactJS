@@ -1,6 +1,6 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChartPie, faBoxArchive, faUserGear, faUser, faAlignJustify, faTruckFast } from '@fortawesome/free-solid-svg-icons'
+import { faChartPie, faBoxArchive, faUserGear, faUser, faAlignJustify, faTruckFast, faPercent } from '@fortawesome/free-solid-svg-icons'
 //import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export default function Sidebar() {
@@ -47,6 +47,12 @@ export default function Sidebar() {
                 <a className="nav-link" href="/admin/category">
                     <FontAwesomeIcon icon={faAlignJustify} />
                     <span> Thể Loại</span>
+                </a>
+            </li>
+            <li className="nav-item active">
+                <a className="nav-link" href="/admin/category">
+                    <FontAwesomeIcon icon={faPercent} />
+                    <span> Khuyến Mãi</span>
                 </a>
             </li>
             <li className="nav-item active">

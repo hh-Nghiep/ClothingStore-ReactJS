@@ -34,37 +34,6 @@ export default function Header() {
             <div>
                 {/* Topbar Start */}
                 <div className="container-fluid">
-                    <div className="row bg-secondary py-1 px-xl-5">
-                        <div className="col-lg-6 d-none d-lg-block">
-                            <div className="d-inline-flex align-items-center h-100">
-                                <NavLink className="text-body mr-3" to='/admin'>Trang ADMIN</NavLink>
-                                <a className="text-body mr-3" href='#'>Liên Hệ</a>
-                                <a className="text-body mr-3" href='#'>Hỗ Trợ</a>
-                            </div>
-                        </div>
-                        <div className="col-lg-6 text-center text-lg-right">
-                            <div className="d-inline-flex align-items-center">
-                                <div className="btn-group">
-                                    <button type="button" className="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">{!userLogin ? "Tài Khoản" : `Chào Nghiệp`}</button>
-                                    <div className="dropdown-menu dropdown-menu-right">
-                                        {handleLogin()}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="d-inline-flex align-items-center d-block d-lg-none">
-                                <a href='#' className="btn px-0 ml-2">
-                                    <i className="fas fa-heart text-dark" />
-                                    <span className="badge text-dark border border-dark rounded-circle" style={{ paddingBottom: 2 }}> 0 </span>
-                                </a>
-                                <NavLink to='/cart' className="btn px-0 ml-2">
-                                    <i className="fas fa-shopping-cart text-dark" />
-                                    <span className="badge text-dark border border-dark rounded-circle" style={{ paddingBottom: 2 }}>{carts.reduce((total) => {
-                                        return total += 1
-                                    }, 0)}</span>
-                                </NavLink>
-                            </div>
-                        </div>
-                    </div>
                     <div className="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
                         <div className="col-lg-4">
                             <NavLink to='/' className="text-decoration-none">
@@ -75,60 +44,13 @@ export default function Header() {
                         <div className="col-lg-4 col-6 text-left">
                             <form>
                                 <div className="input-group">
-                                    <input type="text" className="form-control" placeholder="Search for products" />
+                                    <input type="text" className="form-control" placeholder="Tìm Theo Tên Sản Phẩm" style={{ float: "right" }} />
                                     <div className="input-group-append">
                                         <span className="input-group-text bg-transparent text-primary">
                                             <i className="fa fa-search" />
                                         </span>
                                     </div>
                                 </div>
-                                <ul className='dropdown_search'>
-                                    <li>
-                                        <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
-                                        <a>123</a>
-                                        <span>123</span>
-                                    </li>
-                                    <li>
-                                        <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
-                                        <a>123</a>
-                                        <span>123</span>
-                                    </li>
-                                    <li>
-                                        <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
-                                        <a>123</a>
-                                        <span>123</span>
-                                    </li>
-                                    <li>
-                                        <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
-                                        <a>123</a>
-                                        <span>123</span>
-                                    </li>
-                                    <li>
-                                        <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
-                                        <a>123</a>
-                                        <span>123</span>
-                                    </li>
-                                    <li>
-                                        <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
-                                        <a>123</a>
-                                        <span>123</span>
-                                    </li>
-                                    <li>
-                                        <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
-                                        <a>123</a>
-                                        <span>123</span>
-                                    </li>
-                                    <li>
-                                        <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
-                                        <a>123</a>
-                                        <span>123</span>
-                                    </li>
-                                    <li>
-                                        <img src='https://thuthuatphanmem.vn/uploads/2018/09/11/hinh-anh-dep-6_044127357.jpg'></img>
-                                        <a>123</a>
-                                        <span>123</span>
-                                    </li>
-                                </ul>
                             </form>
                         </div>
                         <div className="col-lg-4 col-6 text-right">
@@ -190,6 +112,15 @@ export default function Header() {
                                                 return total += 1
                                             }, 0)}</span>
                                         </NavLink>
+
+                                        <div className="d-inline-flex align-items-center">
+                                            <div className="btn-group">
+                                                <button type="button" className="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">{!userLogin ? "Tài Khoản" : `Chào Nghiệp`}</button>
+                                                <div className="dropdown-menu dropdown-menu-right">
+                                                    {handleLogin()}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </nav>

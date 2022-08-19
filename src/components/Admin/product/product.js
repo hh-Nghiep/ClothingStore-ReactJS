@@ -283,12 +283,11 @@ export default function Product() {
                                                         <td>{formatPrice(`${item.giaThapNhat}`)} ~ {formatPrice(`${item.giaCaoNhat}`)}</td>
                                                         <td>{item.tongSLTon}</td>
                                                         <td>
-                                                            {statusProduct === "1" ?
+                                                            {statusProduct == "1" ?
                                                                 (<><button onClick={() => handleShow1(`${item.maSP}`)} style={{ marginRight: "10px" }}><FontAwesomeIcon icon={faPenToSquare} style={{ color: "green", cursor: "pointer" }} /></button>
                                                                     {' '}
                                                                     <button onClick={() => deleteProduct(`${item.maSP}`)} ><FontAwesomeIcon icon={faTrash} style={{ color: "red", cursor: "pointer" }} /></button></>)
                                                                 : (<Button variant="success" onClick={() => activateProduct(`${item.maSP}`)}>Bán Lại</Button>)}
-
                                                         </td>
                                                     </tr>
                                                 )

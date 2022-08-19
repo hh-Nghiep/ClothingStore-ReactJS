@@ -1,44 +1,41 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik'
 import './Login.css'
-import { DOMAIN } from '~/util/setting/config'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function Login() {
     const notify = () => toast("Sai Thông Tin Đăng Nhập");
-    const navigate = useNavigate()
-    const { userLogin } = useSelector(state => state.UserReducer)
-    console.log(userLogin)
-    const dispatch = useDispatch()
+    let navigate = useNavigate();
     const formik = useFormik({
         initialValues: {
             email: '',
             password: '',
         },
-        onSubmit: values => {
-            const loginValue = async () => {
-                await axios({
-                    method: 'post',
-                    url: `${DOMAIN}/users/login`,
-                    data: values
-                }).then((values) => {
-                    dispatch({
-                        type: "LOGIN",
-                        values: values.data
-                    })
-                    navigate('/')
-                }).catch((err) => {
+        onSubmit: async (values) => {
+            await axios({
+                method: 'post',
+                url: `http://localhost:3001/user/login`,
+                data: values
+            }).then((values2) => {
+                console.log(values2.data[0])
+                console.log(values2.data[0][0].maQuyen)
+                if (values2.data !== 0) {
+                    // localStorage.setItem('maNguoiDung', values2.data[0][0].maNguoiDung)
+                    // localStorage.setItem('hoTen', values2.data[0][0].hoTen)
+
+                } else {
                     return (
                         notify()
                     )
-                })
-            }
-            loginValue()
-            console.log(values)
+                }
+            }).catch((err) => {
+                return (
+                    notify()
+                )
+            })
         }
     })
     return (
@@ -82,6 +79,8 @@ export default function Login() {
                                                 <button type='submit' href="#" className="btn btn-primary btn-user btn-block">
                                                     Login
                                                 </button>
+                                                <div className='delete-button' onClick={() => { if (window.confirm('Are you sure you wish to delete this item?')) this.onCancel() }} />
+
                                                 <hr />
                                                 <a href="#" className="btn btn-google btn-user btn-block">
                                                     <i className="fab fa-google fa-fw" /> Login with Google
