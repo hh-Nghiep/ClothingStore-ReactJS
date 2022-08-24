@@ -29,7 +29,6 @@ export default function Product() {
                 product: data.data
             })
         }).catch((err) => {
-            console.log("err")
         })
     }
     useEffect(() => {

@@ -1,16 +1,9 @@
 import axios from 'axios'
 import React, { Fragment, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom';
-import { DOMAIN } from '~/util/setting/config'
 
 export default function Shop() {
-    const { cate } = useSelector(state => state.CategoryReducer);
-    const { size } = useSelector(state => state.SizeReducer);
-    const { product } = useSelector(state => state.ProductReducer || null);
-    const { renderCate } = useSelector(state => state.ProductReducer);
-
-    const dispatch = useDispatch();
+    const [arrCate, setArrCate] = useState([]);
     const storeFilterPrice = [
         {
             title: "All Price",
@@ -44,81 +37,55 @@ export default function Shop() {
         },
     ]
 
-    const [arrProduct, setArrProduct] = useState([product]);
+    const [arrProduct, setArrProduct] = useState([]);
     const [filterPrice, setFilterPrice] = useState(0);
     const [filterCate, setFilterCate] = useState("all");
 
-    const filterProduct = () => {
-        let tempArr = [];
-        if (filterCate === "all") {
-            tempArr = renderCate;
-        } else if (filterCate !== "") {
-            tempArr = cate?.[filterCate - 1]?.Products
-        }
 
-        if (filterPrice === 1) {
-            tempArr = tempArr.filter(item => {
-                return item.discount > 400000;
-            })
-        } else if (filterPrice !== 0) {
-            tempArr = tempArr.filter(item => {
-                return item.discount > (filterPrice - 100000) && item.discount < filterPrice;
-            })
-        }
-
-        setArrProduct(tempArr);
-    }
-
-    const addCart = (item) => {
-        dispatch({
-            type: "ADD_CART",
-            item: { ...item, number: 1, size: 1, sizeName: "S" }
-        })
-    }
     const handlechange = (e) => {
         setFilterCate(e.target.value)
     }
-    const filterA = (num, number) => {
-        return renderCate.filter((item) => {
-            return (num <= item.discount && item.discount <= number)
-        })
-    }
     const handeClicker = (num) => {
-        dispatch({
-            type: "SORT",
-            num
+
+    }
+
+    const getArrCate = async () => {
+        axios({
+            method: 'GET',
+            url: `http://localhost:3001/cates`,
+        }).then((data) => {
+            setArrCate(data.data[0])
+        }).catch((err) => {
+            console.log("Lỗi lấy thể loại :", err)
         })
     }
+
+    const getArrProduct = async () => {
+        axios({
+            method: 'post',
+            url: `http://localhost:3001/products`,
+            data: {
+                trangThai: 1
+            }
+        }).then((data) => {
+            setArrProduct(data?.data[0])
+        }).catch((err) => {
+            console.log("Lỗi lấy sản phẩm :", err)
+        })
+    }
+
+    const formatPrice = (price) => {
+        return Intl.NumberFormat('it-IT', { style: 'currency', currency: 'VND' }).format(price)
+    }
+
 
     useEffect(() => {
-        axios({
-            method: 'GET',
-            url: `${DOMAIN}/cate`,
-            data: cate
-        }).then((data) => {
-            dispatch({
-                type: "GET_ALL_CATEGORY",
-                cate: data.data
-            })
-        }).catch((err) => {
-            // console.log("err")
-        })
+        getArrProduct();
+        getArrCate();
+    }, [arrProduct?.length])
 
-        axios({
-            method: 'GET',
-            url: `${DOMAIN}/size`,
-            data: size
-        }).then((data) => {
-            dispatch({
-                type: "GET_ALL_SIZE",
-                size: data.data
-            })
-        }).catch((err) => {
-            // console.log("err")
-        })
 
-        filterProduct();
-    }, [filterPrice, filterCate, product])
+
     return (
         <Fragment>
             <div>
@@ -152,13 +119,13 @@ export default function Shop() {
                                                     (<>
                                                         <input type="radio" name='price' className="custom-control-input" value={item.max} id={item.max} defaultChecked />
                                                         <label className="custom-control-label" htmlFor={item.max}>{item.title}</label>
-                                                        <span className="badge border font-weight-normal">{renderCate.length}</span>
+                                                        <span className="badge border font-weight-normal">{arrCate.length}</span>
                                                     </>
                                                     ) :
                                                     (<>
                                                         <input type="radio" name='price' className="custom-control-input" value={item.max} id={item.max} />
                                                         <label className="custom-control-label" htmlFor={item.max}>{item.title}</label>
-                                                        <span className="badge border font-weight-normal">{filterA(`${item.min}`, `${item.max}`).reduce((total) => { return total += 1 }, 0)}</span>
+                                                        {/* <span className="badge border font-weight-normal">{filterA(`${item.min}`, `${item.max}`).reduce((total) => { return total += 1 }, 0)}</span> */}
                                                     </>
                                                     )}
                                             </div>
@@ -174,14 +141,13 @@ export default function Shop() {
                                     <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                                         <input type="radio" name='Cate' className="custom-control-input" defaultChecked id="cate-all" value="all" onChange={handlechange} />
                                         <label className="custom-control-label" htmlFor="cate-all">All Category</label>
-                                        <span className="badge border font-weight-normal">{renderCate.length}</span>
                                     </div>
-                                    {cate.map((item, index) => {
+                                    {arrCate.map((item, index) => {
                                         return (
                                             <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3" key={index}>
-                                                <input type="radio" name='Cate' className="custom-control-input" id={item.name} value={item.id} onChange={handlechange} />
-                                                <label className="custom-control-label" htmlFor={item.name}>{item.name}</label>
-                                                <span className="badge border font-weight-normal">{item.Products.reduce((total) => { return total += 1 }, 0)}</span>
+                                                <input type="radio" name='Cate' className="custom-control-input" id={item.tenTL} value={item.maTL} onChange={handlechange} />
+                                                <label className="custom-control-label" htmlFor={item.tenTL}>{item.tenTL}</label>
+                                                <span className="badge border font-weight-normal" style={{ color: 'black' }}>{item.SLSanPham}</span>
                                             </div>
                                         )
                                     })}
@@ -220,23 +186,33 @@ export default function Shop() {
                                         </div>
                                     </div>
                                 </div>
+                                {/* Arr Prodcut */}
                                 {arrProduct?.map((item, index) => {
                                     return (
                                         <div className="col-lg-4 col-md-6 col-sm-6 pb-1" key={index} >
-                                            <div className="product-item bg-light mb-4">
-                                                <div className="product-img position-relative overflow-hidden">
-                                                    <img className="img-fluid w-100" src={item.thumbnail} alt='true' />
+                                            <div className="product-item bg-light mb-4" style={{ height: "400px" }}>
+                                                <div className="product-img position-relative overflow-hidden" style={{ height: "67%" }}>
+                                                    <img className="img-fluid w-100" src={item.hinhAnh} alt='true'
+                                                        style={{
+                                                            position: "absolute",
+                                                            margin: "auto",
+                                                            top: "50%",
+                                                            left: "50%",
+                                                            transform: "translate(-50%,-50%)"
+                                                        }}
+                                                    />
                                                     <div className="product-action">
-                                                        <a onClick={() => { addCart(item) }} className="btn btn-outline-dark btn-square" href='#'><i className="fa fa-shopping-cart" /></a>
                                                         <a className="btn btn-outline-dark btn-square" href='#'><i className="far fa-heart" /></a>
                                                         <a className="btn btn-outline-dark btn-square" href='#'><i className="fa fa-sync-alt" /></a>
-                                                        <NavLink className="btn btn-outline-dark btn-square" to={`/product/${item.id}`}><i className="fa fa-search" /></NavLink>
+                                                        <NavLink className="btn btn-outline-dark btn-square" to={`/product/${item.maSP}`}><i className="fa fa-search" /></NavLink>
                                                     </div>
                                                 </div>
                                                 <div className="text-center py-4">
-                                                    <a className="h6 text-decoration-none text-truncate" href='#'>{item.title}</a>
+                                                    <a className="h6 text-decoration-none text-truncate" href='#'>{item.tenSP}</a>
                                                     <div className="d-flex align-items-center justify-content-center mt-2">
-                                                        <h5>{item.discount?.toLocaleString()}</h5><h6 className="text-muted ml-2"><del>{item.price?.toLocaleString()}</del></h6>
+                                                        <h5>{formatPrice(item.giaThapNhat)} ~ {formatPrice(item.giaCaoNhat)}</h5>
+
+                                                        {/* <h6 className="text-muted ml-2"><del>{item.giaCaoNhat?.toLocaleString()}</del></h6> */}
                                                     </div>
                                                     <div className="d-flex align-items-center justify-content-center mb-1">
                                                         <small className="fa fa-star text-primary mr-1" />

@@ -18,32 +18,14 @@ import AccountAdmin from '~/pages/Admin/account/account'
 import Revenue from '~/pages/Admin/revenue/revenue';
 import ManagerUser from '~/pages/Admin/managerUser/managerUser';
 import Category from "./pages/Admin/category/category"
-import { DOMAIN } from '~/util/setting/config'
-import { useDispatch, useSelector } from 'react-redux'
-
-import { USER_LOGIN } from './util/setting/config';
+import Order from './pages/Order/order';
+import AdminOrder from './pages/Admin/Order/order'
 import { Fragment, useEffect } from 'react';
-import axios from 'axios';
 
 function App() {
-  const user = JSON.parse(localStorage.getItem(USER_LOGIN))
-  const { product } = useSelector(state => state.ProductReducer || null);
   const location = useLocation();
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    axios({
-      method: 'GET',
-      url: `${DOMAIN}/product`,
-      data: product
-    }).then((data) => {
-      dispatch({
-        type: "GET_ALL_PRODUCT",
-        product: data.data
-      })
-    }).catch((err) => {
-      // console.log("err")
-    })
   }, [])
 
   // console.log(user)
@@ -60,6 +42,7 @@ function App() {
           <Route path='/contact' element={<Contact />} />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
+          <Route path='/order' element={<Order />} />
         </Routes>
         <Footer />
       </>)
@@ -67,6 +50,7 @@ function App() {
       return (<div id='wrapper'>
         <Sidebar />
         <Routes>
+          <Route path='/admin/order' element={<AdminOrder />} />
           <Route path='/admin/product' element={<Products />} />
           <Route path='/admin/account' element={<AccountAdmin />} />
           <Route path='/admin/revenue' element={<Revenue />} />

@@ -56,7 +56,7 @@ export default function Sidebar() {
                 </a>
             </li>
             <li className="nav-item active">
-                <a className="nav-link" href="/admin/managerUser">
+                <a className="nav-link" href="/admin/order">
                     <FontAwesomeIcon icon={faTruckFast} />
                     <span> Quản Lý Đơn Hàng</span>
                 </a>
