@@ -54,7 +54,7 @@ export default function Carousel() {
           <div className="product-offer mb-30" style={{ height: 200 }}>
             <img className="img-fluid" src={offer1} alt='true' />
             <div className="offer-text">
-              <h6 className="text-white text-uppercase">Save 10%</h6>
+              <h6 className="text-white text-uppercase">Sale 10%</h6>
               <h3 className="text-white mb-3">Sale Off</h3>
               <NavLink to='/shop' className="btn btn-primary">Shop Now</NavLink>
             </div>
@@ -62,7 +62,7 @@ export default function Carousel() {
           <div className="product-offer mb-30" style={{ height: 200 }}>
             <img className="img-fluid" src={offer2} alt='true' />
             <div className="offer-text">
-              <h6 className="text-white text-uppercase">Save 20%</h6>
+              <h6 className="text-white text-uppercase">Sale 20%</h6>
               <h3 className="text-white mb-3">Sale Off</h3>
               <NavLink to='/shop' className="btn btn-primary">Shop Now</NavLink>
             </div>

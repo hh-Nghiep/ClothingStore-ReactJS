@@ -1,6 +1,16 @@
 import React from 'react'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 export default function Revenue() {
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (JSON.parse(localStorage.getItem("infoUser")).role !== 1) {
+            alert("Bạn Không Có Quyền Vào Site Này !!!!!")
+            navigate('/admin')
+        }
+    }, [])
+
     return (
         <><div className="container-fluid">
             {/* Page Heading */}

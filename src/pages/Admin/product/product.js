@@ -7,10 +7,11 @@ import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 import Col from 'react-bootstrap/Col';
-import { Formik, useFormik } from 'formik'
+import { Formik } from 'formik'
 import Row from 'react-bootstrap/Row';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+import * as yup from 'yup';
 
 
 export default function Product() {
@@ -19,19 +20,23 @@ export default function Product() {
     const [statusProduct, setStatusProduct] = useState(1);
     const [infoProduct, setInfoProduct] = useState([]);
     const [imgProduct, setImgProduct] = useState();
+    const [showDrop, setShowDrop] = useState("");
+    const [arrProdcutSearch, setArrProductSearch] = useState([]);
+    const [pageProduct, setPageProdut] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
 
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
-    const handleClose = () => setShow(false);
+    const handleClose = () => { setShow(false); setImgProduct() };
 
     const [show1, setShow1] = useState(false);
     const handleShow1 = (item) => { getInfoProduct(item); };
-    const handleClose1 = () => setShow1(false);
+    const handleClose1 = () => { setShow1(false); setImgProduct() };
 
     const getAllCategory = async () => {
-        const response = await axios({
+        await axios({
             method: 'get',
-            url: `http://localhost:3001/cates`,
+            url: `http://localhost:3001/cate/1`,
         }).then((data) => {
             setCate(data.data?.[0])
         }).catch((err) => {
@@ -40,44 +45,45 @@ export default function Product() {
     }
 
     const deleteProduct = async (maSP) => {
-        const response = await axios({
-            method: 'delete',
-            url: `http://localhost:3001/product/delete`,
-            data: {
-                maSP: maSP
-            }
-        }).then((data) => {
-        }).catch((err) => {
-            console.log("err")
-        })
+        if (window.confirm("Xoá Sản Phẩm ?") === true) {
+            await axios({
+                method: 'delete',
+                url: `http://localhost:3001/product/delete`,
+                data: {
+                    maSP: maSP
+                }
+            }).then((data) => {
+            }).catch((err) => {
+                console.log("err")
+            })
+        }
+
         getAllProduct();
     }
 
     const getAllProduct = async () => {
-        const response = await axios({
+        await axios({
             method: 'post',
-            url: `http://localhost:3001/products`,
+            url: `http://localhost:3001/products?page=${pageProduct}`,
             data: {
-                trangThai: statusProduct
+                trangThai: statusProduct,
+                maTL: 0,
+                gia: 0
             }
         }).then((data) => {
-            console.log("data", data.data[0])
-            setListProduct(data?.data[0])
+            setListProduct(data?.data.data)
+            setTotalPage(data?.data.totalPage)
         }).catch((err) => {
             console.log("err", err.message)
         })
     }
 
     const getInfoProduct = async (maSP) => {
-        const response = await axios({
-            method: 'post',
-            url: `http://localhost:3001/product/id`,
-            data: {
-                maSP: maSP
-            }
+        await axios({
+            method: 'get',
+            url: `http://localhost:3001/product/${maSP}`,
         }).then((data) => {
             setInfoProduct(data.data[0][0])
-            console.log(infoProduct)
             setShow1(true)
         }).catch((err) => {
             console.log("err")
@@ -85,17 +91,19 @@ export default function Product() {
     }
 
     const activateProduct = async (maSP) => {
-        const response = await axios({
-            method: 'post',
-            url: `http://localhost:3001/product/activate`,
-            data: {
-                maSP: maSP
-            }
-        }).then((data) => {
-            getAllProduct();
-        }).catch((err) => {
-            console.log("err")
-        })
+        if (window.confirm("Bán Lại Sản Phẩm ?") === true) {
+            await axios({
+                method: 'post',
+                url: `http://localhost:3001/product/activate`,
+                data: {
+                    maSP: maSP
+                }
+            }).then((data) => {
+                getAllProduct();
+            }).catch((err) => {
+                console.log("err")
+            })
+        }
     }
 
     const formatPrice = (price) => {
@@ -105,7 +113,8 @@ export default function Product() {
     useEffect(() => {
         getAllProduct();
         getAllCategory();
-    }, [listProduct?.length, statusProduct, infoProduct, imgProduct])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [listProduct?.length, statusProduct, infoProduct, imgProduct, pageProduct])
 
 
     const imageUpload = async (e) => {
@@ -136,67 +145,118 @@ export default function Product() {
 
     }
 
-
-    const formik = useFormik({
-        initialValues: {
-            tenSP: "",
-            maTL: "",
-            hinhAnh: "",
-            maNV: "",
-
-            SLSizeS: null,
-            SLSizeM: null,
-            SLSizeL: null,
-            SLSizeXL: null,
-            SLSizeXXL: null,
-
-            giaSizeS: null,
-            giaSizeM: null,
-            giaSizeL: null,
-            giaSizeXL: null,
-            giaSizeXXL: null,
-
-            moTa: "Không có mô tả.",
-        },
-        // validationSchema: yup.object({
-        //     TenSP: yup.string().required("Vui Lòng Điền Tên Sản Phẩm"),
-        //     hinhAnh: yup.string().required("Vui Lòng Điền Link Hình Ảnh"),
-        //     moTa: yup.string().required("Vui Lòng Điền Mô Tả Sản Phẩm"),
-        //     SLSizeS: yup.number().required("Vui Lòng Điền Số Lượng Size S"),
-        //     giaSizeS: yup.number().required("Vui Lòng Điền Giá Size S"),
-
-        //     SLSizeM: yup.number().required("Vui Lòng Điền Số Lượng Size M"),
-        //     giaSizeM: yup.number().required("Vui Lòng Điền Giá Size M"),
-
-        //     SLSizeL: yup.number().required("Vui Lòng Điền Số Lượng Size L"),
-        //     giaSizeL: yup.number().required("Vui Lòng Điền Giá Size L"),
-
-        //     SLSizeXL: yup.number().required("Vui Lòng Điền Số Lượng Size XL"),
-        //     giaSizeXL: yup.number().required("Vui Lòng Điền Giá Size XL"),
-
-        //     SLSizeXXL: yup.number().required("Vui Lòng Điền Số Lượng Size XXL"),
-        //     giaSizeXXL: yup.number().required("Vui Lòng Điền Giá Size XXL"),
-        // }),
-        onSubmit: (values) => {
-            var index = cate.map(item => item.tenTL).indexOf(`${values.maTL}`)
-            if (index === -1) {
-                alert("Vui Lòng Chọn Thể Loại !!!")
-            } else {
-                values.maTL = cate[index].maTL;
-                values.hinhAnh = imgProduct;
-                axios({
-                    method: 'post',
-                    url: `http://localhost:3001/product/add`,
-                    data: values
-                }).then((data) => {
-                    handleClose();
-                    getAllProduct();
-                    formik.resetForm();
-                }).catch((err) => {
-                    console.log("err", err)
-                })
-            }
+    const handleSearch = (e) => {
+        if (e !== "") {
+            axios({
+                method: 'POST',
+                url: `http://localhost:3001/product/find`,
+                data: {
+                    tenSP: e,
+                    trangThai: statusProduct
+                }
+            }).then((data) => {
+                setArrProductSearch(data.data)
+            }).catch((err) => {
+                console.log("Lỗi lấy thể loại :", err)
+            })
+            setShowDrop("block")
+        } else {
+            setShowDrop("")
         }
+    }
+
+    const setNumPage = (boolean) => {
+        if (boolean === true) {
+            if (pageProduct < totalPage) {
+                setPageProdut(pageProduct + 1)
+            }
+        } else {
+            if (pageProduct > 1) {
+                setPageProdut(pageProduct - 1)
+            }
+
+        }
+    }
+
+    const schema = yup.object().shape({
+        tenSP: yup.string().required("Vui Lòng Điền Tên Sản Phẩm"),
+        moTa: yup.string().required("Vui Lòng Điền Mô Tả Sản Phẩm"),
+        hinhAnh: yup.mixed().required("Vui Lòng Chọn 1 Hình"),
+
+        SLSizeS: yup.number().required("Vui Lòng Điền Số Lượng Size S"),
+        giaSizeS: yup.number().when("SLSizeS", {
+            is: value => value && value > 0,
+            then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
+                .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
+        }),
+
+        SLSizeM: yup.number().required("Vui Lòng Điền Số Lượng Size M"),
+        giaSizeM: yup.number().when("SLSizeM", {
+            is: value => value && value > 0,
+            then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
+                .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
+        }),
+
+        SLSizeL: yup.number().required("Vui Lòng Điền Số Lượng Size L"),
+        giaSizeL: yup.number().when("SLSizeL", {
+            is: value => value && value > 0,
+            then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
+                .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
+        }),
+
+        SLSizeXL: yup.number().required("Vui Lòng Điền Số Lượng Size XL"),
+        giaSizeXL: yup.number().when("SLSizeXL", {
+            is: value => value && value > 0,
+            then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
+                .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
+        }),
+
+        SLSizeXXL: yup.number().required("Vui Lòng Điền Số Lượng Size XXL"),
+        giaSizeXXL: yup.number().when("SLSizeXXL", {
+            is: value => value && value > 0,
+            then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
+                .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
+        }),
+    })
+
+    const schema2 = yup.object().shape({
+        tenSP: yup.string().required("Vui Lòng Điền Tên Sản Phẩm"),
+        moTa: yup.string().required("Vui Lòng Điền Mô Tả Sản Phẩm"),
+
+        SLSizeS: yup.number().required("Vui Lòng Điền Số Lượng Size S"),
+        giaSizeS: yup.number().when("SLSizeS", {
+            is: value => value && value > 0,
+            then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
+                .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
+        }),
+
+        SLSizeM: yup.number().required("Vui Lòng Điền Số Lượng Size M"),
+        giaSizeM: yup.number().when("SLSizeM", {
+            is: value => value && value > 0,
+            then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
+                .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
+        }),
+
+        SLSizeL: yup.number().required("Vui Lòng Điền Số Lượng Size L"),
+        giaSizeL: yup.number().when("SLSizeL", {
+            is: value => value && value > 0,
+            then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
+                .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
+        }),
+
+        SLSizeXL: yup.number().required("Vui Lòng Điền Số Lượng Size XL"),
+        giaSizeXL: yup.number().when("SLSizeXL", {
+            is: value => value && value > 0,
+            then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
+                .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
+        }),
+
+        SLSizeXXL: yup.number().required("Vui Lòng Điền Số Lượng Size XXL"),
+        giaSizeXXL: yup.number().when("SLSizeXXL", {
+            is: value => value && value > 0,
+            then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
+                .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
+        }),
     })
 
     return (
@@ -210,12 +270,34 @@ export default function Product() {
                         {/* DataTales Example */}
                         <div className="card shadow mb-4">
                             <div className="card-header py-3" style={{ marginBottom: "5px" }}>
-                                <h6 className="m-0 font-weight-bold text-primary">
+                                <h6 className="m-0 font-weight-bold text-primary" style={{ display: "flex", justifyContent: "space-between" }}>
                                     <Form.Select onChange={e => setStatusProduct(e.target.value)} name="status" style={{ width: "300px" }}>
                                         <option value="1">Sản Phẩm Đang Được Bán</option>
                                         <option value="0">Sản Phẩm Ngưng Bán</option>
                                     </Form.Select>
-                                    <Button variant="success" onClick={handleShow} style={{ position: "absolute", top: "8px", right: "10px" }}>Thêm Sản Phẩm Mới</Button>
+                                    <div className="col-lg-4 col-6 text-left">
+                                        <form>
+                                            <div className="input-group">
+                                                <input type="text" onChange={e => handleSearch(e.target.value)} className="form-control" placeholder="Tìm Theo Tên Sản Phẩm" style={{ float: "right" }} />
+                                                <div className="input-group-append">
+                                                    <span className="input-group-text bg-transparent text-primary">
+                                                        <i className="fa fa-search" />
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <ul className='dropdown_search' style={{ display: `${showDrop}` }}>
+                                            {arrProdcutSearch.map((item, index) => {
+                                                return (
+                                                    <li style={{ height: "70px", display: "flex", alignItems: "center" }}>
+                                                        <img src={item.hinhAnh1} alt="imageProduct" style={{ width: "20%", height: "100%" }}></img>
+                                                        <div style={{ color: "black", overflow: "hidden", cursor: "pointer" }} onClick={() => handleShow1(`${item.maSP}`)}>{item.tenSP}</div>
+                                                    </li>
+                                                )
+                                            })}
+                                        </ul>
+                                    </div>
+                                    <Button variant="success" onClick={handleShow} >Thêm Sản Phẩm Mới</Button>
                                 </h6>
                             </div>
                             <div className="card-body">
@@ -256,9 +338,24 @@ export default function Product() {
                                                     </tr>
                                                 )
                                             })}
-
                                         </tbody>
                                     </Table>
+                                </div>
+                            </div>
+
+                            <div className="col-12">
+                                <div className="input-group quantity mr-3" style={{ width: "fit-content" }}>
+                                    <div className="input-group-btn">
+                                        <button onClick={() => { setNumPage(false) }} className="btn btn-success btn-minus">
+                                            Prev
+                                        </button>
+                                    </div>
+                                    <p className="form-control bg-secondary border-0 text-center" style={{ color: "white", width: "fit-content" }}>{`${pageProduct} / ${totalPage}`}</p>
+                                    <div onClick={() => { setNumPage(true) }} className="input-group-btn">
+                                        <button className="btn btn-success btn-plus">
+                                            Next
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -271,165 +368,298 @@ export default function Product() {
                     <Modal.Title>Thêm Sản Phẩm</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {/* style={{ color: "black", fontSize: "18px" }} */}
-                    <form onSubmit={formik.handleSubmit} style={{ color: "black", fontSize: "18px" }}>
-                        <Row>
-                            < Col >
-                                <Form.Label>Tên Sản Phẩm</Form.Label>
-                                <Form.Control
-                                    required
-                                    type="text"
-                                    name="tenSP"
-                                    onChange={formik.handleChange}
-                                />
-                            </Col>
-                            <Col>
-                                <Form.Label>Hình Ảnh</Form.Label>
-                                <Form.Control required type='file' name="hinhAnh" onChange={e => { imageUpload(e) }} />
-                            </Col>
-                            <Col>
-                                <Form.Label>Thể Loại</Form.Label>
-                                <Form.Select onChange={formik.handleChange} name="maTL">
-                                    <option>Vui Lòng Chọn Thể Loại</option>
-                                    {cate.map((item, index) => {
-                                        return (<option name="maTL" key={item.maTL}>{item.tenTL}</option>)
-                                    })}
-                                </Form.Select>
-                            </Col>
-                            <Row style={{ paddingTop: "20px" }}>
-                                <Col>
-                                    <Form.Label>Mô Tả</Form.Label>
-                                    <Form.Control name="moTa" defaultValue={formik.values.moTa} onChange={formik.handleChange} as="textarea" aria-label="With textarea" />
-                                </Col>
-                            </Row>
-                        </Row>
+                    <Formik
+                        onSubmit={(values, { resetForm }) => {
+                            var index = cate.map(item => item.tenTL).indexOf(`${values.maTL}`)
+                            if (index === -1) {
+                                alert("Vui Lòng Chọn Thể Loại !!!");
+                            } else if (values.SLSizeS === 0 && values.SLSizeM === 0 && values.SLSizeL === 0 && values.SLSizeXL === 0 && values.SLSizeXXL === 0) {
+                                alert("Không Thể Thêm Sản Phẩm Với Tổng Số Lượng Bằng 0 !!!\nPhải Có Ít Nhất 1 Size Có Số Lượng !!!");
+                            } else {
+                                values.maTL = cate[index].maTL;
+                                values.hinhAnh = imgProduct;
+                                values.maNV = JSON.parse(localStorage.getItem("infoUser"))?.maNguoiDung;
+                                axios({
+                                    method: 'post',
+                                    url: `http://localhost:3001/product/add`,
+                                    data: values
+                                }).then((data) => {
+                                    handleClose();
+                                    getAllProduct();
+                                    resetForm();
+                                    setImgProduct();
+                                    alert("Thêm Sản Phẩm Thành Công");
+                                }).catch((err) => {
+                                    console.log("err", err)
+                                })
+                            }
+                        }}
+                        enableReinitialize={true}
+                        validationSchema={schema}
+                        initialValues={{
+                            tenSP: "",
+                            maTL: "",
+                            hinhAnh: "",
+                            maNV: JSON.parse(localStorage.getItem("infoUser"))?.maNguoiDung,
 
-                        <Tabs
-                            defaultActiveKey="sizeS"
-                            id="uncontrolled-tab-example"
-                            className="mb-3"
-                        >
-                            <Tab eventKey="sizeS" title="Size S">
-                                <Row style={{ paddingTop: "10px" }}>
-                                    <Form.Label>Size S</Form.Label>
-                                </Row>
-                                <Row style={{ color: "red" }}>
-                                    <Col>
-                                        <Form.Label>Giá</Form.Label>
-                                        <Form.Control
-                                            required
-                                            type="number"
-                                            name="giaSizeS"
-                                            defaultValue={formik.values.giaSizeS}
-                                            onChange={formik.handleChange}
-                                            min="0"
-                                            placeholder='Giá Size S'
-                                        />
-                                    </Col>
-                                    <Col>
-                                        <Form.Label>Số Lượng</Form.Label>
-                                        <Form.Control required name="SLSizeS" onChange={formik.handleChange} defaultValue={formik.values.SLSizeS} type="number" placeholder="Số Lượng Size S" />
-                                    </Col>
-                                </Row>
-                            </Tab>
-                            <Tab eventKey="sizeM" title="Size M">
-                                <Row style={{ paddingTop: "10px" }}>
-                                    <Form.Label>Size M</Form.Label>
-                                </Row>
-                                <Row style={{ color: "red" }}>
-                                    <Col>
-                                        <Form.Label>Giá</Form.Label>
-                                        <Form.Control
-                                            required
-                                            type="number"
-                                            name="giaSizeM"
-                                            defaultValue={formik.values.giaSizeM}
-                                            onChange={formik.handleChange}
-                                            min="0"
-                                            placeholder='Giá Size M'
-                                        />
-                                    </Col>
-                                    <Col>
-                                        <Form.Label>Số Lượng</Form.Label>
-                                        <Form.Control required name="SLSizeM" onChange={formik.handleChange} defaultValue={formik.values.SLSizeM} type="number" placeholder="Số Lượng Size M" />
-                                    </Col>
-                                </Row>
-                            </Tab>
-                            <Tab eventKey="sizeL" title="Size L">
-                                <Row style={{ paddingTop: "10px" }}>
-                                    <Form.Label>Size L</Form.Label>
-                                </Row>
-                                <Row style={{ color: "red" }}>
-                                    <Col>
-                                        <Form.Label>Giá</Form.Label>
-                                        <Form.Control
-                                            required
-                                            type="number"
-                                            name="giaSizeL"
-                                            defaultValue={formik.values.giaSizeL}
-                                            onChange={formik.handleChange}
-                                            min="0"
-                                            placeholder='Giá Size L'
-                                        />
-                                    </Col>
-                                    <Col>
-                                        <Form.Label>Số Lượng</Form.Label>
-                                        <Form.Control required name="SLSizeL" onChange={formik.handleChange} defaultValue={formik.values.SLSizeL} type="number" placeholder="Số Lượng Size L" />
-                                    </Col>
-                                </Row>
-                            </Tab>
+                            SLSizeS: 0,
+                            SLSizeM: 0,
+                            SLSizeL: 0,
+                            SLSizeXL: 0,
+                            SLSizeXXL: 0,
 
-                            <Tab eventKey="sizeXL" title="Size XL">
-                                <Row style={{ paddingTop: "10px" }}>
-                                    <Form.Label>Size XL</Form.Label>
-                                </Row>
-                                <Row style={{ color: "red" }}>
-                                    <Col>
-                                        <Form.Label>Giá</Form.Label>
-                                        <Form.Control
-                                            required
-                                            type="number"
-                                            name="giaSizeXL"
-                                            defaultValue={formik.values.giaSizeXL}
-                                            onChange={formik.handleChange}
-                                            min="0"
-                                            placeholder='Giá Size XL'
-                                        />
-                                    </Col>
-                                    <Col>
-                                        <Form.Label>Số Lượng</Form.Label>
-                                        <Form.Control required name="SLSizeXL" onChange={formik.handleChange} defaultValue={formik.values.SLSizeXL} type="number" placeholder="Số Lượng Size XL" />
-                                    </Col>
-                                </Row>
-                            </Tab>
+                            giaSizeS: 0,
+                            giaSizeM: 0,
+                            giaSizeL: 0,
+                            giaSizeXL: 0,
+                            giaSizeXXL: 0,
 
-                            <Tab eventKey="sizeXXL" title="Size XXL">
-                                <Row style={{ paddingTop: "10px" }}>
-                                    <Form.Label>Size XXL</Form.Label>
-                                </Row>
-                                <Row style={{ color: "red" }}>
-                                    <Col>
-                                        <Form.Label>Giá</Form.Label>
+                            moTa: "Không có mô tả.",
+                        }}
+                    >
+                        {({
+                            handleSubmit,
+                            handleChange,
+                            handleBlur,
+                            resetForm,
+                            values,
+                            touched,
+                            isValid,
+                            errors,
+                        }) => (
+                            <Form onSubmit={handleSubmit} style={{ color: "black", fontSize: "18px" }}>
+                                <Row>
+                                    < Col >
+                                        <Form.Label>Tên Sản Phẩm</Form.Label>
                                         <Form.Control
-                                            required
-                                            type="number"
-                                            name="giaSizeXXL"
-                                            defaultValue={formik.values.giaSizeXXL}
-                                            onChange={formik.handleChange}
-                                            min="0"
-                                            placeholder='Giá Size XXL'
+                                            type="text"
+                                            name="tenSP"
+                                            onChange={handleChange}
+                                            isValid={touched.tenSP && !errors.tenSP}
+                                            isInvalid={!!errors.tenSP}
                                         />
+                                        <Form.Control.Feedback type="invalid" tooltip>
+                                            {errors.tenSP}
+                                        </Form.Control.Feedback>
                                     </Col>
                                     <Col>
-                                        <Form.Label>Số Lượng</Form.Label>
-                                        <Form.Control required name="SLSizeXXL" onChange={formik.handleChange} defaultValue={formik.values.SLSizeXXL} type="number" placeholder="Số Lượng Size XXL" />
+                                        <Form.Label>Hình Ảnh</Form.Label>
+                                        <Form.Control type='file' name="hinhAnh"
+                                            onChange={e => {
+                                                imageUpload(e)
+                                                handleChange(e)
+                                            }}
+                                            isValid={touched.hinhAnh && !errors.hinhAnh}
+                                            isInvalid={!!errors.hinhAnh}
+                                        />
+                                        <Form.Control.Feedback type="invalid" tooltip>
+                                            {errors.hinhAnh}
+                                        </Form.Control.Feedback>
                                     </Col>
+                                    <Col>
+                                        <Form.Label>Thể Loại</Form.Label>
+                                        <Form.Select onChange={handleChange} name="maTL">
+                                            <option>Vui Lòng Chọn Thể Loại</option>
+                                            {cate.map((item, index) => {
+                                                return (<option name="maTL" key={item.maTL}>{item.tenTL}</option>)
+                                            })}
+                                        </Form.Select>
+                                    </Col>
+                                    <Row style={{ paddingTop: "20px" }}>
+                                        <Col>
+                                            <Form.Label>Mô Tả</Form.Label>
+                                            <Form.Control name="moTa" defaultValue={values.moTa} onChange={handleChange} as="textarea" aria-label="With textarea"
+                                                isValid={touched.moTa && !errors.moTa}
+                                                isInvalid={!!errors.moTa}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.moTa}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                    </Row>
                                 </Row>
-                            </Tab>
-                        </Tabs>
-                        <Button type="submit" style={{ marginTop: "15px" }} > Thêm Sản Phẩm</Button>
-                    </form>
 
+                                <Tabs
+                                    defaultActiveKey="sizeS"
+                                    id="uncontrolled-tab-example"
+                                    className="mb-3"
+                                >
+                                    <Tab eventKey="sizeS" title="Size S">
+                                        <Row style={{ paddingTop: "10px" }}>
+                                            <Form.Label>Size S</Form.Label>
+                                        </Row>
+                                        <Row style={{ color: "red" }}>
+                                            <Col>
+                                                <Form.Label>Giá</Form.Label>
+                                                <Form.Control
+                                                    type="number"
+                                                    name="giaSizeS"
+                                                    defaultValue={values.giaSizeS}
+                                                    onChange={handleChange}
+                                                    min="0"
+                                                    placeholder='Giá Size S'
+                                                    isValid={touched.giaSizeS && !errors.giaSizeS}
+                                                    isInvalid={!!errors.giaSizeS}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.giaSizeS}
+                                                </Form.Control.Feedback>
+                                            </Col>
+                                            <Col>
+                                                <Form.Label>Số Lượng</Form.Label>
+                                                <Form.Control name="SLSizeS" onChange={handleChange} defaultValue={values.SLSizeS} type="number" placeholder="Số Lượng Size S"
+                                                    isValid={touched.SLSizeS && !errors.SLSizeS}
+                                                    isInvalid={!!errors.SLSizeS}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.SLSizeS}
+                                                </Form.Control.Feedback>
+                                            </Col>
+                                        </Row>
+                                    </Tab>
+                                    <Tab eventKey="sizeM" title="Size M">
+                                        <Row style={{ paddingTop: "10px" }}>
+                                            <Form.Label>Size M</Form.Label>
+                                        </Row>
+                                        <Row style={{ color: "red" }}>
+                                            <Col>
+                                                <Form.Label>Giá</Form.Label>
+                                                <Form.Control
+                                                    required
+                                                    type="number"
+                                                    name="giaSizeM"
+                                                    defaultValue={values.giaSizeM}
+                                                    onChange={handleChange}
+                                                    min="0"
+                                                    placeholder='Giá Size M'
+                                                    isValid={touched.giaSizeM && !errors.giaSizeM}
+                                                    isInvalid={!!errors.giaSizeM}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.giaSizeM}
+                                                </Form.Control.Feedback>
+                                            </Col>
+                                            <Col>
+                                                <Form.Label>Số Lượng</Form.Label>
+                                                <Form.Control required name="SLSizeM" onChange={handleChange} defaultValue={values.SLSizeM} type="number" placeholder="Số Lượng Size M"
+                                                    isValid={touched.SLSizeM && !errors.SLSizeM}
+                                                    isInvalid={!!errors.SLSizeM}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.SLSizeM}
+                                                </Form.Control.Feedback>
+                                            </Col>
+                                        </Row>
+                                    </Tab>
+                                    <Tab eventKey="sizeL" title="Size L">
+                                        <Row style={{ paddingTop: "10px" }}>
+                                            <Form.Label>Size L</Form.Label>
+                                        </Row>
+                                        <Row style={{ color: "red" }}>
+                                            <Col>
+                                                <Form.Label>Giá</Form.Label>
+                                                <Form.Control
+                                                    required
+                                                    type="number"
+                                                    name="giaSizeL"
+                                                    defaultValue={values.giaSizeL}
+                                                    onChange={handleChange}
+                                                    min="0"
+                                                    placeholder='Giá Size L'
+                                                    isValid={touched.giaSizeL && !errors.giaSizeL}
+                                                    isInvalid={!!errors.giaSizeL}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.giaSizeL}
+                                                </Form.Control.Feedback>
+                                            </Col>
+                                            <Col>
+                                                <Form.Label>Số Lượng</Form.Label>
+                                                <Form.Control required name="SLSizeL" onChange={handleChange} defaultValue={values.SLSizeL} type="number" placeholder="Số Lượng Size L"
+                                                    isValid={touched.SLSizeL && !errors.SLSizeL}
+                                                    isInvalid={!!errors.SLSizeL}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.SLSizeL}
+                                                </Form.Control.Feedback>
+                                            </Col>
+                                        </Row>
+                                    </Tab>
+
+                                    <Tab eventKey="sizeXL" title="Size XL">
+                                        <Row style={{ paddingTop: "10px" }}>
+                                            <Form.Label>Size XL</Form.Label>
+                                        </Row>
+                                        <Row style={{ color: "red" }}>
+                                            <Col>
+                                                <Form.Label>Giá</Form.Label>
+                                                <Form.Control
+                                                    required
+                                                    type="number"
+                                                    name="giaSizeXL"
+                                                    defaultValue={values.giaSizeXL}
+                                                    onChange={handleChange}
+                                                    min="0"
+                                                    placeholder='Giá Size XL'
+                                                    isValid={touched.giaSizeXL && !errors.giaSizeXL}
+                                                    isInvalid={!!errors.giaSizeXL}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.giaSizeXL}
+                                                </Form.Control.Feedback>
+                                            </Col>
+                                            <Col>
+                                                <Form.Label>Số Lượng</Form.Label>
+                                                <Form.Control required name="SLSizeXL" onChange={handleChange} defaultValue={values.SLSizeXL} type="number" placeholder="Số Lượng Size XL"
+                                                    isValid={touched.SLSizeXL && !errors.SLSizeXL}
+                                                    isInvalid={!!errors.SLSizeXL}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.SLSizeXL}
+                                                </Form.Control.Feedback>
+                                            </Col>
+                                        </Row>
+                                    </Tab>
+
+                                    <Tab eventKey="sizeXXL" title="Size XXL">
+                                        <Row style={{ paddingTop: "10px" }}>
+                                            <Form.Label>Size XXL</Form.Label>
+                                        </Row>
+                                        <Row style={{ color: "red" }}>
+                                            <Col>
+                                                <Form.Label>Giá</Form.Label>
+                                                <Form.Control
+                                                    required
+                                                    type="number"
+                                                    name="giaSizeXXL"
+                                                    defaultValue={values.giaSizeXXL}
+                                                    onChange={handleChange}
+                                                    min="0"
+                                                    placeholder='Giá Size XXL'
+                                                    isValid={touched.giaSizeXXL && !errors.giaSizeXXL}
+                                                    isInvalid={!!errors.giaSizeXXL}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.giaSizeXXL}
+                                                </Form.Control.Feedback>
+                                            </Col>
+                                            <Col>
+                                                <Form.Label>Số Lượng</Form.Label>
+                                                <Form.Control required name="SLSizeXXL" onChange={handleChange} defaultValue={values.SLSizeXXL} type="number" placeholder="Số Lượng Size XXL"
+                                                    isValid={touched.SLSizeXXL && !errors.SLSizeXXL}
+                                                    isInvalid={!!errors.SLSizeXXL}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.SLSizeXXL}
+                                                </Form.Control.Feedback>
+                                            </Col>
+                                        </Row>
+                                    </Tab>
+                                </Tabs>
+                                <Button type="submit" style={{ marginTop: "15px" }} > Thêm Sản Phẩm</Button>
+                            </Form>
+                        )}
+                    </Formik>
                 </Modal.Body >
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>Huỷ</Button>
@@ -447,8 +677,11 @@ export default function Product() {
                                 var index = cate.map(item => item.tenTL).indexOf(`${values.maTL}`)
                                 values.maTL = cate[index].maTL;
                             }
-
-                            values.hinhAnh = imgProduct;
+                            if (imgProduct !== undefined) {
+                                values.hinhAnh = imgProduct;
+                            }
+                            values.maNV = JSON.parse(localStorage.getItem("infoUser")).maNguoiDung;
+                            console.log(values)
                             axios({
                                 method: 'post',
                                 url: `http://localhost:3001/product/edit`,
@@ -461,6 +694,7 @@ export default function Product() {
                             })
                         }}
                         enableReinitialize={true}
+                        validationSchema={schema2}
                         initialValues={{
                             maSP: infoProduct.maSP,
                             tenSP: infoProduct.tenSP,
@@ -468,17 +702,17 @@ export default function Product() {
                             hinhAnh: infoProduct.hinhAnh,
                             maNV: "",
 
-                            SLSizeS: infoProduct.SLSizeS,
-                            SLSizeM: infoProduct.SLSizeM,
-                            SLSizeL: infoProduct.SLSizeL,
-                            SLSizeXL: infoProduct.SLSizeXL,
-                            SLSizeXXL: infoProduct.SLSizeXXL,
+                            SLSizeS: infoProduct.SLSizeS || 0,
+                            SLSizeM: infoProduct.SLSizeM || 0,
+                            SLSizeL: infoProduct.SLSizeL || 0,
+                            SLSizeXL: infoProduct.SLSizeXL || 0,
+                            SLSizeXXL: infoProduct.SLSizeXXL || 0,
 
-                            giaSizeS: infoProduct.giaSizeS,
-                            giaSizeM: infoProduct.giaSizeM,
-                            giaSizeL: infoProduct.giaSizeL,
-                            giaSizeXL: infoProduct.giaSizeXL,
-                            giaSizeXXL: infoProduct.giaSizeXXL,
+                            giaSizeS: infoProduct.giaSizeS || 0,
+                            giaSizeM: infoProduct.giaSizeM || 0,
+                            giaSizeL: infoProduct.giaSizeL || 0,
+                            giaSizeXL: infoProduct.giaSizeXL || 0,
+                            giaSizeXXL: infoProduct.giaSizeXXL || 0,
 
                             ngayCapNhat: infoProduct.ngayCapNhat,
                             trangThai: infoProduct.trangThai,
@@ -500,33 +734,49 @@ export default function Product() {
                                     < Col >
                                         <Form.Label>Tên Sản Phẩm</Form.Label>
                                         <Form.Control
-                                            required
                                             type="text"
                                             name="tenSP"
-                                            value={values.tenSP}
                                             onChange={handleChange}
+                                            value={values.tenSP}
+                                            isValid={touched.tenSP && !errors.tenSP}
+                                            isInvalid={!!errors.tenSP}
                                         />
+                                        <Form.Control.Feedback type="invalid" tooltip>
+                                            {errors.tenSP}
+                                        </Form.Control.Feedback>
                                     </Col>
                                     <Col>
                                         <Form.Label>Hình Ảnh</Form.Label>
-                                        <Form.Control required type='file' name="hinhAnh" onChange={e => { imageUpload(e) }} />
+                                        <Form.Control type='file' name="hinhAnh"
+                                            onChange={e => {
+                                                imageUpload(e)
+                                                handleChange(e)
+                                            }}
+                                            isValid={touched.hinhAnh && !errors.hinhAnh}
+                                            isInvalid={!!errors.hinhAnh}
+                                        />
+                                        <Form.Control.Feedback type="invalid" tooltip>
+                                            {errors.hinhAnh}
+                                        </Form.Control.Feedback>
                                     </Col>
                                     <Col>
                                         <Form.Label>Thể Loại</Form.Label>
-                                        <Form.Select onChange={handleChange} name="maTL">
-                                            {cate.map((item, index) => {
-                                                if (item.maTL === values.maTL) {
-                                                    return (<option name="maTL" key={item.maTL} selected>{item.tenTL}</option>)
-                                                } else {
-                                                    return (<option name="maTL" key={item.maTL}>{item.tenTL}</option>)
-                                                }
+                                        <Form.Select onChange={handleChange} name="maTL" defaultValue={values.maTL}>
+                                            {cate.map((item) => {
+                                                return (<option name="maTL" key={item.maTL} value={item.maTL}>{item.tenTL}</option>)
                                             })}
                                         </Form.Select>
                                     </Col>
                                     <Row style={{ paddingTop: "20px" }}>
                                         <Col>
                                             <Form.Label>Mô Tả</Form.Label>
-                                            <Form.Control name="moTa" defaultValue={values.moTa} onChange={handleChange} as="textarea" aria-label="With textarea" />
+                                            <Form.Control name="moTa" defaultValue={values.moTa} onChange={handleChange} as="textarea" aria-label="With textarea"
+                                                isValid={touched.moTa && !errors.moTa}
+                                                isInvalid={!!errors.moTa}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.moTa}
+                                            </Form.Control.Feedback>
                                         </Col>
                                     </Row>
                                 </Row>
@@ -536,7 +786,7 @@ export default function Product() {
                                     id="uncontrolled-tab-example"
                                     className="mb-3"
                                 >
-                                    <Tab eventKey="sizeS" title="Size S" aria-selected="true">
+                                    <Tab eventKey="sizeS" title="Size S">
                                         <Row style={{ paddingTop: "10px" }}>
                                             <Form.Label>Size S</Form.Label>
                                         </Row>
@@ -544,18 +794,28 @@ export default function Product() {
                                             <Col>
                                                 <Form.Label>Giá</Form.Label>
                                                 <Form.Control
-                                                    required
                                                     type="number"
                                                     name="giaSizeS"
                                                     defaultValue={values.giaSizeS}
                                                     onChange={handleChange}
                                                     min="0"
                                                     placeholder='Giá Size S'
+                                                    isValid={touched.giaSizeS && !errors.giaSizeS}
+                                                    isInvalid={!!errors.giaSizeS}
                                                 />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.giaSizeS}
+                                                </Form.Control.Feedback>
                                             </Col>
                                             <Col>
                                                 <Form.Label>Số Lượng</Form.Label>
-                                                <Form.Control required name="SLSizeS" onChange={handleChange} defaultValue={values.SLSizeS} type="number" placeholder="Số Lượng Size S" />
+                                                <Form.Control name="SLSizeS" onChange={handleChange} defaultValue={values.SLSizeS} type="number" placeholder="Số Lượng Size S"
+                                                    isValid={touched.SLSizeS && !errors.SLSizeS}
+                                                    isInvalid={!!errors.SLSizeS}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.SLSizeS}
+                                                </Form.Control.Feedback>
                                             </Col>
                                         </Row>
                                     </Tab>
@@ -574,11 +834,22 @@ export default function Product() {
                                                     onChange={handleChange}
                                                     min="0"
                                                     placeholder='Giá Size M'
+                                                    isValid={touched.giaSizeM && !errors.giaSizeM}
+                                                    isInvalid={!!errors.giaSizeM}
                                                 />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.giaSizeM}
+                                                </Form.Control.Feedback>
                                             </Col>
                                             <Col>
                                                 <Form.Label>Số Lượng</Form.Label>
-                                                <Form.Control required name="SLSizeM" onChange={handleChange} defaultValue={values.SLSizeM} type="number" placeholder="Số Lượng Size M" />
+                                                <Form.Control required name="SLSizeM" onChange={handleChange} defaultValue={values.SLSizeM} type="number" placeholder="Số Lượng Size M"
+                                                    isValid={touched.SLSizeM && !errors.SLSizeM}
+                                                    isInvalid={!!errors.SLSizeM}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.SLSizeM}
+                                                </Form.Control.Feedback>
                                             </Col>
                                         </Row>
                                     </Tab>
@@ -597,11 +868,22 @@ export default function Product() {
                                                     onChange={handleChange}
                                                     min="0"
                                                     placeholder='Giá Size L'
+                                                    isValid={touched.giaSizeL && !errors.giaSizeL}
+                                                    isInvalid={!!errors.giaSizeL}
                                                 />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.giaSizeL}
+                                                </Form.Control.Feedback>
                                             </Col>
                                             <Col>
                                                 <Form.Label>Số Lượng</Form.Label>
-                                                <Form.Control required name="SLSizeL" onChange={handleChange} defaultValue={values.SLSizeL} type="number" placeholder="Số Lượng Size L" />
+                                                <Form.Control required name="SLSizeL" onChange={handleChange} defaultValue={values.SLSizeL} type="number" placeholder="Số Lượng Size L"
+                                                    isValid={touched.SLSizeL && !errors.SLSizeL}
+                                                    isInvalid={!!errors.SLSizeL}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.SLSizeL}
+                                                </Form.Control.Feedback>
                                             </Col>
                                         </Row>
                                     </Tab>
@@ -621,11 +903,22 @@ export default function Product() {
                                                     onChange={handleChange}
                                                     min="0"
                                                     placeholder='Giá Size XL'
+                                                    isValid={touched.giaSizeXL && !errors.giaSizeXL}
+                                                    isInvalid={!!errors.giaSizeXL}
                                                 />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.giaSizeXL}
+                                                </Form.Control.Feedback>
                                             </Col>
                                             <Col>
                                                 <Form.Label>Số Lượng</Form.Label>
-                                                <Form.Control required name="SLSizeXL" onChange={handleChange} defaultValue={values.SLSizeXL} type="number" placeholder="Số Lượng Size XL" />
+                                                <Form.Control required name="SLSizeXL" onChange={handleChange} defaultValue={values.SLSizeXL} type="number" placeholder="Số Lượng Size XL"
+                                                    isValid={touched.SLSizeXL && !errors.SLSizeXL}
+                                                    isInvalid={!!errors.SLSizeXL}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.SLSizeXL}
+                                                </Form.Control.Feedback>
                                             </Col>
                                         </Row>
                                     </Tab>
@@ -645,16 +938,31 @@ export default function Product() {
                                                     onChange={handleChange}
                                                     min="0"
                                                     placeholder='Giá Size XXL'
+                                                    isValid={touched.giaSizeXXL && !errors.giaSizeXXL}
+                                                    isInvalid={!!errors.giaSizeXXL}
                                                 />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.giaSizeXXL}
+                                                </Form.Control.Feedback>
                                             </Col>
                                             <Col>
                                                 <Form.Label>Số Lượng</Form.Label>
-                                                <Form.Control required name="SLSizeXXL" onChange={handleChange} defaultValue={values.SLSizeXXL} type="number" placeholder="Số Lượng Size XXL" />
+                                                <Form.Control required name="SLSizeXXL" onChange={handleChange} defaultValue={values.SLSizeXXL} type="number" placeholder="Số Lượng Size XXL"
+                                                    isValid={touched.SLSizeXXL && !errors.SLSizeXXL}
+                                                    isInvalid={!!errors.SLSizeXXL}
+                                                />
+                                                <Form.Control.Feedback type="invalid" tooltip>
+                                                    {errors.SLSizeXXL}
+                                                </Form.Control.Feedback>
                                             </Col>
                                         </Row>
                                     </Tab>
                                 </Tabs>
                                 <Form.Label style={{ marginTop: "25px", color: "red" }}>Chỉnh Sửa Lần Cuối : {values.ngayCapNhat.substring(0, 10).substring(0, 10)}</Form.Label>
+                                <Form.Label style={{ marginTop: "25px", color: "red", display: "flex" }}>
+                                    <img src={imgProduct || values.hinhAnh} alt="Old Img" style={{ height: "20%", width: "20%" }}></img>
+                                </Form.Label>
+                                {values.trangThai === 0 ? (<Button type="button" variant='success' onClick={() => activateProduct(`${values.maSP}`)} style={{ marginTop: "15px" }} >Bán Lại</Button>) : (<></>)}
                                 <Button type="submit" variant='success' style={{ marginTop: "15px", float: "right" }} >Chỉnh Sửa Sản Phẩm</Button>
                             </Form>
                         )}

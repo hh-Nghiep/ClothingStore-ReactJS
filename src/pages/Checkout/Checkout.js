@@ -1,8 +1,10 @@
 import React, { Fragment } from 'react'
 import { useFormik } from 'formik'
+import Form from 'react-bootstrap/Form';
 import axios from 'axios'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react';
 
 export default function Checkout() {
     let navigate = useNavigate();
@@ -31,6 +33,7 @@ export default function Checkout() {
                     }
                 }).catch((err) => {
                     console.log("Lỗi lấy Số Lượng Sản Phẩm :", err)
+                    return;
                 })
             });
 
@@ -56,18 +59,34 @@ export default function Checkout() {
 
                         }).catch((err) => {
                             console.log("Lỗi lấy Số Lượng Sản Phẩm :", err)
+                            return;
                         })
                     })
                 } catch (error) {
                     console.log("Lỗi Thêm Đơn Hàng", error)
+                    return;
                 }
                 localStorage.setItem("CART:" + JSON.parse(localStorage.getItem("infoUser")).maNguoiDung, JSON.stringify([]))
-                navigate('/');
+                navigate('/order');
             }).catch((err) => {
                 console.log("Lỗi Tạo Đơn Hàng", err)
             })
         }
     })
+
+
+    useEffect(() => {
+        axios({
+            method: 'get',
+            url: `https://provinces.open-api.vn/api/?depth=2`,
+        }).then((data) => {
+            console.log(data.data)
+        }).catch((err) => {
+            console.log("Lỗi lấy Số Lượng Sản Phẩm :", err)
+            return;
+        })
+    }, [])
+
 
     return (
         <Fragment>
@@ -107,10 +126,32 @@ export default function Checkout() {
                                         <label>Số Điện Thoại</label>
                                         <input name='sdt' defaultValue={formik.values.sdt} onChange={formik.handleChange} className="form-control" type="text" placeholder="+123 456 789" />
                                     </div>
+
                                     <div className="col-md-6 form-group">
                                         <label>Địa Chỉ</label>
                                         <input name='diaChi' defaultValue={formik.values.diaChi} onChange={formik.handleChange} className="form-control" type="text" placeholder="123 Street" />
                                     </div>
+
+                                    {/* <div className="col-md-6 form-group">
+                                        <label>Thành Phố / Tỉnh</label>
+                                        <Form.Select onChange={formik.handleChange} name="maTL">
+                                            <option>Vui Lòng Chọn Thể Loại</option>
+                                        </Form.Select>
+                                    </div>
+
+                                    <div className="col-md-6 form-group">
+                                        <label>Quận / Huyện</label>
+                                        <Form.Select onChange={formik.handleChange} name="maTL">
+                                            <option>Vui Lòng Chọn Thể Loại</option>
+                                        </Form.Select>
+                                    </div>
+
+                                    <div className="col-md-6 form-group">
+                                        <label>Phường / Thị Xã</label>
+                                        <Form.Select onChange={formik.handleChange} name="maTL">
+                                            <option>Vui Lòng Chọn Thể Loại</option>
+                                        </Form.Select>
+                                    </div> */}
                                 </div>
                             </div>
 

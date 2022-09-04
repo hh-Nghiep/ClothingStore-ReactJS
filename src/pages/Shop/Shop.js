@@ -1,9 +1,9 @@
 import axios from 'axios'
 import React, { Fragment, useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom';
+import Form from 'react-bootstrap/Form';
 
 export default function Shop() {
-    const [arrCate, setArrCate] = useState([]);
     const storeFilterPrice = [
         {
             title: "All Price",
@@ -36,23 +36,17 @@ export default function Shop() {
             max: 1,
         },
     ]
-
+    const [arrCate, setArrCate] = useState([]);
     const [arrProduct, setArrProduct] = useState([]);
     const [filterPrice, setFilterPrice] = useState(0);
-    const [filterCate, setFilterCate] = useState("all");
-
-
-    const handlechange = (e) => {
-        setFilterCate(e.target.value)
-    }
-    const handeClicker = (num) => {
-
-    }
+    const [filterCate, setFilterCate] = useState(0);
+    const [pageProduct, setPageProduct] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
 
     const getArrCate = async () => {
         axios({
             method: 'GET',
-            url: `http://localhost:3001/cates`,
+            url: `http://localhost:3001/cate/1`,
         }).then((data) => {
             setArrCate(data.data[0])
         }).catch((err) => {
@@ -63,12 +57,15 @@ export default function Shop() {
     const getArrProduct = async () => {
         axios({
             method: 'post',
-            url: `http://localhost:3001/products`,
+            url: `http://localhost:3001/products?page=${pageProduct}`,
             data: {
-                trangThai: 1
+                trangThai: 1,
+                maTL: filterCate,
+                gia: filterPrice
             }
         }).then((data) => {
-            setArrProduct(data?.data[0])
+            setArrProduct(data?.data.data)
+            setTotalPage(data?.data.totalPage)
         }).catch((err) => {
             console.log("Lỗi lấy sản phẩm :", err)
         })
@@ -78,13 +75,34 @@ export default function Shop() {
         return Intl.NumberFormat('it-IT', { style: 'currency', currency: 'VND' }).format(price)
     }
 
+    const setNumPage = (boolean) => {
+        if (boolean === true) {
+            if (pageProduct < totalPage) {
+                setPageProduct(pageProduct + 1)
+            }
+        } else {
+            if (pageProduct > 1) {
+                setPageProduct(pageProduct - 1)
+            }
+        }
+    }
+
+    const setInputNumpage = (number) => {
+        if (number <= totalPage && number > 0) {
+            setPageProduct(number);
+        } else if (number > totalPage) {
+            setPageProduct(totalPage)
+        } else {
+            setPageProduct(1)
+        }
+    }
 
     useEffect(() => {
+        window.scroll(0, 0)
         getArrProduct();
         getArrCate();
-    }, [arrProduct?.length])
-
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [arrProduct?.length, filterCate, filterPrice, pageProduct])
 
     return (
         <Fragment>
@@ -117,15 +135,13 @@ export default function Shop() {
                                             <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3" key={index}>
                                                 {item.min === 0 && item.max === 0 ?
                                                     (<>
-                                                        <input type="radio" name='price' className="custom-control-input" value={item.max} id={item.max} defaultChecked />
+                                                        <input type="radio" name='price' onChange={() => { setFilterPrice(item.max) }} className="custom-control-input" value={item.max} id={item.max} defaultChecked />
                                                         <label className="custom-control-label" htmlFor={item.max}>{item.title}</label>
-                                                        <span className="badge border font-weight-normal">{arrCate.length}</span>
                                                     </>
                                                     ) :
                                                     (<>
-                                                        <input type="radio" name='price' className="custom-control-input" value={item.max} id={item.max} />
+                                                        <input type="radio" name='price' onChange={() => { setFilterPrice(item.max) }} className="custom-control-input" value={item.max} id={item.max} />
                                                         <label className="custom-control-label" htmlFor={item.max}>{item.title}</label>
-                                                        {/* <span className="badge border font-weight-normal">{filterA(`${item.min}`, `${item.max}`).reduce((total) => { return total += 1 }, 0)}</span> */}
                                                     </>
                                                     )}
                                             </div>
@@ -139,13 +155,13 @@ export default function Shop() {
                             <div className="bg-light p-4 mb-30">
                                 <form >
                                     <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                        <input type="radio" name='Cate' className="custom-control-input" defaultChecked id="cate-all" value="all" onChange={handlechange} />
+                                        <input type="radio" name='Cate' className="custom-control-input" defaultChecked id="cate-all" value="all" onChange={() => { setFilterCate(0) }} />
                                         <label className="custom-control-label" htmlFor="cate-all">All Category</label>
                                     </div>
                                     {arrCate.map((item, index) => {
                                         return (
                                             <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3" key={index}>
-                                                <input type="radio" name='Cate' className="custom-control-input" id={item.tenTL} value={item.maTL} onChange={handlechange} />
+                                                <input type="radio" name='Cate' className="custom-control-input" id={item.tenTL} value={item.maTL} onChange={() => { setFilterCate(item.maTL) }} />
                                                 <label className="custom-control-label" htmlFor={item.tenTL}>{item.tenTL}</label>
                                                 <span className="badge border font-weight-normal" style={{ color: 'black' }}>{item.SLSanPham}</span>
                                             </div>
@@ -163,10 +179,10 @@ export default function Shop() {
                                     <div className="d-flex align-items-center justify-content-between mb-4">
                                         <div>
                                             <button className="btn btn-sm btn-light"><i className="fa fa-th-large" /></button>
-                                            <button className="btn btn-sm btn-light ml-2"><i className="fa fa-bars" /></button>
+                                            {/* <button className="btn btn-sm btn-light ml-2"><i className="fa fa-bars" /></button> */}
                                         </div>
                                         <div className="ml-2">
-                                            <div className="btn-group">
+                                            {/* <div className="btn-group">
                                                 <button type="button" className="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Sorting</button>
                                                 <div className="dropdown-menu dropdown-menu-right">
                                                     <a onClick={() => { handeClicker(1) }} className="dropdown-item" href="#">Thấp - Cao</a>
@@ -174,15 +190,15 @@ export default function Shop() {
                                                     <a onClick={() => { handeClicker(3) }} className="dropdown-item" href="#">A - Z</a>
                                                     <a onClick={() => { handeClicker(4) }} className="dropdown-item" href="#">Z - A</a>
                                                 </div>
-                                            </div>
-                                            <div className="btn-group ml-2">
+                                            </div> */}
+                                            {/* <div className="btn-group ml-2">
                                                 <button type="button" className="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Showing</button>
                                                 <div className="dropdown-menu dropdown-menu-right">
                                                     <a className="dropdown-item" href="#">10</a>
                                                     <a className="dropdown-item" href="#">20</a>
                                                     <a className="dropdown-item" href="#">30</a>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
                                 </div>
@@ -202,26 +218,19 @@ export default function Shop() {
                                                         }}
                                                     />
                                                     <div className="product-action">
-                                                        <a className="btn btn-outline-dark btn-square" href='#'><i className="far fa-heart" /></a>
-                                                        <a className="btn btn-outline-dark btn-square" href='#'><i className="fa fa-sync-alt" /></a>
                                                         <NavLink className="btn btn-outline-dark btn-square" to={`/product/${item.maSP}`}><i className="fa fa-search" /></NavLink>
                                                     </div>
                                                 </div>
                                                 <div className="text-center py-4">
-                                                    <a className="h6 text-decoration-none text-truncate" href='#'>{item.tenSP}</a>
+                                                    <a className="h6 text-decoration-none text-truncate" href={`/product/${item.maSP}`}>{item.tenSP}</a>
                                                     <div className="d-flex align-items-center justify-content-center mt-2">
                                                         <h5>{formatPrice(item.giaThapNhat)} ~ {formatPrice(item.giaCaoNhat)}</h5>
 
                                                         {/* <h6 className="text-muted ml-2"><del>{item.giaCaoNhat?.toLocaleString()}</del></h6> */}
                                                     </div>
-                                                    <div className="d-flex align-items-center justify-content-center mb-1">
-                                                        <small className="fa fa-star text-primary mr-1" />
-                                                        <small className="fa fa-star text-primary mr-1" />
-                                                        <small className="fa fa-star text-primary mr-1" />
-                                                        <small className="fa fa-star text-primary mr-1" />
-                                                        <small className="fa fa-star text-primary mr-1" />
-                                                        <small>(99)</small>
-                                                    </div>
+                                                    {/* <div className="d-flex align-items-center justify-content-center mb-1">
+                                                        <small>Lượt Xem : {item.luotXem}</small>
+                                                    </div> */}
                                                 </div>
                                             </div>
                                         </div>
@@ -229,15 +238,20 @@ export default function Shop() {
                                 })}
 
                                 <div className="col-12">
-                                    <nav>
-                                        <ul className="pagination justify-content-center">
-                                            <li className="page-item disabled"><a className="page-link" href="#">Previous</a></li>
-                                            <li className="page-item active"><a className="page-link" href="#">1</a></li>
-                                            <li className="page-item"><a className="page-link" href="#">2</a></li>
-                                            <li className="page-item"><a className="page-link" href="#">3</a></li>
-                                            <li className="page-item"><a className="page-link" href="#">Next</a></li>
-                                        </ul>
-                                    </nav>
+                                    <div className="input-group quantity mr-3" style={{ width: "fit-content" }}>
+                                        <div className="input-group-btn">
+                                            <button onClick={() => { setNumPage(false) }} className="btn btn-success btn-minus">
+                                                Prev
+                                            </button>
+                                        </div>
+                                        <Form.Control type="number" value={pageProduct} onChange={(e) => setInputNumpage(parseInt(e.target.value))} placeholder="Nhập Số Trang" style={{ width: '50px' }} className="disableControlInput" />
+                                        <Form.Control type="number" value={totalPage} placeholder="totalPage" style={{ width: '50px' }} disabled />
+                                        <div onClick={() => { setNumPage(true) }} className="input-group-btn">
+                                            <button className="btn btn-success btn-plus">
+                                                Next
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

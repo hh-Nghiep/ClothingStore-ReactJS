@@ -7,7 +7,7 @@ import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 
-export default function Category() {
+export default function Index() {
     const [listCategory, setListCategory] = useState([]);
     const [nameCategory, setNameCategory] = useState();
     const [statusCategory, setStatusCategory] = useState(1);
@@ -93,14 +93,15 @@ export default function Category() {
                     {/* Begin Page Content */}
                     <div className="container-fluid">
                         {/* Page Heading */}
-                        <h1 className="h3 mb-2 text-gray-800">Quản Lý Thể Loại</h1>
+                        <h1 className="h3 mb-2 text-gray-800">Quản Lý Khuyến Mãi</h1>
                         {/* DataTales Example */}
                         <div className="card shadow mb-4">
                             <div className="card-header py-3" style={{ marginBottom: "5px" }}>
                                 <h6 className="m-0 font-weight-bold text-primary">
                                     <Form.Select onChange={e => setStatusCategory(parseInt(e.target.value))} name="status" style={{ width: "300px" }}>
-                                        <option value="1">Thể Loại Đang Bán</option>
-                                        <option value="0">Thể Loại Ngưng Bán</option>
+                                        <option value="1">Khuyến Mãi Đang Có Hiệu Lực</option>
+                                        <option value="0">Khuyến Mãi Chưa Có Hiệu Lực</option>
+                                        <option value="0">Khuyến Mãi Đã Hết Hiệu Lực</option>
                                     </Form.Select>
                                     <Button variant="success" onClick={handleShow} style={{ position: "absolute", top: "8px", right: "10px" }}>Thêm Thể Loại Mới</Button>
                                 </h6>

@@ -1,96 +1,60 @@
-let cart = []
 
-if (localStorage.getItem("CART")) {
-    cart = JSON.parse(localStorage.getItem("CART"));
+const initialState = {
+    carts: JSON.parse(localStorage.getItem("CART:" + JSON.parse(localStorage.getItem("infoUser")).maNguoiDung)) || []
 }
-const stateDefault = {
-    carts: cart
-}
-export const CartReducer = (state = stateDefault, action) => {
+
+export const CartReducer = (state = initialState, action) => {
+    var check = 0;
     switch (action.type) {
-        case "ADD_CART": {
-            let cartUpdate = [...state.carts];
+        case 'ADD_CART': {
+            const newCart = [...state.carts];
+            const item = action.payload.item;
 
-            if (cartUpdate.length === 0) {
-                cartUpdate.push(action.item)
+            check = newCart.map(itcart => itcart.maCT).indexOf(parseInt(`${item.maCT}`))
+            if (check === -1) {
+                newCart.push(item);
             } else {
-                let i = cartUpdate.findIndex(item => { return (item.id === action.item.id && item.sizeName === action.item.sizeName) })
-                if (i !== -1) {
-                    console.log("Có rồi")
-                    cartUpdate[i].number += action.item.number;
+                if ((newCart[check].SL + item.SL) > parseInt(action.payload.SL)) {
+                    alert(`Size Không Đủ Số Lượng Sản Phẩm !!!\n\nTrong Giỏ Hàng Đã Có ${newCart[check].SL} Sản Phẩm`)
                 } else {
-                    console.log("Mới")
-                    cartUpdate.push(action.item);
+                    newCart[check].SL += parseInt(item.SL);
                 }
             }
-            localStorage.setItem("CART", JSON.stringify(cartUpdate));
-            state.carts = cartUpdate;
-            return { ...state }
+            console.log(newCart)
+            localStorage.setItem("CART:" + JSON.parse(localStorage.getItem("infoUser")).maNguoiDung, JSON.stringify(newCart));
+
+            return { ...state, carts: newCart }
         }
-        case 'TANG_GIAM': {
-
-            let cartUpdate = [...state.carts];
-            let i = cartUpdate.findIndex(sp => sp.id === action.id);
-
-            if (i !== -1) {
-                if (action.boolean) {
-                    cartUpdate[i].number += 1;
-                } else if (!action.boolean) {
-                    if (cartUpdate[i].number > 1) {
-                        cartUpdate[i].number -= 1
-                    } else {
-                        alert("Sản Phẩm Phải Bằng Hoặc Lớn Hơn 1, Nếu Không Muốn Mua : Bấm 'Xóa'")
-                    }
-                }
+        case 'UPDATE_AMOUNT': {
+            const newCart = [...state.carts];
+            check = newCart.map(itcart => itcart.maCT).indexOf(parseInt(action.payload.maCT));
+            if (action.payload.calc) {
+                newCart[check].SL += 1;
+            } else {
+                newCart[check].SL -= 1;
             }
-            localStorage.setItem("CART", JSON.stringify(cartUpdate));
-            state.carts = cartUpdate;
-            return { ...state }
+            localStorage.setItem("CART:" + JSON.parse(localStorage.getItem("infoUser")).maNguoiDung, JSON.stringify(newCart));
+            return { ...state, carts: newCart }
         }
         case "DELETE_CART": {
-            let cartUpdate = [...state.carts];
-            let i = cartUpdate.findIndex(sp => sp.id === action.num);
-            if (i !== -1) {
-                cartUpdate.splice(i, 1);
+            const newCart = [...state.carts];
+            const maCT = action.payload.maCT;
+            check = newCart.map(itcart => itcart.maCT).indexOf(parseInt(maCT))
+            if (check > -1) {
+                newCart.splice(check, 1);
+                localStorage.setItem("CART:" + JSON.parse(localStorage.getItem("infoUser")).maNguoiDung, JSON.stringify(newCart));
             }
-            localStorage.setItem("CART", JSON.stringify(cartUpdate));
-            state.carts = cartUpdate;
-            return { ...state }
+            return { ...state, carts: newCart }
         }
-        case "ADD_SIZE": {
-
-            let cartUpdate = [...state.carts];
-            let i = cartUpdate.findIndex(sp => sp.id === action.id);
-
-            let name;
-            if (action.value === 1) {
-                name = "S"
-            } else if (action.value === 2) {
-                name = "M"
-            } else if (action.value === 3) {
-                name = "L"
-            } else if (action.value === 4) {
-                name = "XL"
-            } else if (action.value === 5) {
-                name = "XXL"
-            }
-            if (i !== -1) {
-                cartUpdate[i].size = action.value
-                cartUpdate[i].sizeName = name
-            }
-            localStorage.setItem("CART", JSON.stringify(cartUpdate));
-            state.carts = cartUpdate;
-            return { ...state }
+        case "GET_CART": {
+            const newCart = JSON.parse(localStorage.getItem("CART:" + JSON.parse(localStorage.getItem("infoUser")).maNguoiDung)) || [];
+            return { ...state, carts: newCart }
         }
         case "DONE": {
-            let cartUpdate = [];
-            alert("Đặt Hàng Thành Công")
-            localStorage.removeItem("CART");
-            state.carts = cartUpdate;
-            return { ...state }
+            localStorage.removeItem("CART:" + JSON.parse(localStorage.getItem("infoUser")).maNguoiDung);
+            return { ...state, carts: [] }
         }
         default:
             return { ...state }
-
     }
 }

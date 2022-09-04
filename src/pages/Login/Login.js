@@ -6,19 +6,19 @@ import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Modal from 'react-bootstrap/Modal';
+import { useDispatch } from 'react-redux';
 
 export default function Login() {
-    const notify = () => toast("Sai Thông Tin Đăng Nhập");
+    const dispatch = useDispatch();
+    const notify = () => toast(`Sai Thông Tin Đăng Nhập Hoặc Tài Khoản Của Bạn Đã Bị Khoá !!!`);
     let navigate = useNavigate();
 
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
 
     const formik = useFormik({
         initialValues: {
@@ -38,14 +38,24 @@ export default function Login() {
                         email: values2.data[0][0].email,
                         sdt: values2.data[0][0].sdt,
                         diaChi: values2.data[0][0].diaChi,
+                        role: values2.data[0][0].maQuyen,
+                        cmnd: values2.data[0][0].cmnd
                     }
+
+                    dispatch({
+                        type: 'SET_ROLE',
+                        payload: {
+                            role: values2.data[0][0].maQuyen,
+                        }
+                    })
                     localStorage.setItem("infoUser", JSON.stringify(infoUser));
                     localStorage.setItem('isLogin', true);
                     if (JSON.parse(localStorage.getItem("CART:" + values2.data[0][0].maNguoiDung)) === null) {
                         localStorage.setItem("CART:" + values2.data[0][0].maNguoiDung, JSON.stringify([]));
                     }
+
                     if (values2.data[0][0].maQuyen === 3) {
-                        navigate('/')
+                        window.location.href = '/'
                     } else {
                         handleShow()
                     }
@@ -64,7 +74,6 @@ export default function Login() {
     return (
         <>
             <div onSubmit={(e) => {
-                e.preventDefault()
                 formik.handleSubmit(e)
             }} className="bg-gradient-primary">
                 <div className="container">
@@ -104,14 +113,7 @@ export default function Login() {
                                                         Login
                                                     </button>
                                                     <div className='delete-button' onClick={() => { if (window.confirm('Are you sure you wish to delete this item?')) this.onCancel() }} />
-
                                                     <hr />
-                                                    <a href="#" className="btn btn-google btn-user btn-block">
-                                                        <i className="fab fa-google fa-fw" /> Login with Google
-                                                    </a>
-                                                    <a href="#" className="btn btn-facebook btn-user btn-block">
-                                                        <i className="fab fa-facebook-f fa-fw" /> Login with Facebook
-                                                    </a>
                                                 </form>
                                                 <hr />
                                                 <div className="text-center">
@@ -137,7 +139,7 @@ export default function Login() {
                 <Modal.Body>
                     <Row>
                         <Button variant="success" href='/' style={{ width: "200px", marginLeft: "40px", color: 'white!important' }}>Site Người Dùng</Button>{' '}
-                        <Button variant="danger" onClick={() => navigate('/admin')} style={{ width: "200px", marginLeft: "40px" }}>Site Admin</Button>{' '}
+                        <Button variant="danger" onClick={() => navigate('/admin/product')} style={{ width: "200px", marginLeft: "40px" }}>Site Admin</Button>{' '}
                     </Row>
                 </Modal.Body>
                 <Modal.Footer>

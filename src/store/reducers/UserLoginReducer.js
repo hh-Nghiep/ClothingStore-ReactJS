@@ -1,24 +1,24 @@
-import { TOKEN, USER_LOGIN } from "~/util/setting/config";
-
-let user = {}
-
 const stateDefault = {
-    userLogin: user
-}
-
-if (localStorage.getItem(USER_LOGIN)) {
-    user = JSON.parse(localStorage.getItem(USER_LOGIN));
+    userLogin: localStorage.getItem('isLogin'),
+    role: JSON.parse(localStorage.getItem("infoUser")).role,
+    infoUser: JSON.parse(localStorage.getItem("infoUser")),
 }
 
 export const UserReducer = (state = stateDefault, action) => {
     switch (action.type) {
-        case "LOGIN": {
-            const { values } = action;
-            localStorage.setItem(USER_LOGIN, JSON.stringify(values));
-            localStorage.setItem(TOKEN, values.asscess_Token);
-            return { ...state, userLogin: values };
+        case "SET_LOGIN": {
+            localStorage.setItem("isLogin", action.payload.status)
+            return { ...state, userLogin: action.payload.status };
         }
-
+        case "SET_ROLE": {
+            var newRole = action.payload.role;
+            return { ...state, role: newRole };
+        }
+        case "SET_INFO": {
+            var info = action.payload.info;
+            console.log(info)
+            return { ...state };
+        }
         default:
             return { ...state }
     }

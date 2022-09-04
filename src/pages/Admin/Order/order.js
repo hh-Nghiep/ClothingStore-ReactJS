@@ -12,6 +12,11 @@ export default function Order() {
     const [statusOrder, setStatusOrder] = useState(3);
     const [detailOrder, setDetailOrder] = useState([]);
     const [lgShow, setLgShow] = useState(false);
+    const [pageOrder, setPageOrder] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const [arrOrderSearch, setArrOrderSearch] = useState([]);
+    const [showDrop, setShowDrop] = useState("");
+    const [statusSearch, setStatusSearch] = useState();
 
     const listStatusOrder = [
         {
@@ -71,50 +76,108 @@ export default function Order() {
     }
 
     const updateStatusOrder = async (idOrder, statusOrder2) => {
+        var maPT = 0;
+        var arrProduct = [];
         if (statusOrder2 === -1) {
-            axios({
-                method: 'post',
-                url: `http://localhost:3001/order/update`,
-                data: {
-                    maNVDuyet: JSON.parse(localStorage.getItem("infoUser")).maNguoiDung,
-                    maDH: idOrder,
-                    trangThai: statusOrder2,
-                }
-            }).then((data) => {
-                alert("Cập Nhật Thành Công")
-            }).catch((err) => {
-                console.log("err")
-            })
+            if (window.confirm(`Huỷ Đơn Hàng ${idOrder} ?`) === true) {
+                axios({
+                    method: 'post',
+                    url: `http://localhost:3001/order/update`,
+                    data: {
+                        maNVDuyet: JSON.parse(localStorage.getItem("infoUser")).maNguoiDung,
+                        maDH: idOrder,
+                        trangThai: statusOrder2,
+                    }
+                }).then((data) => {
+                    maPT = (data.data[1])[0].maHD;
+                    arrProduct = data.data[0];
+                    try {
+                        arrProduct.forEach((item, index) => {
+                            axios({
+                                method: 'post',
+                                url: `http://localhost:3001/order/return`,
+                                data: {
+                                    maPhieuTra: maPT,
+                                    maCTSP: item.maCTSP,
+                                    soLuong: item.soLuong
+                                }
+                            }).then((data) => {
+                                setStatusOrder(0);
+                                setStatusOrder(statusOrder2);
+                                getListOrder();
+                            }).catch((err) => {
+                                console.log("err")
+                                return;
+                            })
+                        })
+                    } catch (error) {
+                        console.log("lỗi Thêm Chi Tiết Phiếu Nhập", error)
+                    }
+                }).catch((error) => {
+                    console.log("lỗi Thêm Phiếu Nhập", error)
+                })
+            }
         } else if (statusOrder2 === 1) {
-            axios({
-                method: 'post',
-                url: `http://localhost:3001/order/update`,
-                data: {
-                    maNVDuyet: JSON.parse(localStorage.getItem("infoUser")).maNguoiDung,
-                    maDH: idOrder,
-                    trangThai: statusOrder2,
-                }
-            }).then((data) => {
-                alert("Cập Nhật Thành Công")
-            }).catch((err) => {
-                console.log("err")
-            })
+            if (window.confirm(`Đã Lên Đơn Hàng ${idOrder} ?`) === true) {
+                axios({
+                    method: 'post',
+                    url: `http://localhost:3001/order/update`,
+                    data: {
+                        maNVDuyet: JSON.parse(localStorage.getItem("infoUser")).maNguoiDung,
+                        maDH: idOrder,
+                        trangThai: statusOrder2,
+                    }
+                }).then((data) => {
+                    alert("Cập Nhật Thành Công")
+                    setStatusOrder(0);
+                    setStatusOrder(statusOrder2);
+                    getListOrder();
+                }).catch((err) => {
+                    console.log("err")
+                })
+            }
         } else if (statusOrder2 === 2) {
-            axios({
-                method: 'post',
-                url: `http://localhost:3001/order/confirm`,
-                data: {
-                    maNVGiao: JSON.parse(localStorage.getItem("infoUser")).maNguoiDung,
-                    maDH: idOrder,
-                }
-            }).then((data) => {
-                alert("Cập Nhật Thành Công")
-            }).catch((err) => {
-                console.log("err")
-            })
+            if (window.confirm(`Xác Nhận Giao Đơn Hàng ${idOrder} Thành Công ?`) === true) {
+                axios({
+                    method: 'post',
+                    url: `http://localhost:3001/order/update`,
+                    data: {
+                        maNVDuyet: JSON.parse(localStorage.getItem("infoUser")).maNguoiDung,
+                        maDH: idOrder,
+                        trangThai: statusOrder2
+                    }
+                }).then((data) => {
+                    maPT = (data.data[1])[0].maHD;
+                    arrProduct = data.data[0];
+
+                    try {
+                        arrProduct.forEach((item, index) => {
+                            axios({
+                                method: 'post',
+                                url: `http://localhost:3001/order/return`,
+                                data: {
+                                    maPhieuTra: maPT,
+                                    maCTSP: item.maCTSP,
+                                    soLuong: 0
+                                }
+                            }).then((data) => {
+                                setStatusOrder(0);
+                                setStatusOrder(statusOrder2);
+                                getListOrder();
+                            }).catch((err) => {
+                                console.log("err")
+                                return;
+                            })
+                        })
+                    } catch (error) {
+                        console.log("lỗi Thêm Chi Tiết Phiếu Nhập", error)
+                    }
+                }).catch((err) => {
+                    console.log("err")
+                })
+            }
         }
 
-        setStatusOrder(statusOrder2);
     }
 
     const getAction = (id, status) => {
@@ -123,7 +186,7 @@ export default function Order() {
                 <>
                     <button onClick={() => updateStatusOrder(id, 1)} title={'Đã Lên Đơn'}><FontAwesomeIcon icon={faClipboardCheck} style={{ color: "green", cursor: "pointer" }} /></button>
                     {' '}
-                    <button onClick={() => { getDetailOrder(id) }} title={'Xem Đơn Hàng'}><FontAwesomeIcon icon={faEye} style={{ color: "black", cursor: "pointer" }} /></button>
+                    <button onClick={() => { setStatusSearch(status); getDetailOrder(id) }} title={'Xem Đơn Hàng'}><FontAwesomeIcon icon={faEye} style={{ color: "black", cursor: "pointer" }} /></button>
                     {' '}
                     <button onClick={() => updateStatusOrder(id, -1)} title={'Huỷ Đơn'}><FontAwesomeIcon icon={faTrash} style={{ color: "red", cursor: "pointer" }} /></button>
                 </>
@@ -131,47 +194,66 @@ export default function Order() {
         } else if (status === '1') {
             return (
                 <>
+                    <button onClick={() => { setStatusSearch(status); getDetailOrder(id) }} title={'Xem Đơn Hàng'}><FontAwesomeIcon icon={faEye} style={{ color: "black", cursor: "pointer" }} /></button>
+                    {' '}
                     <button onClick={() => updateStatusOrder(id, 2)} title={'Xác Nhận Đã Giao'}><FontAwesomeIcon icon={faTruckFast} style={{ color: "green", cursor: "pointer" }} /></button>
                     {' '}
                     <button onClick={() => updateStatusOrder(id, -1)} title={'Giao Thất Bại'}><FontAwesomeIcon icon={faBan} style={{ color: "red", cursor: "pointer" }} /></button>
                 </>
             )
         } else {
-            return <button onClick={() => { getDetailOrder(id) }} title={'Xem Đơn Hàng'}><FontAwesomeIcon icon={faEye} style={{ color: "black", cursor: "pointer" }} /></button>
+            return <button onClick={() => { setStatusSearch(status); getDetailOrder(id) }} title={'Xem Đơn Hàng'}><FontAwesomeIcon icon={faEye} style={{ color: "black", cursor: "pointer" }} /></button>
         }
     }
 
     const getListOrder = async () => {
-        if (statusOrder !== 3) {
-            axios({
-                method: 'get',
-                url: `http://localhost:3001/order/status/${statusOrder}`,
-            }).then((data) => {
-                setListOrder(data.data[0]);
-            }).catch((err) => {
-                console.log("err")
-            })
-        } else {
-            axios({
-                method: 'get',
-                url: `http://localhost:3001/orders`,
-            }).then((data) => {
-                setListOrder(data.data[0]);
-            }).catch((err) => {
-                console.log("err")
-            })
-        }
-
+        axios({
+            method: 'get',
+            url: `http://localhost:3001/order/status/${statusOrder}?page=${pageOrder}`,
+        }).then((data) => {
+            setListOrder(data?.data.data);
+            setTotalPage(data.data.totalPage);
+        }).catch((err) => {
+            console.log("err")
+        })
     }
 
     useEffect(() => {
         getListOrder();
-        console.log(detailOrder?.[0])
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [statusOrder, listOrder?.length, detailOrder])
+    }, [statusOrder, listOrder?.length, detailOrder, pageOrder])
+
+    const handleSearch = (e) => {
+        if (e !== "") {
+            axios({
+                method: 'GET',
+                url: `http://localhost:3001/order/find/${e}`,
+            }).then((data) => {
+                setArrOrderSearch(data.data[0])
+            }).catch((err) => {
+                console.log("Lỗi lấy thể loại :", err)
+            })
+            setShowDrop("block")
+        } else {
+            setShowDrop("")
+        }
+    }
 
     const formatPrice = (price) => {
         return Intl.NumberFormat('it-IT', { style: 'currency', currency: 'VND' }).format(price)
+    }
+
+    const setNumPage = (boolean) => {
+        if (boolean === true) {
+            if (pageOrder < totalPage) {
+                setPageOrder(pageOrder + 1)
+            }
+        } else {
+            if (pageOrder > 1) {
+                setPageOrder(pageOrder - 1)
+            }
+        }
     }
 
     return (
@@ -185,14 +267,36 @@ export default function Order() {
                         {/* DataTales Example */}
                         <div className="card shadow mb-4">
                             <div className="card-header py-3" style={{ marginBottom: "5px" }}>
-                                <h6 className="m-0 font-weight-bold text-primary">
-                                    <Form.Select onChange={e => setStatusOrder(parseInt(e.target.value))} name="status" style={{ width: "300px" }}>
+                                <h6 className="m-0 font-weight-bold text-primary" style={{ display: "flex", justifyContent: "space-between" }}>
+                                    <Form.Select value={statusOrder} onChange={e => setStatusOrder(parseInt(e.target.value))} name="status" style={{ width: "300px" }}>
                                         <option value="3">Toàn Bộ</option>
                                         <option value="0">Đặt Hàng Thành Công</option>
                                         <option value="1">Đang Giao</option>
                                         <option value="2">Thành Công</option>
                                         <option value="-1">Thất Bại</option>
                                     </Form.Select>
+
+                                    <div className="col-lg-4 col-6 text-left">
+                                        <form>
+                                            <div className="input-group">
+                                                <input type="text" onChange={e => handleSearch(e.target.value)} className="form-control" placeholder="Tìm Theo Mã Đơn Hàng" style={{ float: "right" }} />
+                                                <div className="input-group-append">
+                                                    <span className="input-group-text bg-transparent text-primary">
+                                                        <i className="fa fa-search" />
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <ul className='dropdown_search' style={{ display: `${showDrop}` }}>
+                                            {arrOrderSearch?.map((item, index) => {
+                                                return (
+                                                    <li style={{ height: "70px", display: "flex", alignItems: "center" }} key={index}>
+                                                        <div style={{ color: "black", overflow: "hidden", cursor: "pointer" }} onClick={() => { setStatusSearch(item.trangThai); getDetailOrder(item.maDH) }}>Mã Đơn Hàng : {item.maDH}</div>
+                                                    </li>
+                                                )
+                                            })}
+                                        </ul>
+                                    </div>
                                 </h6>
                             </div>
                             <div className="card-body">
@@ -221,9 +325,9 @@ export default function Order() {
                                                         <td>{item.maDH}</td>
                                                         <td>{item.soLuong || 0}</td>
                                                         <td>{item.ngayTao.slice(0, 10)}</td>
-                                                        <td>{item.gia || 0}</td>
+                                                        <td>{formatPrice(item.gia) || 0}</td>
                                                         <td >{listStatusOrder[item.trangThai + 1].title}</td>
-                                                        <td>
+                                                        <td style={{ display: "flex" }}>
                                                             {getAction(`${item.maDH}`, `${item.trangThai}`)}
                                                         </td>
                                                     </tr>
@@ -231,6 +335,22 @@ export default function Order() {
                                             })}
                                         </tbody>
                                     </Table>
+                                </div>
+                            </div>
+
+                            <div className="col-12">
+                                <div className="input-group quantity mr-3" style={{ width: "fit-content" }}>
+                                    <div className="input-group-btn">
+                                        <button onClick={() => { setNumPage(false) }} className="btn btn-success btn-minus">
+                                            Prev
+                                        </button>
+                                    </div>
+                                    <p className="form-control bg-secondary border-0 text-center" style={{ color: "white", width: "fit-content" }}>{`${pageOrder} / ${totalPage}`}</p>
+                                    <div onClick={() => { setNumPage(true) }} className="input-group-btn">
+                                        <button className="btn btn-success btn-plus">
+                                            Next
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -253,17 +373,19 @@ export default function Order() {
                         Mã NV Duyệt: <u>{detailOrder?.[0]?.maNVDuyet}</u>
                         <br />
                         <br />
-                        {' '}Ngày Giao: <u>{detailOrder?.[0]?.ngayGiao.slice(0, 10)}</u>
+                        {' '}Ngày Giao: <u>{detailOrder?.[0]?.ngayGiao?.slice(0, 10)}</u>
                         {' -- '}
                         Mã NV Giao: <u>{detailOrder?.[0]?.maNVGiao}</u>
                         {' ------ '}
                         <b>
                             <u>
-                                Tổng Tiền : {formatPrice(detailOrder.reduce((total, item) =>
+                                Tổng Tiền : {formatPrice(detailOrder?.reduce((total, item) =>
                                     total += (item.gia * item.soLuong), 0
                                 ))}
                             </u>
                         </b>
+                        {' ------ '}
+                        {getAction(`${detailOrder.maDH}`, `${statusSearch}`)}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -281,11 +403,11 @@ export default function Order() {
                             </tr>
                         </thead>
                         <tbody>
-                            {detailOrder.map((item, index) => {
+                            {detailOrder?.map((item, index) => {
                                 return (
                                     <tr key={index}>
                                         <td style={{ fontSize: "20px", fontWeight: "bold" }}>{index}</td>
-                                        <td style={{ fontSize: "20px", fontWeight: "bold" }}><img src={item.hinhAnh} alt="imageProduct" style={{ width: "150px" }} /> - {item.maSP}</td>
+                                        <td style={{ fontSize: "20px", fontWeight: "bold" }}><img src={item.hinhAnh1} alt="imageProduct" style={{ width: "150px" }} /> - {item.maSP}</td>
                                         <td>{item.tenSP}</td>
                                         <td>{formatPrice(item.gia)}</td>
                                         <td>{listSize[`${item.maSize - 1}`].size}</td>
@@ -299,12 +421,6 @@ export default function Order() {
                         </tbody>
                     </Table>
                 </Modal.Body>
-
-                <Modal.Header>
-                    <Modal.Title>
-
-                    </Modal.Title>
-                </Modal.Header>
             </Modal>
         </>
     )

@@ -5,7 +5,7 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
 export default function Product() {
-    const { product } = useSelector(state => state.ProductReducer)
+    const { product } = useSelector(state => state.product)
     const dispatch = useDispatch()
     const navigate = useNavigate()
 

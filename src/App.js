@@ -20,6 +20,8 @@ import ManagerUser from '~/pages/Admin/managerUser/managerUser';
 import Category from "./pages/Admin/category/category"
 import Order from './pages/Order/order';
 import AdminOrder from './pages/Admin/Order/order'
+import Account from './pages/Account/index';
+import Sale from './pages/Admin/sale/index'
 import { Fragment, useEffect } from 'react';
 
 function App() {
@@ -28,7 +30,6 @@ function App() {
   useEffect(() => {
   }, [])
 
-  // console.log(user)
   const handleHomePage = () => {
     if (location.pathname.slice(0, 6) !== "/admin") {
       return (<>
@@ -43,10 +44,11 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/order' element={<Order />} />
+          <Route path='/account' element={<Account />} />
         </Routes>
         <Footer />
       </>)
-    } else {//&& user.role === 1
+    } else {
       return (<div id='wrapper'>
         <Sidebar />
         <Routes>
@@ -56,37 +58,10 @@ function App() {
           <Route path='/admin/revenue' element={<Revenue />} />
           <Route path='/admin/managerUser' element={<ManagerUser />} />
           <Route path='/admin/category' element={<Category />} />
+          <Route path='/admin/sale' element={<Sale />} />
         </Routes>
       </div>)
     }
-    // if (user === null) {
-    //   return (<>
-    //     <Header />
-    //     <Routes>
-    //       <Route path='/' element={<HomePage />} />
-    //       <Route path='/shop' element={<Shop />} />
-    //       <Route path='/product/:id' element={<ShopDetails />} />
-    //       <Route path='/cart' element={<Cart />} />
-    //       <Route path='/checkout' element={<Checkout />} />
-    //       <Route path='/contact' element={<Contact />} />
-    //       <Route path='/login' element={<Login />} />
-    //       <Route path='/register' element={<Register />} />
-    //     </Routes>
-    //     <Footer />
-    //   </>)
-    // } else if (user !== null) {//&& user.role === 1
-    //   return (<div id='wrapper'>
-    //     <Sidebar />
-    //     <Routes>
-    //       <Route path='/admin/product' element={<Products />} />
-    //       <Route path='/admin/account' element={<AccountAdmin />} />
-    //       <Route path='/admin/revenue' element={<Revenue />} />
-    //       <Route path='/admin/managerUser' element={<ManagerUser />} />
-    //     </Routes>
-    //   </div>)
-    // } else {
-    //   alert("Role gi la the?")
-    // }
   }
   return (
     <Fragment>

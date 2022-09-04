@@ -9,6 +9,11 @@
 .cssbutton button {
   margin-right: 7px;
 }
+.disableControlInput::-webkit-outer-spin-button,
+.disableControlInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
 :root {
   --blue: #007bff;

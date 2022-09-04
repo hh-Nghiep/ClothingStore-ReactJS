@@ -1,9 +1,7 @@
 
 
 const stateDefault = {
-    cate: [
-
-    ]
+    cate: []
 }
 
 export const CategoryReducer = (state = stateDefault, action) => {
@@ -12,7 +10,7 @@ export const CategoryReducer = (state = stateDefault, action) => {
             state.cate = action.cate
             return { ...state }
         }
-        
+
         default:
             return { ...state }
     }

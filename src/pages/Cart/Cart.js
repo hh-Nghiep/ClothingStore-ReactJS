@@ -1,57 +1,59 @@
 import axios from 'axios';
 import React, { Fragment, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import { useSelector, useDispatch } from 'react-redux';
 
 export default function Cart() {
-    const navigate = useNavigate();
-    const [cart, setCart] = useState(JSON.parse(localStorage.getItem("CART:" + JSON.parse(localStorage.getItem("infoUser")).maNguoiDung)) || []);
+    const cart = useSelector(state => state.cart.carts)
+    const dispatch = useDispatch();
 
-    const handleNumber = async (maCT, boolean) => {
+    const navigate = useNavigate();
+
+    const handleNumber = async (maCT, calc) => {
         var check = cart.map(itcart => itcart.maCT).indexOf(parseInt(maCT));
         axios({
             method: 'get',
             url: `http://localhost:3001/product/amount/${maCT}`
         }).then((data) => {
             if (check > -1) {
-                if (boolean === true) {
+                if (calc === true) {
                     if (cart[check].SL >= data.data[0][0].soLuongTon) {
                         alert("Số Lượng Không Đủ");
                         return;
                     } else {
-                        cart[check].SL += 1;
+                        dispatch({
+                            type: 'UPDATE_AMOUNT',
+                            payload: { maCT, calc }
+                        })
                     }
                 } else {
                     if (cart[check].SL <= 1) {
                         alert("Số Lượng Không Được Nhỏ Hơn 1")
                         return;
                     } else {
-                        cart[check].SL -= 1;
+                        dispatch({
+                            type: 'UPDATE_AMOUNT',
+                            payload: { maCT, calc }
+                        })
                     }
                 }
-                localStorage.setItem("CART:" + localStorage.getItem("maNguoiDung"), JSON.stringify(cart));
             }
-            setCart(JSON.parse(localStorage.getItem("CART:" + localStorage.getItem("maNguoiDung"))) || [])
         }).catch((err) => {
             console.log("Lỗi lấy Số Lượng Sản Phẩm :", err)
         })
     }
 
-    const handleChange = (e) => {
-        const id = parseInt(e.target[0].id)
-        const value = parseInt(e.target.value)
-    }
     const handleClick = () => {
         navigate('/checkout')
     }
 
     const deleteItemCart = (maCT) => {
-        var check = cart.map(itcart => itcart.maCT).indexOf(parseInt(maCT))
-        if (check > -1) {
-            cart.splice(check, 1);
-            localStorage.setItem("CART:" + localStorage.getItem("maNguoiDung"), JSON.stringify(cart));
+        if (window.confirm("Xoá Sản Phẩm Khỏi Giỏ Hàng ?") === true) {
+            dispatch({
+                type: 'DELETE_CART',
+                payload: { maCT }
+            })
         }
-        setCart(JSON.parse(localStorage.getItem("CART:" + localStorage.getItem("maNguoiDung"))) || [])
     }
 
     const formatPrice = (price) => {
@@ -59,7 +61,6 @@ export default function Cart() {
     }
 
     useEffect(() => {
-        // window.scrollTo(0, 0)
     }, [cart])
 
 
@@ -117,7 +118,7 @@ export default function Cart() {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="align-middle">{formatPrice(`${cart?.tongTien}` * `${cart?.SL}`)}</td>
+                                                <td className="align-middle">{formatPrice(`${cart?.gia * cart?.SL}`)}</td>
                                                 <td className="align-middle"><button onClick={() => { deleteItemCart(`${cart?.maCT}`) }} className="btn btn-sm btn-danger"><i className="fa fa-times" /></button></td>
                                             </tr>
                                         )
@@ -155,7 +156,7 @@ export default function Cart() {
                                             return total += item.gia * item.SL
                                         }, 0).toLocaleString()} VND</h5>
                                     </div>
-                                    <button onClick={() => handleClick()} className="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</button>
+                                    <button onClick={() => handleClick()} className="btn btn-block btn-success font-weight-bold my-3 py-3">Tiến Hành Đặt Hàng</button>
                                 </div>
                             </div>
                         </div>

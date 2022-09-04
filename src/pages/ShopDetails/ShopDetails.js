@@ -1,21 +1,26 @@
 import axios from 'axios'
 import React, { Fragment, useEffect, useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
-import user from '~/assets/img/user.jpg'
-import Product from '~/components/Product/Product'
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import ToggleButton from 'react-bootstrap/ToggleButton';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom'
+import Form from 'react-bootstrap/Form';
+import { ToastContainer, toast } from 'react-toastify';
 
 export default function ShopDetails() {
-    const [checked, setChecked] = useState(false);
-    const [radioValue, setRadioValue] = useState('S');
-    const [amountProduct, setAmountProduct] = useState(0);
-    const [productID, setProductID] = useState();
+    const params = useParams();
+    let navigate = useNavigate();
+    const notify = () => { return toast(`Thêm Vào Giỏ Hàng Thành Công !!!`) };
+    const isLogin = useSelector(state => state.user.userLogin)
+    const dispatch = useDispatch();
 
+    const [radioValue, setRadioValue] = useState('S');
+    const [productID, setProductID] = useState();
     const location = useLocation();
     const IDProduct = location.pathname.slice(9);
-
     const [num, setNum] = useState(1);
+
     const handleNumber = (boolean) => {
         if (boolean) {
             if (num < parseInt(productID?.["SLSize" + radioValue])) {
@@ -29,6 +34,16 @@ export default function ShopDetails() {
             } else {
                 setNum(num - 1)
             }
+        }
+    }
+
+    const handleNumberInput = (number) => {
+        if (number <= parseInt(productID?.["SLSize" + radioValue]) && number > 0) {
+            setNum(number)
+        } else if (number > parseInt(productID?.["SLSize" + radioValue])) {
+            setNum(parseInt(productID?.["SLSize" + radioValue]));
+        } else {
+            setNum(1);
         }
     }
 
@@ -55,30 +70,31 @@ export default function ShopDetails() {
         },
     ];
 
-    const params = useParams();
-    const addCart = () => {
-        const item = {
-            hinhAnh: productID?.hinhAnh,
-            tenSP: productID?.tenSP,
-            gia: productID?.["giaSize" + radioValue],
-            size: radioValue,
-            maCT: productID?.["maCT" + radioValue],
-            SL: num,
-            tongTien: num * productID?.["giaSize" + radioValue]
-        }
+    const addCart = (SL) => {
+        if (isLogin == 'true') {
+            if (SL < 1) {
+                alert("Size Này Đã Hết Hàng !!!!")
+            } else {
+                const item = {
+                    hinhAnh: productID?.hinhAnh,
+                    tenSP: productID?.tenSP,
+                    gia: productID?.["giaSize" + radioValue],
+                    size: radioValue,
+                    maCT: productID?.["maCT" + radioValue],
+                    SL: num,
+                }
+                notify()
+                dispatch({
+                    type: 'ADD_CART',
+                    payload: { item, SL }
+                })
 
-        var cart = JSON.parse(localStorage.getItem("CART:" + localStorage.getItem("maNguoiDung"))) || [];
-        // if (cart === '') {
-        //     cart = []
-        // }
-        var check = cart.map(itcart => itcart.maCT).indexOf(parseInt(`${item.maCT}`))
-        if (check === -1) {
-            cart.push(item);
+
+            }
         } else {
-            cart[check].SL = cart[check].SL + item.SL;
+            alert("Vui Lòng Đăng Nhập Trước Khi Thêm Vào Giỏ Hàng !!!")
+            navigate('/login')
         }
-
-        localStorage.setItem("CART:" + localStorage.getItem("maNguoiDung"), JSON.stringify(cart));
     }
 
     const getShopDetails = async () => {
@@ -98,11 +114,13 @@ export default function ShopDetails() {
         // return formatPrice(Size[parseInt(radioValue) - 1]?.gia);
         return Intl.NumberFormat('it-IT', { style: 'currency', currency: 'VND' }).format(productID?.["giaSize" + radioValue])
     }
+
     useEffect(() => {
         if (productID === undefined)
             getShopDetails();
 
         setNum(1)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.id, radioValue])
     return (
         <Fragment>
@@ -112,9 +130,12 @@ export default function ShopDetails() {
                     <div className="row px-xl-5">
                         <div className="col-12">
                             <nav className="breadcrumb bg-light mb-30">
-                                <a className="breadcrumb-item text-dark" href="#">Home</a>
-                                <a className="breadcrumb-item text-dark" href="#">Shop</a>
+                                <a className="breadcrumb-item text-dark" href="/">Home</a>
+                                <a className="breadcrumb-item text-dark" href="/shop">Shop</a>
                                 <span className="breadcrumb-item active">Shop Detail</span>
+                                <div>
+                                    <ToastContainer />
+                                </div>
                             </nav>
                         </div>
                     </div>
@@ -226,20 +247,20 @@ export default function ShopDetails() {
                                 </div>
                                 <strong className="text-dark mr-3" >Số lượng: {productID?.["SLSize" + radioValue]}</strong>
                                 <div className="d-flex align-items-center mb-4 pt-2" style={{ marginTop: "15px" }}>
-                                    <div className="input-group quantity mr-3" style={{ width: 130 }}>
+                                    <div className="input-group quantity mr-3" style={{ width: "fit-content" }}>
                                         <div className="input-group-btn">
                                             <button onClick={() => handleNumber(false)} className="btn btn-primary btn-minus">
                                                 <i className="fa fa-minus" />
                                             </button>
                                         </div>
-                                        <p className="form-control bg-secondary border-0 text-center">{num}</p>
+                                        <Form.Control type="number" value={num} onChange={(e) => handleNumberInput(parseInt(e.target.value))} placeholder="Nhập Số Lượng" style={{ width: '55px' }} className="disableControlInput" />
                                         <div onClick={() => handleNumber(true)} className="input-group-btn">
                                             <button className="btn btn-primary btn-plus">
                                                 <i className="fa fa-plus" />
                                             </button>
                                         </div>
                                     </div>
-                                    <button onClick={() => addCart()} className="btn btn-primary px-3"><i className="fa fa-shopping-cart mr-1" />Thêm Vào Giỏ Hàng</button>
+                                    <button onClick={() => addCart(`${productID?.["SLSize" + radioValue]}`)} className="btn btn-primary px-3"><i className="fa fa-shopping-cart mr-1" />Thêm Vào Giỏ Hàng</button>
                                 </div>
                             </div>
                         </div>
@@ -247,7 +268,7 @@ export default function ShopDetails() {
                 </div>
                 {/* Shop Detail End */}
                 {/* Products Start */}
-                <Product />
+                {/* <Product /> */}
             </div>
 
         </Fragment >

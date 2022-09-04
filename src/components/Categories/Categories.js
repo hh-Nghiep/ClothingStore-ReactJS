@@ -7,7 +7,7 @@ import cate1 from '../../assets/img/cat-1.jpg'
 
 export default function Categories() {
     const dispatch = useDispatch()
-    const { cate } = useSelector(state => state.CategoryReducer)
+    const { cate } = useSelector(state => state.category)
 
     useEffect(() => {
         axios({
