@@ -3,88 +3,180 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import * as yup from 'yup';
+import { Formik } from 'formik';
 
 export default function Index() {
-    const [listCategory, setListCategory] = useState([]);
-    const [nameCategory, setNameCategory] = useState();
-    const [statusCategory, setStatusCategory] = useState(1);
-
+    const today = new Date();
+    const [check, setCheck] = useState(false);
+    const [listSale, setListSale] = useState([]);
+    const [statusSale, setStatusSale] = useState(0);
+    const [arrProdcutSearch, setArrProductSearch] = useState([]);
+    const [pageSale, setpageSale] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const [showDrop, setShowDrop] = useState("");
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
+    const [arrSize, setArrSize] = useState([]);
 
-    const [infoBeforUpdate, setInfoBeforUpdate] = useState();
-    const [show1, setShow1] = useState(false);
-    const handleShow1 = (item) => { setInfoBeforUpdate(item); setShow1(true) };
-    const handleClose1 = () => setShow1(false);
+    const [valueSearch, setValueSearch] = useState("");
+    const [infoProduct, setInfoProduct] = useState({});
 
-    const updateStatusCategory = async (trangThai, maTL) => {
-        var text = trangThai === 0 ? 'Xoá Thể Loại ?' : "Kích Hoạt Thể Loại?";
-        if (window.confirm(text) === true) {
-            axios({
+
+    const listSize = [
+        {
+            size: 'S'
+        },
+        {
+            size: 'M'
+        },
+        {
+            size: 'L'
+        },
+        {
+            size: 'XL'
+        },
+        {
+            size: 'XXL'
+        },
+    ]
+
+    const getAllSale = async () => {
+        await axios({
+            method: 'post',
+            url: `http://localhost:3001/sales?page=${pageSale}`,
+            data: {
+                trangThai: statusSale
+            }
+        }).then((data) => {
+            setListSale(data.data?.data)
+            setTotalPage(data?.data.totalPage)
+        }).catch((err) => {
+            console.log("err")
+        })
+    }
+
+    const deleteSale = async (id) => {
+        if (window.confirm("Bạn Muốn Xoá Khuyến Mãi ?") === true) {
+            await axios({
                 method: 'delete',
-                url: `http://localhost:3001/cate/status`,
-                data: {
-                    trangThai: trangThai,
-                    maTL: maTL,
-                }
+                url: `http://localhost:3001/sale/delete/${id}`
             }).then((data) => {
+                alert("Xoá Thành Công!!!");
+                getAllSale();
             }).catch((err) => {
                 console.log("err")
             })
         }
-        getAllCategory();
     }
 
-    const getAllCategory = async () => {
-        await axios({
-            method: 'get',
-            url: `http://localhost:3001/cate/${statusCategory}`
-        }).then((data) => {
-            setListCategory(data.data?.[0])
-        }).catch((err) => {
-            console.log("err")
+    const getDayMin = () => {
+        if (today.getMonth() < 10 && today.getDate() < 10) {
+            return (today.getFullYear() + '-0' + (today.getMonth() + 1) + '-0' + today.getDate())
+        } else if (today.getDate() < 10) {
+            return (today.getFullYear() + '-' + (today.getMonth() + 1) + '-0' + today.getDate())
+        } else {
+            return (today.getFullYear() + '-0' + (today.getMonth() + 1) + '-' + today.getDate())
+        }
+    }
+
+    const changeArrSize = (value) => {
+        var tempArr = arrSize;
+        if (tempArr.indexOf(value) === -1) {
+            tempArr.push(value);
+        } else {
+            tempArr.splice(tempArr.indexOf(value), 1)
+        }
+        setArrSize(tempArr)
+    }
+
+    const getInfoProduct = (item) => {
+        setInfoProduct({
+            hinhAnh: item.item.hinhAnh1,
+            tenSP: item.item.tenSP,
+            maSP: item.item.maSP
         })
+        handleSearch("")
     }
 
-    const addCategory = async () => {
-        axios({
-            method: 'post',
-            url: `http://localhost:3001/cate/add`,
-            data: {
-                tenTL: nameCategory
+    const handleSearch = (e) => {
+        setValueSearch(e)
+        if (e !== "") {
+            axios({
+                method: 'POST',
+                url: `http://localhost:3001/product/find`,
+                data: {
+                    tenSP: e,
+                    trangThai: 1
+                }
+            }).then((data) => {
+                setArrProductSearch(data.data)
+            }).catch((err) => {
+                console.log("Lỗi lấy thể loại :", err)
+            })
+            setShowDrop("block")
+        } else {
+            setShowDrop("")
+        }
+    }
+
+    const setNumPage = (boolean) => {
+        if (boolean === true) {
+            if (pageSale < totalPage) {
+                setpageSale(pageSale + 1)
             }
-        }).then((data) => {
-        }).catch((err) => {
-            console.log("err")
-        })
-        handleClose();
-        getAllCategory();
+        } else {
+            if (pageSale > 1) {
+                setpageSale(pageSale - 1)
+            }
+        }
     }
 
-    const updateCategory = async () => {
-        axios({
-            method: 'post',
-            url: `http://localhost:3001/cate/update`,
-            data: {
-                tenTL: infoBeforUpdate.tenTL,
-                maTL: infoBeforUpdate.maTL
-            }
-        }).then((data) => {
-        }).catch((err) => {
-            console.log("err")
-        })
-        handleClose1();
-        getAllCategory();
+    const checkSaleExists = async (values) => {
+        try {
+            arrSize.forEach(item => {
+                axios({
+                    method: 'POST',
+                    url: `http://localhost:3001/sale/check`,
+                    data: {
+                        ngayApDung: values.ngayApDung,
+                        ngayHetHan: values.ngayHetHan,
+                        maSP: parseInt(infoProduct.maSP),
+                        maSize: parseInt(item),
+                    }
+                }).then((data) => {
+                    if (data.data === 0) {
+                        alert(`Khuyến Mãi Size ${listSize[parseInt(item) - 1].size} Bị Trùng Ngày !!!`)
+                        setCheck(false);
+                        return;
+                    }
+                }).catch((err) => {
+                    console.log("Lỗi lấy thể loại :", err)
+                })
+            })
+        } catch (error) {
+            console.log(error)
+        }
+
+        setCheck(true)
     }
+
+    const schema = yup.object().shape({
+        moTa: yup.string().required("Vui Lòng Điền Mô Tả Sản Phẩm"),
+        phanTramGiam: yup.number().required("Vui Lòng Nhập Phần Trăm Giảm Giá")
+    })
 
     useEffect(() => {
-        getAllCategory();
+        window.scroll(0, 0)
+        getAllSale();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [listCategory.length, statusCategory])
+    }, [listSale?.length, statusSale, infoProduct, pageSale])
 
     return (
         <>
@@ -98,12 +190,13 @@ export default function Index() {
                         <div className="card shadow mb-4">
                             <div className="card-header py-3" style={{ marginBottom: "5px" }}>
                                 <h6 className="m-0 font-weight-bold text-primary">
-                                    <Form.Select onChange={e => setStatusCategory(parseInt(e.target.value))} name="status" style={{ width: "300px" }}>
+                                    <Form.Select onChange={e => setStatusSale(parseInt(e.target.value))} name="status" style={{ width: "300px" }}>
+                                        <option value="0">Tất Cả Khuyến Mãi</option>
                                         <option value="1">Khuyến Mãi Đang Có Hiệu Lực</option>
-                                        <option value="0">Khuyến Mãi Chưa Có Hiệu Lực</option>
-                                        <option value="0">Khuyến Mãi Đã Hết Hiệu Lực</option>
+                                        <option value="2">Khuyến Mãi Chưa Có Hiệu Lực</option>
+                                        <option value="-1">Khuyến Mãi Đã Hết Hiệu Lực</option>
                                     </Form.Select>
-                                    <Button variant="success" onClick={handleShow} style={{ position: "absolute", top: "8px", right: "10px" }}>Thêm Thể Loại Mới</Button>
+                                    <Button variant="success" onClick={handleShow} style={{ position: "absolute", top: "8px", right: "10px" }}>Thêm Khuyến Mãi Mới</Button>
                                 </h6>
                             </div>
                             <div className="card-body">
@@ -117,32 +210,47 @@ export default function Index() {
                                     >
                                         <thead>
                                             <tr >
-                                                <th>Mã Thể Loại</th>
-                                                <th>Tên Thể Loại</th>
-                                                <th>Số Lượng Sản Phẩm</th>
+                                                <th>Mã KM</th>
+                                                <th>Tên - Mã - Size SP</th>
+                                                <th style={{ width: "15%" }}>Hình Ảnh</th>
+                                                <th>Ngày Áp Dụng</th>
+                                                <th>Ngày Hết Hạn</th>
+                                                <th>Phần Trăm Giảm</th>
                                                 <th>Thao Tác</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {listCategory.map((item, index) => {
+                                            {listSale.map((item, index) => {
                                                 return (
                                                     <tr key={index}>
-                                                        <td>{item.maTL}</td>
-                                                        <td>{item.tenTL}</td>
-                                                        <td>{item.SLSanPham}</td>
-                                                        <td>
-                                                            {statusCategory == "1" ?
-                                                                (<><button onClick={() => handleShow1(item)} style={{ marginRight: "10px" }}><FontAwesomeIcon icon={faPenToSquare} style={{ color: "green", cursor: "pointer" }} /></button>
-                                                                    {' '}
-                                                                    <button onClick={() => updateStatusCategory(0, `${item.maTL}`)} ><FontAwesomeIcon icon={faTrash} style={{ color: "red", cursor: "pointer" }} /></button></>)
-                                                                : (<Button variant="success" onClick={() => updateStatusCategory(1, `${item.maTL}`)}>Bán Lại</Button>)}
-                                                        </td>
+                                                        <td>{item.maKM}</td>
+                                                        <td><strong>{item.tenSP}</strong> - {item.maSP} - {listSize[parseInt(item.maSize) - 1].size}</td>
+                                                        <td><img src={`${item.hinhAnh1}`} alt='ImgProduct' style={{ width: "100%" }}></img></td>
+                                                        <td>{item.ngayApDung.slice(0, 10)}</td>
+                                                        <td>{item.ngayHetHan.slice(0, 10)}</td>
+                                                        <td>{item.phanTramGiam}%</td>
+                                                        <td><button onClick={() => { deleteSale(item.maKM) }} ><FontAwesomeIcon icon={faTrash} style={{ color: "red", cursor: "pointer" }} /></button></td>
                                                     </tr>
                                                 )
                                             })}
-
                                         </tbody>
                                     </Table>
+                                </div>
+                            </div>
+
+                            <div className="col-12">
+                                <div className="input-group quantity mr-3" style={{ width: "fit-content" }}>
+                                    <div className="input-group-btn">
+                                        <button onClick={() => { setNumPage(false) }} className="btn btn-success btn-minus">
+                                            Prev
+                                        </button>
+                                    </div>
+                                    <p className="form-control bg-secondary border-0 text-center" style={{ color: "white", width: "fit-content" }}>{`${pageSale} / ${totalPage}`}</p>
+                                    <div onClick={() => { setNumPage(true) }} className="input-group-btn">
+                                        <button className="btn btn-success btn-plus">
+                                            Next
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -151,62 +259,227 @@ export default function Index() {
                 </div>
             </div>
 
-            <Modal show={show} onHide={handleClose}>
+            <Modal show={show} onHide={handleClose} size={'xl'} fullscreen={true}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Thêm Thể Loại</Modal.Title>
+                    <Modal.Title>Thêm Sản Phẩm</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form.Label htmlFor="tenTL">Nhập Tên Thể Loại</Form.Label>
-                    <Form.Control
-                        type="text"
-                        id="tenTL"
-                        onChange={e => setNameCategory(e.target.value)}
-                    />
-                    <Button variant="warning" style={{ marginTop: "20px" }}>Kiểm Tra</Button>{' '}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Huỷ
-                    </Button>
-                    <Button variant="success" onClick={addCategory}>
-                        Thêm
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+                    <Formik
+                        onSubmit={(values, { resetForm }) => {
+                            values.maSP = parseInt(infoProduct.maSP);
 
-            <Modal show={show1} onHide={handleClose1}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Thêm Thể Loại</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form.Label htmlFor="tenCu">Tên Cũ</Form.Label>
-                    <Form.Control
-                        disabled
-                        type="text"
-                        id="tenCu"
-                        value={infoBeforUpdate?.tenTL}
-                    />
-                    <Form.Label htmlFor="tenMoi">Tên Mới</Form.Label>
-                    <Form.Control
-                        type="text"
-                        id="tenMoi"
-                        onChange={e => {
-                            var temp = infoBeforUpdate;
-                            temp.tenTL = e.target.value
-                            setInfoBeforUpdate(temp)
+                            if (isNaN(values.maSP)) {
+                                alert("Vui Lòng Chọn Sản Phẩm !!!");
+                            } else if (arrSize.length < 1) {
+                                console.log(arrSize)
+                                alert("Vui Lòng Chọn Ít Nhất 1 Size !!!");
+                            } else {
+                                if (values.ngayHetHan >= values.ngayApDung) {
+                                    checkSaleExists(values);
+
+                                    if (check === true) {
+                                        try {
+                                            arrSize.forEach(item => {
+                                                axios({
+                                                    method: 'POST',
+                                                    url: `http://localhost:3001/sale/add`,
+                                                    data: {
+                                                        maNV: JSON.parse(localStorage.getItem("infoUser"))?.maNguoiDung,
+                                                        ngayApDung: values.ngayApDung,
+                                                        ngayHetHan: values.ngayHetHan,
+                                                        moTa: "Không có mô tả.",
+                                                        maSP: parseInt(infoProduct.maSP),
+                                                        maSize: parseInt(item),
+                                                        phanTramGiam: values.phanTramGiam
+                                                    }
+                                                }).then((data) => {
+                                                }).catch((err) => {
+                                                    console.log("Lỗi lấy thể loại :", err)
+                                                })
+                                            })
+                                        } catch (error) {
+                                            console.log(error)
+                                        }
+                                        alert("Thêm Khuyến Mãi Thành Công !!!")
+                                        window.location.href = '/admin/sale'
+                                    }
+
+                                } else {
+                                    alert("Ngày Hết Hạn Phải Sau Ngày Bắt Đầu !!!")
+                                }
+                            }
+
+
                         }}
-                    />
-                    <Button variant="warning" style={{ marginTop: "20px" }}>Kiểm Tra</Button>{' '}
-                </Modal.Body>
+                        enableReinitialize={true}
+                        validationSchema={schema}
+                        initialValues={{
+                            maNV: JSON.parse(localStorage.getItem("infoUser"))?.maNguoiDung,
+                            ngayApDung: "",
+                            ngayHetHan: "",
+                            moTa: "Không có mô tả.",
+                            maSP: 0,
+                            maSize: 0,
+                            phanTramGiam: ""
+                        }}
+                    >
+                        {({
+                            handleSubmit,
+                            handleChange,
+                            handleBlur,
+                            resetForm,
+                            values,
+                            touched,
+                            isValid,
+                            errors,
+                        }) => (
+                            <Form onSubmit={handleSubmit} style={{ color: "black", fontSize: "18px" }}>
+                                <Row>
+                                    <Row>
+                                        <Col>
+                                            <div>
+                                                <Form.Label>Chọn Sản Phẩm</Form.Label>
+                                                <div className="input-group">
+                                                    <input type="text" value={valueSearch} onChange={e => handleSearch(e.target.value)} className="form-control" placeholder="Tìm Theo Tên Sản Phẩm" style={{ float: "right" }} />
+                                                    <div className="input-group-append">
+                                                        <span className="input-group-text bg-transparent text-primary">
+                                                            <i className="fa fa-search" />
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <ul className='dropdown_search' style={{ display: `${showDrop}` }}>
+                                                {arrProdcutSearch.map((item, index) => {
+                                                    return (
+                                                        <li key={index} style={{ height: "70px", display: "flex", alignItems: "center" }}>
+                                                            <img src={item.hinhAnh1} alt="imageProduct" style={{ width: "20%", height: "100%" }}></img>
+                                                            <div style={{ color: "black", overflow: "hidden", cursor: "pointer" }} onClick={() => getInfoProduct({ item })}>{item.tenSP}</div>
+                                                        </li>
+                                                    )
+                                                })}
+                                            </ul>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label>Tên Sản Phẩm - Mã SP: <strong>{infoProduct.tenSP} - {infoProduct.maSP}</strong> </Form.Label>
+                                            <img src={infoProduct.hinhAnh} alt='Hình Ảnh' style={{ width: "50%" }}></img>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label>Chọn Size</Form.Label>
+                                            <div className="mb-3">
+                                                <Form.Check
+                                                    inline
+                                                    label="S"
+                                                    value="1"
+                                                    name="group1"
+                                                    type='checkbox'
+                                                    id={`checkbox-1`}
+                                                    onChange={e => changeArrSize(e.target.value)}
+                                                />
+                                                <Form.Check
+                                                    inline
+                                                    label="M"
+                                                    value="2"
+                                                    name="group1"
+                                                    type='checkbox'
+                                                    id={`checkbox-2`}
+                                                    onChange={e => changeArrSize(e.target.value)}
+                                                />
+                                                <Form.Check
+                                                    inline
+                                                    label="L"
+                                                    value="3"
+                                                    type='checkbox'
+                                                    id={`checkbox-3`}
+                                                    onChange={e => changeArrSize(e.target.value)}
+                                                />
+                                                <Form.Check
+                                                    inline
+                                                    label="XL"
+                                                    value="4"
+                                                    type='checkbox'
+                                                    id={`checkbox-3`}
+                                                    onChange={e => changeArrSize(e.target.value)}
+                                                />
+                                                <Form.Check
+                                                    inline
+                                                    label="XLL"
+                                                    value="5"
+                                                    type='checkbox'
+                                                    id={`checkbox-3`}
+                                                    onChange={e => changeArrSize(e.target.value)}
+                                                />
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                    <Row style={{ paddingTop: "20px" }}>
+                                        <Col>
+                                            <Form.Label>Ngày Bắt Đầu</Form.Label>
+                                            <Form.Control
+                                                required
+                                                type="date"
+                                                name="ngayApDung"
+                                                min={getDayMin()}
+                                                onChange={handleChange}
+                                                isValid={touched.ngayApDung && !errors.ngayApDung}
+                                                isInvalid={!!errors.ngayApDung}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.ngayApDung}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                        < Col >
+                                            <Form.Label>Ngày Kết Thúc</Form.Label>
+                                            <Form.Control
+                                                required
+                                                type="date"
+                                                name="ngayHetHan"
+                                                min={getDayMin()}
+                                                onChange={handleChange}
+                                                isValid={touched.ngayHetHan && !errors.ngayHetHan}
+                                                isInvalid={!!errors.ngayHetHan}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.ngayHetHan}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                        < Col >
+                                            <Form.Label>Phần Trăm Giảm</Form.Label>
+                                            <Form.Control
+                                                type="number"
+                                                name="phanTramGiam"
+                                                min="0"
+                                                max="100"
+                                                onChange={handleChange}
+                                                isValid={touched.phanTramGiam && !errors.phanTramGiam}
+                                                isInvalid={!!errors.phanTramGiam}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.phanTramGiam}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                    </Row>
+                                    <Row style={{ paddingTop: "20px" }}>
+                                        <Col>
+                                            <Form.Label>Mô Tả</Form.Label>
+                                            <Form.Control name="moTa" defaultValue={values.moTa} onChange={handleChange} as="textarea" aria-label="With textarea"
+                                                isValid={touched.moTa && !errors.moTa}
+                                                isInvalid={!!errors.moTa}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.moTa}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                    </Row>
+                                </Row>
+                                <Button type="submit" variant="success" style={{ marginTop: "15px", float: "right" }} > Thêm Khuyến Mãi</Button>
+                            </Form>
+                        )}
+                    </Formik>
+                </Modal.Body >
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose1}>
-                        Huỷ
-                    </Button>
-                    <Button variarfnt="success" onClick={() => updateCategory()}>
-                        Chỉnh Sửa
-                    </Button>
+                    <Button variant="secondary" onClick={handleClose}>Huỷ</Button>
                 </Modal.Footer>
-            </Modal>
+            </Modal >
         </>
     )
 }

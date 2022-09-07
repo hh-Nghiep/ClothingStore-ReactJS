@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom'
 import Form from 'react-bootstrap/Form';
 import { ToastContainer, toast } from 'react-toastify';
+import iconSale from './../../assets/img/sale.png';
 
 export default function ShopDetails() {
     const params = useParams();
@@ -15,7 +16,9 @@ export default function ShopDetails() {
     const isLogin = useSelector(state => state.user.userLogin)
     const dispatch = useDispatch();
 
+    const [listProductSale, setListProductSale] = useState([]);
     const [radioValue, setRadioValue] = useState('S');
+    const [idSize, setIdSize] = useState(1);
     const [productID, setProductID] = useState();
     const location = useLocation();
     const IDProduct = location.pathname.slice(9);
@@ -97,6 +100,41 @@ export default function ShopDetails() {
         }
     }
 
+    const getAllSale = async () => {
+        await axios({
+            method: 'post',
+            url: `http://localhost:3001/sales?page=0`,
+            data: {
+                trangThai: 1
+            }
+        }).then((data) => {
+            setListProductSale(data?.data[0])
+        }).catch((err) => {
+            console.log("err")
+        })
+    }
+
+    const getSale = () => {
+        var index = listProductSale.findIndex(item => {
+            if (item.maSP === parseInt(params.id) && item.maSize === parseInt(idSize)) {
+                return true;
+            }
+            return false;
+        });
+        if (index !== -1) {
+            return (
+                <>
+                    <del> {getPrice(productID?.["giaSize" + radioValue])}</del>
+                    &rArr;
+                    {getPrice((productID?.["giaSize" + radioValue] * (100 - listProductSale[index].phanTramGiam)) / 100)}
+                    <img src={iconSale} alt="icon sale"></img>
+                </>
+            )
+        } else {
+            return (getPrice(productID?.["giaSize" + radioValue]))
+        }
+    }
+
     const getShopDetails = async () => {
         await axios({
             method: 'get',
@@ -110,15 +148,15 @@ export default function ShopDetails() {
         setNum(1)
     }
 
-    const getPrice = () => {
+    const getPrice = (price) => {
         // return formatPrice(Size[parseInt(radioValue) - 1]?.gia);
-        return Intl.NumberFormat('it-IT', { style: 'currency', currency: 'VND' }).format(productID?.["giaSize" + radioValue])
+        return Intl.NumberFormat('it-IT', { style: 'currency', currency: 'VND' }).format(price)
     }
 
     useEffect(() => {
         if (productID === undefined)
             getShopDetails();
-
+        getAllSale();
         setNum(1)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.id, radioValue])
@@ -166,7 +204,8 @@ export default function ShopDetails() {
                                 <div className="d-flex mb-3">
                                     <small className="pt-1" style={{ fontSize: "15px" }}> Lượt Xem: {productID?.luotXem + 1}</small>
                                 </div>
-                                <h3 className="font-weight-semi-bold mb-4">{getPrice()}</h3>
+                                <h3 className="font-weight-semi-bold mb-4">{getSale()}</h3>
+
                                 <p className="mb-4" style={{ fontSize: "20px", color: "black" }}>{productID?.moTa}</p>
                                 <div className="d-flex mb-3">
                                     <strong className="text-dark mr-3" style={{ paddingTop: "5px" }}>Sizes:</strong>
@@ -180,7 +219,7 @@ export default function ShopDetails() {
                                                 name="radio"
                                                 value={Size[0].name}
                                                 checked={radioValue === Size[0].name}
-                                                onChange={(e) => { setRadioValue(e.currentTarget.value) }}
+                                                onChange={(e) => { setRadioValue(e.currentTarget.value); setIdSize(1) }}
                                                 style={{ marginRight: "10px" }}
                                             >
                                                 {Size[0].name}{' '}
@@ -194,7 +233,7 @@ export default function ShopDetails() {
                                                 name="radio"
                                                 value={Size[1].name}
                                                 checked={radioValue === Size[1].name}
-                                                onChange={(e) => { setRadioValue(e.currentTarget.value) }}
+                                                onChange={(e) => { setRadioValue(e.currentTarget.value); setIdSize(2) }}
                                                 style={{ marginRight: "10px" }}
                                             >
                                                 {Size[1].name}{' '}
@@ -208,7 +247,7 @@ export default function ShopDetails() {
                                                 name="radio"
                                                 value={Size[2].name}
                                                 checked={radioValue === Size[2].name}
-                                                onChange={(e) => { setRadioValue(e.currentTarget.value) }}
+                                                onChange={(e) => { setRadioValue(e.currentTarget.value); setIdSize(3) }}
                                                 style={{ marginRight: "10px" }}
                                             >
                                                 {Size[2].name}{' '}
@@ -222,7 +261,7 @@ export default function ShopDetails() {
                                                 name="radio"
                                                 value={Size[3].name}
                                                 checked={radioValue === Size[3].name}
-                                                onChange={(e) => { setRadioValue(e.currentTarget.value) }}
+                                                onChange={(e) => { setRadioValue(e.currentTarget.value); setIdSize(4) }}
                                                 style={{ marginRight: "10px" }}
                                             >
                                                 {Size[3].name}{' '}
@@ -236,7 +275,7 @@ export default function ShopDetails() {
                                                 name="radio"
                                                 value={Size[4].name}
                                                 checked={radioValue === Size[4].name}
-                                                onChange={(e) => { setRadioValue(e.currentTarget.value) }}
+                                                onChange={(e) => { setRadioValue(e.currentTarget.value); setIdSize(5) }}
                                                 style={{ marginRight: "10px" }}
                                             >
                                                 {Size[4].name}{' '}

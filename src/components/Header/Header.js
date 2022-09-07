@@ -42,7 +42,7 @@ export default function Header() {
     }
 
     const handleLogin = () => {
-        if (userLogin === 'false') {
+        if (userLogin !== 'true') {
             return (
                 <Fragment>
                     <NavLink to='/login' className="dropdown-item">Đăng Nhập</NavLink>

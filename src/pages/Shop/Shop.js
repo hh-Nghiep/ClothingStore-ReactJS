@@ -2,6 +2,7 @@ import axios from 'axios'
 import React, { Fragment, useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
+import iconSale from './../../assets/img/sale.png';
 
 export default function Shop() {
     const storeFilterPrice = [
@@ -42,6 +43,7 @@ export default function Shop() {
     const [filterCate, setFilterCate] = useState(0);
     const [pageProduct, setPageProduct] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
+    const [listProductSale, setListProductSale] = useState([]);
 
     const getArrCate = async () => {
         axios({
@@ -97,10 +99,35 @@ export default function Shop() {
         }
     }
 
+    const getAllSale = async () => {
+        await axios({
+            method: 'post',
+            url: `http://localhost:3001/sales?page=0`,
+            data: {
+                trangThai: 1
+            }
+        }).then((data) => {
+            setListProductSale(data?.data[0])
+        }).catch((err) => {
+            console.log("err")
+        })
+    }
+
+    const getSale = (maSP) => {
+        var index = listProductSale.map(item => item.maSP).indexOf(maSP);
+        if (index !== -1) {
+            return (<img src={iconSale} alt="icon sale"></img>)
+        } else {
+            return (<></>)
+        }
+    }
+
     useEffect(() => {
         window.scroll(0, 0)
         getArrProduct();
         getArrCate();
+        getAllSale();
+        console.log(listProductSale)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [arrProduct?.length, filterCate, filterPrice, pageProduct])
 
@@ -181,25 +208,6 @@ export default function Shop() {
                                             <button className="btn btn-sm btn-light"><i className="fa fa-th-large" /></button>
                                             {/* <button className="btn btn-sm btn-light ml-2"><i className="fa fa-bars" /></button> */}
                                         </div>
-                                        <div className="ml-2">
-                                            {/* <div className="btn-group">
-                                                <button type="button" className="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Sorting</button>
-                                                <div className="dropdown-menu dropdown-menu-right">
-                                                    <a onClick={() => { handeClicker(1) }} className="dropdown-item" href="#">Thấp - Cao</a>
-                                                    <a onClick={() => { handeClicker(2) }} className="dropdown-item" href="#">Cao - Thấp</a>
-                                                    <a onClick={() => { handeClicker(3) }} className="dropdown-item" href="#">A - Z</a>
-                                                    <a onClick={() => { handeClicker(4) }} className="dropdown-item" href="#">Z - A</a>
-                                                </div>
-                                            </div> */}
-                                            {/* <div className="btn-group ml-2">
-                                                <button type="button" className="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Showing</button>
-                                                <div className="dropdown-menu dropdown-menu-right">
-                                                    <a className="dropdown-item" href="#">10</a>
-                                                    <a className="dropdown-item" href="#">20</a>
-                                                    <a className="dropdown-item" href="#">30</a>
-                                                </div>
-                                            </div> */}
-                                        </div>
                                     </div>
                                 </div>
                                 {/* Arr Prodcut */}
@@ -228,9 +236,9 @@ export default function Shop() {
 
                                                         {/* <h6 className="text-muted ml-2"><del>{item.giaCaoNhat?.toLocaleString()}</del></h6> */}
                                                     </div>
-                                                    {/* <div className="d-flex align-items-center justify-content-center mb-1">
-                                                        <small>Lượt Xem : {item.luotXem}</small>
-                                                    </div> */}
+                                                    <div className="d-flex align-items-center justify-content-center mb-1">
+                                                        {getSale(item.maSP)}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
