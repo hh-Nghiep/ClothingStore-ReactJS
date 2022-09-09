@@ -143,13 +143,12 @@ export default function ShopDetails() {
         }).then((data) => {
             setProductID(data.data[0][0])
         }).catch((err) => {
-            // console.log("err")
+            console.log("err")
         })
         setNum(1)
     }
 
     const getPrice = (price) => {
-        // return formatPrice(Size[parseInt(radioValue) - 1]?.gia);
         return Intl.NumberFormat('it-IT', { style: 'currency', currency: 'VND' }).format(price)
     }
 
@@ -188,7 +187,6 @@ export default function ShopDetails() {
                                     <div className="carousel-item active">
                                         <img width={496} height={496} src={productID?.hinhAnh} alt="ImageProduct" />
                                     </div>
-
                                 </div>
                                 <a className="carousel-control-prev" href="#product-carousel" data-slide="prev">
                                     <i className="fa fa-2x fa-angle-left text-dark" />
@@ -211,21 +209,41 @@ export default function ShopDetails() {
                                     <strong className="text-dark mr-3" style={{ paddingTop: "5px" }}>Sizes:</strong>
                                     <form>
                                         <ButtonGroup >
-                                            <ToggleButton
-                                                key={Size[0].id}
-                                                id={Size[0].id}
-                                                type="radio"
-                                                variant='outline-success'
-                                                name="radio"
-                                                value={Size[0].name}
-                                                checked={radioValue === Size[0].name}
-                                                onChange={(e) => { setRadioValue(e.currentTarget.value); setIdSize(1) }}
-                                                style={{ marginRight: "10px" }}
-                                            >
-                                                {Size[0].name}{' '}
-                                            </ToggleButton>
+                                            {Size.map((item, index) => {
+                                                if (productID?.["SLSize" + item.name] === 0) {
+                                                    return (<ToggleButton
+                                                        disabled
+                                                        key={item.id}
+                                                        id={item.id}
+                                                        type="radio"
+                                                        variant='outline-success'
+                                                        name="radio"
+                                                        value={item.name}
+                                                        checked={radioValue === item.name}
+                                                        onChange={(e) => { setRadioValue(e.currentTarget.value); setIdSize(1) }}
+                                                        style={{ marginRight: "10px" }}
+                                                    >
+                                                        {item.name}{' '}
+                                                    </ToggleButton>)
+                                                } else {
+                                                    return (<ToggleButton
+                                                        key={item.id}
+                                                        id={item.id}
+                                                        type="radio"
+                                                        variant='outline-success'
+                                                        name="radio"
+                                                        value={item.name}
+                                                        checked={radioValue === item.name}
+                                                        onChange={(e) => { setRadioValue(e.currentTarget.value); setIdSize(1) }}
+                                                        style={{ marginRight: "10px" }}
+                                                    >
+                                                        {item.name}{' '}
+                                                    </ToggleButton>)
+                                                }
+                                            })}
 
-                                            <ToggleButton
+
+                                            {/* <ToggleButton
                                                 key={Size[1].id}
                                                 id={Size[1].id}
                                                 type="radio"
@@ -279,12 +297,11 @@ export default function ShopDetails() {
                                                 style={{ marginRight: "10px" }}
                                             >
                                                 {Size[4].name}{' '}
-                                            </ToggleButton>
-
+                                            </ToggleButton> */}
                                         </ButtonGroup>
                                     </form>
                                 </div>
-                                <strong className="text-dark mr-3" >Số lượng: {productID?.["SLSize" + radioValue]}</strong>
+                                <strong className="text-dark mr-3" >Số lượng Còn: {productID?.["SLSize" + radioValue]}</strong>
                                 <div className="d-flex align-items-center mb-4 pt-2" style={{ marginTop: "15px" }}>
                                     <div className="input-group quantity mr-3" style={{ width: "fit-content" }}>
                                         <div className="input-group-btn">

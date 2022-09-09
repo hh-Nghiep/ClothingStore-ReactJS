@@ -174,7 +174,6 @@ export default function Product() {
             if (pageProduct > 1) {
                 setPageProdut(pageProduct - 1)
             }
-
         }
     }
 
@@ -379,6 +378,8 @@ export default function Product() {
                                 values.maTL = cate[index].maTL;
                                 values.hinhAnh = imgProduct;
                                 values.maNV = JSON.parse(localStorage.getItem("infoUser"))?.maNguoiDung;
+                                values.tenSP = (values.tenSP.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
+                                values.moTa = (values.moTa.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
                                 axios({
                                     method: 'post',
                                     url: `http://localhost:3001/product/add`,
@@ -681,7 +682,8 @@ export default function Product() {
                                 values.hinhAnh = imgProduct;
                             }
                             values.maNV = JSON.parse(localStorage.getItem("infoUser")).maNguoiDung;
-                            console.log(values)
+                            values.tenSP = (values.tenSP.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
+                            values.moTa = (values.moTa.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
                             axios({
                                 method: 'post',
                                 url: `http://localhost:3001/product/edit`,

@@ -9,10 +9,11 @@ import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 
 export default function Header() {
-    const cart = useSelector(state => state.cart.carts)
     const dispatch = useDispatch();
-
     const navigate = useNavigate();
+    var today = new Date();
+    const [time, setTime] = useState(today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds());
+    const cart = useSelector(state => state.cart.carts)
     const [userLogin, setUserLogin] = useState(localStorage.getItem("isLogin"))
     const [showDrop, setShowDrop] = useState("");
     const [arrProdcutSearch, setArrProductSearch] = useState([]);
@@ -81,6 +82,17 @@ export default function Header() {
     }
 
     useEffect(() => {
+        const interval = setInterval(() => {
+            setTime((new Date()).getHours() + ' : ' + (new Date()).getMinutes() + ' : ' + (new Date()).getSeconds());
+            if ((new Date()).getHours() === 0 && (new Date()).getMinutes() === 0 && (new Date()).getSeconds() === 0) {
+                window.location.reload(false);
+            }
+        }, 1000);
+
+        return () => {
+            clearInterval(interval);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [arrProdcutSearch?.length])
 
 
@@ -141,7 +153,7 @@ export default function Header() {
                                     <div className="navbar-nav mr-auto py-0">
                                         <NavLink to='/' className="nav-item nav-link active">Trang Chủ</NavLink>
                                         <NavLink to='/shop' className="nav-item nav-link">Sản Phẩm</NavLink>
-                                        <NavLink to='/contact' className="nav-item nav-link">Liên Hệ</NavLink>
+                                        <NavLink to='/' className="nav-item nav-link disabled" style={{ color: "red", fontSize: "18px", fontWeight: "bold" }}>{time}</NavLink>
                                     </div>
                                     <div className="navbar-nav ml-auto py-0 d-none d-lg-block">
                                         <NavLink to='/cart' className="btn px-0 ml-3" style={{ marginRight: "15px", padding: "0 0" }}>

@@ -38,6 +38,8 @@ export default function Managerser() {
     const [statusUser, setStatusUser] = useState(1);
     const [infoUser, setInfoUser] = useState();
     const [idUser, setIdUser] = useState();
+    const [pageProduct, setPageProdut] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
 
     const roles = [
         {
@@ -81,16 +83,29 @@ export default function Managerser() {
             .required("Vui Lòng Nhập Lại Password")
     });
 
+    const schema2 = yup.object().shape({
+        hoTen: yup.string().required("Vui Lòng Điền Tên Người Dùng"),
+        sdt: yup.string().required("Vui Lòng Điền Số Điện Thoại")
+            .matches(/^[0-9]+$/, "Chỉ Chứa Chữ Số")
+            .test('len', 'Số Điện Thoại Chỉ Có 10 Số', val => val?.length === 10),
+        email: yup.string().email().required("Kiểm tra lại email"),
+        diaChi: yup.string().required("Vui Lòng Điền Địa Chỉ"),
+        cmnd: yup.string().required("Vui Lòng Điền CMND")
+            .matches(/^[0-9]+$/, "Chỉ Chứa Chữ Số")
+            .test('len', 'Chỉ Được 9 Hoặc 12 Số', val => val?.length === 9 || val?.length === 12),
+    });
+
     const getUsers = async () => {
-        const response = await axios({
+        await axios({
             method: 'post',
-            url: `http://localhost:3001/users`,
+            url: `http://localhost:3001/users?page=${pageProduct}`,
             data: {
                 maQuyen: idRole,
                 trangThai: statusUser
             }
         }).then((data) => {
-            setArrUser(data.data[0]);
+            setArrUser(data.data.data);
+            setTotalPage(data.data.totalPage)
         }).catch((err) => {
             console.log("err")
         })
@@ -105,13 +120,14 @@ export default function Managerser() {
             }
         }).then((data) => {
             setInfoUser(data.data[0][0]);
+            console.log(infoUser)
         }).catch((err) => {
             console.log("err")
         })
     }
 
     const disableUser = async (id) => {
-        const response = await axios({
+        await axios({
             method: 'delete',
             url: `http://localhost:3001/user/disable`,
             data: {
@@ -124,11 +140,12 @@ export default function Managerser() {
         getUsers();
     }
 
-    const fcCheckPhone = async (sdt) => {
+    const fcCheckPhone = async (id, sdt) => {
         const response = await axios({
             method: 'post',
             url: `http://localhost:3001/user/checkPhone`,
             data: {
+                maNguoiDung: id,
                 sdt: sdt
             }
         }).then((data) => {
@@ -143,11 +160,12 @@ export default function Managerser() {
         })
     }
 
-    const fcCheckEmail = async (email) => {
+    const fcCheckEmail = async (id, email) => {
         const response = await axios({
             method: 'post',
             url: `http://localhost:3001/user/checkEmail`,
             data: {
+                maNguoiDung: id,
                 email: email
             }
         }).then((data) => {
@@ -162,11 +180,12 @@ export default function Managerser() {
         })
     }
 
-    const fcCheckId = async (cmnd) => {
+    const fcCheckId = async (id, cmnd) => {
         await axios({
             method: 'post',
             url: `http://localhost:3001/user/checkId`,
             data: {
+                maNguoiDung: id,
                 cmnd: cmnd
             }
         }).then((data) => {
@@ -189,11 +208,23 @@ export default function Managerser() {
             }).then((data) => {
                 setArrUserSearch(data.data[0])
             }).catch((err) => {
-                console.log("Lỗi lấy thể loại :", err)
+                console.log("Lỗi Tìm Người Dùng :", err)
             })
             setShowDrop("block")
         } else {
             setShowDrop("")
+        }
+    }
+
+    const setNumPage = (boolean) => {
+        if (boolean === true) {
+            if (pageProduct < totalPage) {
+                setPageProdut(pageProduct + 1)
+            }
+        } else {
+            if (pageProduct > 1) {
+                setPageProdut(pageProduct - 1)
+            }
         }
     }
 
@@ -296,6 +327,22 @@ export default function Managerser() {
                                     </Table>
                                 </div>
                             </div>
+
+                            <div className="col-12">
+                                <div className="input-group quantity mr-3" style={{ width: "fit-content" }}>
+                                    <div className="input-group-btn">
+                                        <button onClick={() => { setNumPage(false) }} className="btn btn-success btn-minus">
+                                            Prev
+                                        </button>
+                                    </div>
+                                    <p className="form-control bg-secondary border-0 text-center" style={{ color: "white", width: "fit-content" }}>{`${pageProduct} / ${totalPage}`}</p>
+                                    <div onClick={() => { setNumPage(true) }} className="input-group-btn">
+                                        <button className="btn btn-success btn-plus">
+                                            Next
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     {/* /.container-fluid */}
@@ -309,11 +356,16 @@ export default function Managerser() {
                 <Modal.Body>
                     <Formik
                         onSubmit={values => {
-                            fcCheckPhone(values.sdt)
-                            fcCheckEmail(values.email)
-                            fcCheckId(values.cmnd)
+                            fcCheckPhone(0, values.sdt)
+                            fcCheckEmail(0, values.email)
+                            fcCheckId(0, values.cmnd)
                             if (checkPhone === true && checkEmail === true && checkId === true) {
-                                values.maQuyen = roles[roles.findIndex(item => item.role === values.maQuyen)].idRole;
+                                if (values.maQuyen !== 1) {
+                                    values.maQuyen = roles[roles.findIndex(item => item.role === values.maQuyen)].idRole;
+                                }
+
+                                values.hoTen = (values.hoTen.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
+                                values.diaChi = (values.diaChi.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
                                 axios({
                                     method: 'post',
                                     url: `http://localhost:3001/user/add`,
@@ -474,26 +526,36 @@ export default function Managerser() {
                 <Modal.Body>
                     <Formik
                         onSubmit={values => {
-                            if (typeof (values.trangThai) === 'string') {
-                                var index = status.map(item => item.status).indexOf(`${values.trangThai}`)
-                                values.trangThai = status[index].idStatus;
+                            fcCheckPhone(values.maNguoiDung, values.sdt)
+                            fcCheckEmail(values.maNguoiDung, values.email)
+                            fcCheckId(values.maNguoiDung, values.cmnd)
+                            if (checkPhone === true && checkEmail === true && checkId === true) {
+                                if (window.confirm("Chỉnh Sửa Nhân Viên ?") === true) {
+                                    if (typeof (values.trangThai) === 'string') {
+                                        var index = status.map(item => item.status).indexOf(`${values.trangThai}`)
+                                        values.trangThai = status[index].idStatus;
+                                    }
+                                    if (typeof (values.maQuyen) === 'string') {
+                                        var index2 = roles.map(item => item.role).indexOf(`${values.maQuyen}`)
+                                        values.maQuyen = roles[index2].idRole;
+                                    }
+                                    values.hoTen = (values.hoTen.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
+                                    values.diaChi = (values.diaChi.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
+                                    axios({
+                                        method: 'post',
+                                        url: `http://localhost:3001/user/edit`,
+                                        data: values
+                                    }).then((data) => {
+                                        alert("Cập Nhật Thông Tin Người Dùng Thành Công")
+                                        handleClose1();
+                                        window.location.href = '/admin/manageruser'
+                                    }).catch((err) => {
+                                        console.log("err", err)
+                                    })
+                                }
                             }
-                            if (typeof (values.maQuyen) === 'string') {
-                                var index2 = roles.map(item => item.role).indexOf(`${values.maQuyen}`)
-                                values.maQuyen = roles[index2].idRole;
-                            }
-                            axios({
-                                method: 'post',
-                                url: `http://localhost:3001/user/edit`,
-                                data: values
-                            }).then((data) => {
-                                alert("Cập Nhật Thông Tin Người Dùng Thành Công")
-                                handleClose1();
-                                getUsers();
-                            }).catch((err) => {
-                                console.log("err", err)
-                            })
                         }}
+                        validationSchema={schema2}
                         enableReinitialize={true}
                         initialValues={{
                             maNguoiDung: infoUser?.maNguoiDung,
@@ -502,7 +564,6 @@ export default function Managerser() {
                             email: infoUser?.email,
                             diaChi: infoUser?.diaChi,
                             cmnd: infoUser?.cmnd,
-                            password: infoUser?.password,
                             maQuyen: infoUser?.maQuyen,
                             trangThai: infoUser?.trangThai
                         }}
@@ -536,13 +597,26 @@ export default function Managerser() {
                                     </Col>
                                     <Col>
                                         <Form.Label>Số Điện Thoại</Form.Label>
-                                        <Form.Control required name="sdt" onChange={handleChange} value={values?.sdt} />
+                                        <Form.Control
+                                            name="sdt"
+                                            onChange={handleChange}
+                                            value={values?.sdt}
+                                            isValid={touched.sdt && !errors.sdt}
+                                            isInvalid={!!errors.sdt} />
+                                        <Form.Control.Feedback type="invalid" tooltip>
+                                            {errors.sdt}
+                                        </Form.Control.Feedback>
                                     </Col>
                                     <Col>
                                         <Form.Label>Quyền Tài Khoản</Form.Label>
-                                        <Form.Select onChange={handleChange} name="maQuyen" defaultValue={idRole}>
+                                        <Form.Select onChange={handleChange} name="maQuyen">
                                             {roles.map((item, index) => {
-                                                return (<option name="maQuyen" key={item.idRole} value={item?.idRole}>{item?.role}</option>)
+                                                if ((index + 1) === values.maQuyen) {
+                                                    return (<option name="maQuyen" key={item.idRole} value={item?.role} selected>{item?.role}</option>)
+                                                } else {
+                                                    return (<option name="maQuyen" key={item.idRole} value={item?.idrole}>{item?.role}</option>)
+                                                }
+
                                             })}
                                         </Form.Select>
                                     </Col>
@@ -551,22 +625,42 @@ export default function Managerser() {
                                     <Col>
                                         <Form.Label>Email</Form.Label>
                                         <Form.Control
-                                            required
                                             type="email"
                                             name="email"
                                             value={values?.email}
                                             onChange={handleChange}
+                                            isValid={touched.email && !errors.email}
+                                            isInvalid={!!errors.email}
                                         />
+                                        <Form.Control.Feedback type="invalid" tooltip>
+                                            {errors.email}
+                                        </Form.Control.Feedback>
                                     </Col>
 
                                     <Col>
                                         <Form.Label>Địa Chỉ</Form.Label>
-                                        <Form.Control required name="diaChi" onChange={handleChange} value={values?.diaChi} />
+                                        <Form.Control
+                                            name="diaChi"
+                                            onChange={handleChange}
+                                            value={values?.diaChi}
+                                            isValid={touched.diaChi && !errors.diaChi}
+                                            isInvalid={!!errors.diaChi} />
+                                        <Form.Control.Feedback type="invalid" tooltip>
+                                            {errors.diaChi}
+                                        </Form.Control.Feedback>
                                     </Col>
 
                                     <Col>
                                         <Form.Label>CMND</Form.Label>
-                                        <Form.Control required name="cmnd" onChange={handleChange} value={values?.cmnd} />
+                                        <Form.Control
+                                            name="cmnd"
+                                            onChange={handleChange}
+                                            value={values?.cmnd}
+                                            isValid={touched.cmnd && !errors.cmnd}
+                                            isInvalid={!!errors.cmnd} />
+                                        <Form.Control.Feedback type="invalid" tooltip>
+                                            {errors.cmnd}
+                                        </Form.Control.Feedback>
                                     </Col>
                                 </Row>
                                 <Row style={{ width: "380px", marginTop: "40px" }}>

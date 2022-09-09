@@ -9,16 +9,18 @@ export default function Sidebar() {
     const navigate = useNavigate();
 
     const Logout = () => {
-        localStorage.setItem("isLogin", false);
-        var infoUser = {
-            maNguoiDung: "",
-            hoTen: "",
-            email: "",
-            sdt: "",
-            diaChi: "",
+        if (window.confirm("Đăng Xuất ?") === true) {
+            localStorage.setItem("isLogin", false);
+            var infoUser = {
+                maNguoiDung: "",
+                hoTen: "",
+                email: "",
+                sdt: "",
+                diaChi: "",
+            }
+            localStorage.setItem("infoUser", JSON.stringify(infoUser));
+            navigate('/login');
         }
-        localStorage.setItem("infoUser", JSON.stringify(infoUser));
-        navigate('/login');
     }
 
     var navItem = [
@@ -57,12 +59,6 @@ export default function Sidebar() {
             icon: <FontAwesomeIcon icon={faUserGear} />,
             title: "Quản Lý Người Dùng",
             role: 1,
-        },
-        {
-            link: "/admin/manageruser",
-            icon: <FontAwesomeIcon icon={faUser} />,
-            title: "Tài Khoản",
-            role: 2,
         },
     ]
 

@@ -17,6 +17,7 @@ export default function Category() {
     const handleClose = () => setShow(false);
 
     const [infoBeforUpdate, setInfoBeforUpdate] = useState();
+    const [nameAfterUpdate, setNameAfterUpdate] = useState();
     const [show1, setShow1] = useState(false);
     const handleShow1 = (item) => { setInfoBeforUpdate(item); setShow1(true) };
     const handleClose1 = () => setShow1(false);
@@ -36,7 +37,8 @@ export default function Category() {
                 console.log("err")
             })
         }
-        getAllCategory();
+        setStatusCategory(0)
+        setStatusCategory(1)
     }
 
     const getAllCategory = async () => {
@@ -58,11 +60,18 @@ export default function Category() {
                 tenTL: nameCategory
             }
         }).then((data) => {
+            if (data.data === 0) {
+                alert("Tên Thể Loại Đã Tồn Tại !!!")
+                return;
+            } else {
+                setStatusCategory(0)
+                setStatusCategory(1)
+                handleClose();
+            }
         }).catch((err) => {
             console.log("err")
         })
-        handleClose();
-        getAllCategory();
+
     }
 
     const updateCategory = async () => {
@@ -70,15 +79,22 @@ export default function Category() {
             method: 'post',
             url: `http://localhost:3001/cate/update`,
             data: {
-                tenTL: infoBeforUpdate.tenTL,
+                tenTL: nameAfterUpdate,
                 maTL: infoBeforUpdate.maTL
             }
         }).then((data) => {
+            if (data.data === 0) {
+                alert("Tên Thể Loại Đã Tồn Tại !!!")
+                return;
+            } else {
+                setStatusCategory(0)
+                setStatusCategory(1)
+                setNameAfterUpdate("");
+                handleClose1();
+            }
         }).catch((err) => {
             console.log("err")
         })
-        handleClose1();
-        getAllCategory();
     }
 
     useEffect(() => {
@@ -159,9 +175,8 @@ export default function Category() {
                     <Form.Control
                         type="text"
                         id="tenTL"
-                        onChange={e => setNameCategory(e.target.value)}
+                        onChange={e => setNameCategory((e.target.value.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim())}
                     />
-                    <Button variant="warning" style={{ marginTop: "20px" }}>Kiểm Tra</Button>{' '}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
@@ -175,7 +190,7 @@ export default function Category() {
 
             <Modal show={show1} onHide={handleClose1}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Thêm Thể Loại</Modal.Title>
+                    <Modal.Title>Chỉnh Sửa Thể Loại</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form.Label htmlFor="tenCu">Tên Cũ</Form.Label>
@@ -190,12 +205,10 @@ export default function Category() {
                         type="text"
                         id="tenMoi"
                         onChange={e => {
-                            var temp = infoBeforUpdate;
-                            temp.tenTL = e.target.value
-                            setInfoBeforUpdate(temp)
+                            const temp = (e.target.value.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
+                            setNameAfterUpdate(temp)
                         }}
                     />
-                    <Button variant="warning" style={{ marginTop: "20px" }}>Kiểm Tra</Button>{' '}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose1}>

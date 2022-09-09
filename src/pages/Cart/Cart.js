@@ -2,12 +2,85 @@ import axios from 'axios';
 import React, { Fragment, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux';
+import iconSale from './../../assets/img/sale.png';
 
 export default function Cart() {
     const cart = useSelector(state => state.cart.carts)
     const dispatch = useDispatch();
-
     const navigate = useNavigate();
+    const [listProductSale, setListProductSale] = useState([]);
+
+    const getAllSale = async () => {
+        await axios({
+            method: 'post',
+            url: `http://localhost:3001/sales?page=0`,
+            data: {
+                trangThai: 1
+            }
+        }).then((data) => {
+            setListProductSale(data?.data[0])
+        }).catch((err) => {
+            console.log("err")
+        })
+    }
+
+    const getSale = (maCT, gia) => {
+        var index = listProductSale.findIndex(item => {
+            if (item.maCTSP === parseInt(maCT)) {
+                return true;
+            }
+            return false;
+        });
+        if (index !== -1) {
+            return (
+                <>
+                    <del> {getPrice(gia)}</del>
+                    &rArr;
+                    <strong>{getPrice((gia * (100 - listProductSale[index].phanTramGiam)) / 100)}</strong>
+                    <img src={iconSale} alt="icon sale"></img>
+                </>
+            )
+        } else {
+            return (<strong>{getPrice(gia)}</strong>)
+        }
+    }
+
+    const getPriceSale = (maCT, gia, SL) => {
+        var index = listProductSale.findIndex(item => {
+            if (item.maCTSP === parseInt(maCT)) {
+                return true;
+            }
+            return false;
+        });
+        if (index !== -1) {
+            return (
+                <>
+                    {getPrice((gia * SL * (100 - listProductSale[index].phanTramGiam)) / 100)}
+                </>
+            )
+        } else {
+            return (getPrice(gia * SL))
+        }
+    }
+
+    const getNumPriceSale = (maCT, gia, SL) => {
+        var index = listProductSale.findIndex(item => {
+            if (item.maCTSP === parseInt(maCT)) {
+                return true;
+            }
+            return false;
+        });
+        if (index !== -1) {
+            return ((gia * SL * (100 - listProductSale[index].phanTramGiam)) / 100)
+        } else {
+            return (gia * SL)
+        }
+    }
+
+    const getPrice = (price) => {
+        // return formatPrice(Size[parseInt(radioValue) - 1]?.gia);
+        return Intl.NumberFormat('it-IT', { style: 'currency', currency: 'VND' }).format(price)
+    }
 
     const handleNumber = async (maCT, calc) => {
         var check = cart.map(itcart => itcart.maCT).indexOf(parseInt(maCT));
@@ -56,13 +129,9 @@ export default function Cart() {
         }
     }
 
-    const formatPrice = (price) => {
-        return Intl.NumberFormat('it-IT', { style: 'currency', currency: 'VND' }).format(price)
-    }
-
     useEffect(() => {
-    }, [cart])
-
+        getAllSale();
+    }, [cart.length])
 
 
     return (
@@ -100,8 +169,8 @@ export default function Cart() {
                                     {cart?.map((cart, index) => {
                                         return (
                                             <tr key={index}>
-                                                <td className="align-middle"><img src={cart?.hinhAnh} alt='true' style={{ width: 50 }} /> {cart.tenSP}</td>
-                                                <td className="align-middle">{cart?.gia}</td>
+                                                <td className="align-middle"><img src={cart?.hinhAnh} alt='true' style={{ width: 50 }} />{cart.tenSP}</td>
+                                                <td className="align-middle">{getSale(cart.maCT, cart.gia)}</td>
                                                 <td className="align-middle">{cart?.size}</td>
                                                 <td className="align-middle">
                                                     <div className="input-group quantity mx-auto" style={{ width: 100 }}>
@@ -118,7 +187,7 @@ export default function Cart() {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="align-middle">{formatPrice(`${cart?.gia * cart?.SL}`)}</td>
+                                                <td className="align-middle"><strong>{getPriceSale(cart?.maCT, cart?.gia, cart?.SL)}</strong></td>
                                                 <td className="align-middle"><button onClick={() => { deleteItemCart(`${cart?.maCT}`) }} className="btn btn-sm btn-danger"><i className="fa fa-times" /></button></td>
                                             </tr>
                                         )
@@ -141,7 +210,7 @@ export default function Cart() {
                                     <div className="d-flex justify-content-between mb-3">
                                         <h6>Tổng Tiền Hàng</h6>
                                         <h6>{cart?.reduce((total, item) => {
-                                            return total += item.gia * item.SL
+                                            return total += getNumPriceSale(item?.maCT, item?.gia, item?.SL)
                                         }, 0).toLocaleString()} VND</h6>
                                     </div>
                                     <div className="d-flex justify-content-between">
@@ -153,7 +222,7 @@ export default function Cart() {
                                     <div className="d-flex justify-content-between mt-2">
                                         <h5>Tổng Cộng</h5>
                                         <h5>{cart?.reduce((total, item) => {
-                                            return total += item.gia * item.SL
+                                            return total += getNumPriceSale(item?.maCT, item?.gia, item?.SL)
                                         }, 0).toLocaleString()} VND</h5>
                                     </div>
                                     <button onClick={() => handleClick()} className="btn btn-block btn-success font-weight-bold my-3 py-3">Tiến Hành Đặt Hàng</button>

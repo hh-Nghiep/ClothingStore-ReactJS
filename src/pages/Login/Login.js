@@ -117,10 +117,10 @@ export default function Login() {
                                                 </form>
                                                 <hr />
                                                 <div className="text-center">
-                                                    <a className="small" href="forgot-password.html">Forgot Password?</a>
+                                                    <NavLink to='/forgotpassword' className="small">Quên Mật Khẩu?</NavLink>
                                                 </div>
                                                 <div className="text-center">
-                                                    <NavLink to='/register' className="small">Create an Account!</NavLink>
+                                                    <NavLink to='/register' className="small">Tạo Tài Khoản Mới!</NavLink>
                                                 </div>
                                             </div>
                                         </div>

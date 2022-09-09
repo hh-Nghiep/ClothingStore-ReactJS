@@ -265,7 +265,7 @@ export default function Index() {
                 </Modal.Header>
                 <Modal.Body>
                     <Formik
-                        onSubmit={(values, { resetForm }) => {
+                        onSubmit={async (values, { resetForm }) => {
                             values.maSP = parseInt(infoProduct.maSP);
 
                             if (isNaN(values.maSP)) {
@@ -279,7 +279,7 @@ export default function Index() {
 
                                     if (check === true) {
                                         try {
-                                            arrSize.forEach(item => {
+                                            arrSize.forEach((item, index) => {
                                                 axios({
                                                     method: 'POST',
                                                     url: `http://localhost:3001/sale/add`,
@@ -290,11 +290,12 @@ export default function Index() {
                                                         moTa: "Không có mô tả.",
                                                         maSP: parseInt(infoProduct.maSP),
                                                         maSize: parseInt(item),
-                                                        phanTramGiam: values.phanTramGiam
+                                                        phanTramGiam: values.phanTramGiam,
+                                                        index: index
                                                     }
                                                 }).then((data) => {
                                                 }).catch((err) => {
-                                                    console.log("Lỗi lấy thể loại :", err)
+                                                    console.log("Lỗi Thêm Khuyến Mãi :", err)
                                                 })
                                             })
                                         } catch (error) {

@@ -1,15 +1,69 @@
 import React, { Fragment } from 'react'
 import { useFormik } from 'formik'
-import Form from 'react-bootstrap/Form';
 import axios from 'axios'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react';
+import iconSale from './../../assets/img/sale.png';
+import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 
 export default function Checkout() {
-    let navigate = useNavigate();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [infoUser, setInfoUser] = useState(JSON.parse(localStorage.getItem("infoUser")));
-    const carts = JSON.parse(localStorage.getItem("CART:" + JSON.parse(localStorage.getItem("infoUser")).maNguoiDung))
+    const carts = useSelector(state => state.cart.carts)
+    const [listProductSale, setListProductSale] = useState([]);
+
+    const getAllSale = async () => {
+        await axios({
+            method: 'post',
+            url: `http://localhost:3001/sales?page=0`,
+            data: {
+                trangThai: 1
+            }
+        }).then((data) => {
+            setListProductSale(data?.data[0])
+        }).catch((err) => {
+            console.log("err")
+        })
+    }
+
+    const getSale = (maCT, gia, soLuong) => {
+        var index = listProductSale.findIndex(item => {
+            if (item.maCTSP === parseInt(maCT)) {
+                return true;
+            }
+            return false;
+        });
+        if (index !== -1) {
+            return (
+                <>
+                    {getPrice(((gia * (100 - listProductSale[index].phanTramGiam)) / 100) * soLuong)}
+                    <img src={iconSale} alt="icon sale"></img>
+                </>
+            )
+        } else {
+            return (getPrice(gia * soLuong))
+        }
+    }
+
+    const getPrice = (price) => {
+        return Intl.NumberFormat('it-IT', { style: 'currency', currency: 'VND' }).format(price)
+    }
+
+    const getNumPriceSale = (maCT, gia, SL) => {
+        var index = listProductSale.findIndex(item => {
+            if (item.maCTSP === parseInt(maCT)) {
+                return true;
+            }
+            return false;
+        });
+        if (index !== -1) {
+            return ((gia * SL * (100 - listProductSale[index].phanTramGiam)) / 100)
+        } else {
+            return (gia * SL)
+        }
+    }
 
     const formik = useFormik({
         initialValues: {
@@ -20,8 +74,8 @@ export default function Checkout() {
             "diaChi": infoUser.diaChi,
         },
         onSubmit: values => {
-            console.log(values)
-            console.log(carts)
+            getAllSale();
+
             carts.forEach(item => {
                 axios({
                     method: 'get',
@@ -49,8 +103,9 @@ export default function Checkout() {
                             maDH: maDH,
                             maCTSP: item.maCT,
                             soLuong: item.SL,
-                            gia: item.gia
+                            gia: getNumPriceSale(item.maCT, item.gia, 1)
                         }
+
                         axios({
                             method: 'post',
                             url: `http://localhost:3001/order/addDetail`,
@@ -66,6 +121,10 @@ export default function Checkout() {
                     console.log("Lỗi Thêm Đơn Hàng", error)
                     return;
                 }
+                dispatch({
+                    type: 'DONE',
+                    payload: {}
+                })
                 localStorage.setItem("CART:" + JSON.parse(localStorage.getItem("infoUser")).maNguoiDung, JSON.stringify([]))
                 navigate('/order');
             }).catch((err) => {
@@ -74,17 +133,17 @@ export default function Checkout() {
         }
     })
 
-
     useEffect(() => {
-        axios({
-            method: 'get',
-            url: `https://provinces.open-api.vn/api/?depth=2`,
-        }).then((data) => {
-            console.log(data.data)
-        }).catch((err) => {
-            console.log("Lỗi lấy Số Lượng Sản Phẩm :", err)
-            return;
-        })
+        // axios({
+        //     method: 'get',
+        //     url: `https://provinces.open-api.vn/api/?depth=2`,
+        // }).then((data) => {
+        //     console.log(data.data)
+        // }).catch((err) => {
+        //     console.log("Lỗi lấy Số Lượng Sản Phẩm :", err)
+        //     return;
+        // })
+        getAllSale();
     }, [])
 
 
@@ -166,8 +225,8 @@ export default function Checkout() {
                                     {carts.map((item, index) => {
                                         return (
                                             <div className="d-flex justify-content-between" key={index}>
-                                                <p>{index + 1}: {item.tenSP} _Số Lượng : {item.SL} _Size:  ( {item.size} )</p>
-                                                <p>{(item.gia * item.SL).toLocaleString()}</p>
+                                                <p><strong>{index + 1}:</strong> {item.tenSP} : {item.SL} :  ( {item.size} )</p>
+                                                <p><strong>{getSale(item.maCT, item.gia, item.SL)}</strong></p>
                                             </div>
                                         )
                                     })}
@@ -175,9 +234,9 @@ export default function Checkout() {
                                 <div className="border-bottom pt-3 pb-2">
                                     <div className="d-flex justify-content-between mb-3">
                                         <h6>Tổng Tiền Sản Phẩm: </h6>
-                                        <h6>{carts.reduce((total, item) => {
-                                            return total += item.gia * item.SL
-                                        }, 0).toLocaleString()}</h6>
+                                        <h6>{carts?.reduce((total, item) => {
+                                            return total += getNumPriceSale(item?.maCT, item?.gia, item?.SL)
+                                        }, 0).toLocaleString()} VND</h6>
                                     </div>
                                     <div className="d-flex justify-content-between">
                                         <h6 className="font-weight-medium">Phí Ship:</h6>
@@ -187,9 +246,9 @@ export default function Checkout() {
                                 <div className="pt-2">
                                     <div className="d-flex justify-content-between mt-2">
                                         <h5>Tổng Cộng:</h5>
-                                        <h5>{carts.reduce((total, item) => {
-                                            return total += item.gia * item.SL
-                                        }, 0).toLocaleString()}</h5>
+                                        <h5>{carts?.reduce((total, item) => {
+                                            return total += getNumPriceSale(item?.maCT, item?.gia, item?.SL)
+                                        }, 0).toLocaleString()} VND</h5>
                                     </div>
                                 </div>
                             </div>

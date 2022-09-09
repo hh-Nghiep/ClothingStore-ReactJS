@@ -127,7 +127,6 @@ export default function Shop() {
         getArrProduct();
         getArrCate();
         getAllSale();
-        console.log(listProductSale)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [arrProduct?.length, filterCate, filterPrice, pageProduct])
 
@@ -138,8 +137,8 @@ export default function Shop() {
                     <div className="row px-xl-5">
                         <div className="col-12">
                             <nav className="breadcrumb bg-light mb-30">
-                                <a className="breadcrumb-item text-dark" href="#">Home</a>
-                                <a className="breadcrumb-item text-dark" href="#">Shop</a>
+                                <a className="breadcrumb-item text-dark" href="/">Home</a>
+                                <a className="breadcrumb-item text-dark" href="/shop">Shop</a>
                                 <span className="breadcrumb-item active">Shop List</span>
                             </nav>
                         </div>
@@ -162,12 +161,12 @@ export default function Shop() {
                                             <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3" key={index}>
                                                 {item.min === 0 && item.max === 0 ?
                                                     (<>
-                                                        <input type="radio" name='price' onChange={() => { setFilterPrice(item.max) }} className="custom-control-input" value={item.max} id={item.max} defaultChecked />
+                                                        <input type="radio" name='price' onChange={() => { setFilterPrice(item.max); setPageProduct(1) }} className="custom-control-input" value={item.max} id={item.max} defaultChecked />
                                                         <label className="custom-control-label" htmlFor={item.max}>{item.title}</label>
                                                     </>
                                                     ) :
                                                     (<>
-                                                        <input type="radio" name='price' onChange={() => { setFilterPrice(item.max) }} className="custom-control-input" value={item.max} id={item.max} />
+                                                        <input type="radio" name='price' onChange={() => { setFilterPrice(item.max); setPageProduct(1) }} className="custom-control-input" value={item.max} id={item.max} />
                                                         <label className="custom-control-label" htmlFor={item.max}>{item.title}</label>
                                                     </>
                                                     )}
@@ -182,13 +181,13 @@ export default function Shop() {
                             <div className="bg-light p-4 mb-30">
                                 <form >
                                     <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                        <input type="radio" name='Cate' className="custom-control-input" defaultChecked id="cate-all" value="all" onChange={() => { setFilterCate(0) }} />
+                                        <input type="radio" name='Cate' className="custom-control-input" defaultChecked id="cate-all" value="all" onChange={() => { setFilterCate(0); setPageProduct(1) }} />
                                         <label className="custom-control-label" htmlFor="cate-all">All Category</label>
                                     </div>
                                     {arrCate.map((item, index) => {
                                         return (
                                             <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3" key={index}>
-                                                <input type="radio" name='Cate' className="custom-control-input" id={item.tenTL} value={item.maTL} onChange={() => { setFilterCate(item.maTL) }} />
+                                                <input type="radio" name='Cate' className="custom-control-input" id={item.tenTL} value={item.maTL} onChange={() => { setFilterCate(item.maTL); setPageProduct(1) }} />
                                                 <label className="custom-control-label" htmlFor={item.tenTL}>{item.tenTL}</label>
                                                 <span className="badge border font-weight-normal" style={{ color: 'black' }}>{item.SLSanPham}</span>
                                             </div>

@@ -21,7 +21,9 @@ import Category from "./pages/Admin/category/category"
 import Order from './pages/Order/order';
 import AdminOrder from './pages/Admin/Order/order'
 import Account from './pages/Account/index';
-import Sale from './pages/Admin/sale/index'
+import Sale from './pages/Admin/sale/index';
+import Forgotpassword from './pages/Forgotpassword';
+
 import { Fragment, useEffect } from 'react';
 
 function App() {
@@ -45,6 +47,7 @@ function App() {
           <Route path='/register' element={<Register />} />
           <Route path='/order' element={<Order />} />
           <Route path='/account' element={<Account />} />
+          <Route path='/forgotpassword' element={<Forgotpassword />} />
         </Routes>
         <Footer />
       </>)

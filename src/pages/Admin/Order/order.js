@@ -105,13 +105,14 @@ export default function Order() {
                                 setStatusOrder(0);
                                 setStatusOrder(statusOrder2);
                                 getListOrder();
+                                setLgShow(false);
                             }).catch((err) => {
                                 console.log("err")
                                 return;
                             })
                         })
                     } catch (error) {
-                        console.log("lỗi Thêm Chi Tiết Phiếu Nhập", error)
+                        console.log("lỗi Huỷ Đơn Hàng", error)
                     }
                 }).catch((error) => {
                     console.log("lỗi Thêm Phiếu Nhập", error)
@@ -132,6 +133,7 @@ export default function Order() {
                     setStatusOrder(0);
                     setStatusOrder(statusOrder2);
                     getListOrder();
+                    setLgShow(false);
                 }).catch((err) => {
                     console.log("err")
                 })
@@ -149,7 +151,6 @@ export default function Order() {
                 }).then((data) => {
                     maPT = (data.data[1])[0].maHD;
                     arrProduct = data.data[0];
-
                     try {
                         arrProduct.forEach((item, index) => {
                             axios({
@@ -161,16 +162,19 @@ export default function Order() {
                                     soLuong: 0
                                 }
                             }).then((data) => {
-                                setStatusOrder(0);
-                                setStatusOrder(statusOrder2);
-                                getListOrder();
+
                             }).catch((err) => {
                                 console.log("err")
                                 return;
                             })
                         })
+                        alert("Cập Nhật Thành Công");
+                        setStatusOrder(0);
+                        setStatusOrder(statusOrder2);
+                        getListOrder();
+                        setLgShow(false);
                     } catch (error) {
-                        console.log("lỗi Thêm Chi Tiết Phiếu Nhập", error)
+                        console.log("lỗi Cập Nhật Đơn Hàng Thành Công", error)
                     }
                 }).catch((err) => {
                     console.log("err")
@@ -385,7 +389,7 @@ export default function Order() {
                             </u>
                         </b>
                         {' ------ '}
-                        {getAction(`${detailOrder.maDH}`, `${statusSearch}`)}
+                        {getAction(`${detailOrder?.[0]?.maDH}`, `${statusSearch}`)}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
