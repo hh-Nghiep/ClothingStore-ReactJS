@@ -184,9 +184,15 @@ export default function ShopDetails() {
                         <div className="col-lg-5 mb-30">
                             <div id="product-carousel" className="carousel slide" data-ride="carousel">
                                 <div className="carousel-inner bg-light">
-                                    <div className="carousel-item active">
-                                        <img width={496} height={496} src={productID?.hinhAnh} alt="ImageProduct" />
-                                    </div>
+                                    {productID?.hinhAnh !== null ? (<div className="carousel-item active">
+                                        <img width={`100%`} height={496} src={productID?.hinhAnh} alt="ImageProduct" />
+                                    </div>) : null}
+                                    {productID?.hinhAnh2 !== null ? (<div className="carousel-item" >
+                                        <img width={`100%`} height={496} src={productID?.hinhAnh2} alt="ImageProduct" />
+                                    </div>) : null}
+                                    {productID?.hinhAnh3 !== null ? (<div className="carousel-item" >
+                                        <img width={`100%`} height={496} src={productID?.hinhAnh3} alt="ImageProduct" />
+                                    </div>) : null}
                                 </div>
                                 <a className="carousel-control-prev" href="#product-carousel" data-slide="prev">
                                     <i className="fa fa-2x fa-angle-left text-dark" />

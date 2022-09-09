@@ -75,7 +75,11 @@ export default function Checkout() {
         },
         onSubmit: values => {
             getAllSale();
-
+            if (carts.length < 1) {
+                alert("Giỏ Hàng Không Có Sản Phẩm. Phải Có Ít Nhất 1 Sản Phẩm Mới Được Đặt Hàng !!!!")
+                navigate('/shop')
+                return;
+            }
             carts.forEach(item => {
                 axios({
                     method: 'get',

@@ -117,7 +117,11 @@ export default function Cart() {
     }
 
     const handleClick = () => {
-        navigate('/checkout')
+        if (cart.length < 1) {
+            alert("Giỏ Hàng Không Có Sản Phẩm.\nPhải Có Ít Nhất 1 Sản Phẩm Mới Có Thể Thanh Toán !!!!")
+        } else {
+            navigate('/checkout')
+        }
     }
 
     const deleteItemCart = (maCT) => {

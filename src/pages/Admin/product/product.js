@@ -19,19 +19,31 @@ export default function Product() {
     const [cate, setCate] = useState([]);
     const [statusProduct, setStatusProduct] = useState(1);
     const [infoProduct, setInfoProduct] = useState([]);
-    const [imgProduct, setImgProduct] = useState();
     const [showDrop, setShowDrop] = useState("");
     const [arrProdcutSearch, setArrProductSearch] = useState([]);
     const [pageProduct, setPageProdut] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
+    const [img1, setImg1] = useState();
+    const [img2, setImg2] = useState();
+    const [img3, setImg3] = useState();
 
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
-    const handleClose = () => { setShow(false); setImgProduct() };
+    const handleClose = () => {
+        setShow(false);
+        setImg1();
+        setImg2();
+        setImg3();
+    };
 
     const [show1, setShow1] = useState(false);
     const handleShow1 = (item) => { getInfoProduct(item); };
-    const handleClose1 = () => { setShow1(false); setImgProduct() };
+    const handleClose1 = () => {
+        setShow1(false);
+        setImg1();
+        setImg2();
+        setImg3();
+    };
 
     const getAllCategory = async () => {
         await axios({
@@ -110,31 +122,46 @@ export default function Product() {
         return Intl.NumberFormat('it-IT', { style: 'currency', currency: 'VND' }).format(price)
     }
 
-    useEffect(() => {
-        getAllProduct();
-        getAllCategory();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [listProduct?.length, statusProduct, infoProduct, imgProduct, pageProduct])
-
-
-    const imageUpload = async (e) => {
+    const imageUpload = async (e, idImg) => {
         var fileIn = e.target;
         var file = fileIn.files[0];
         if (file && file.size < 5e6) {
             const formData = new FormData();
-
             formData.append("file", file);
             formData.append("upload_preset", "nghiephh")
+            formData.append("mode", 'no-cors')
             try {
-                let res = await fetch('https://api.cloudinary.com/v1_1/nghiephh/image/upload', {
-                    method: 'POST',
-                    body: formData,
-                })
-                    .then((response) => response.json())
-                    .then((response) => {
-                        e.preventDefault();
-                        setImgProduct(response.secure_url)
-                    });
+                if (idImg === 1) {
+                    let res = await fetch('https://api.cloudinary.com/v1_1/nghiephh/image/upload', {
+                        method: 'POST',
+                        body: formData,
+                    })
+                        .then((response) => response.json())
+                        .then((response) => {
+                            e.preventDefault();
+                            setImg1(response.secure_url)
+                        });
+                } else if (idImg === 2) {
+                    let res = await fetch('https://api.cloudinary.com/v1_1/nghiephh/image/upload', {
+                        method: 'POST',
+                        body: formData,
+                    })
+                        .then((response) => response.json())
+                        .then((response) => {
+                            e.preventDefault();
+                            setImg2(response.secure_url)
+                        });
+                } else if (idImg === 3) {
+                    let res = await fetch('https://api.cloudinary.com/v1_1/nghiephh/image/upload', {
+                        method: 'POST',
+                        body: formData,
+                    })
+                        .then((response) => response.json())
+                        .then((response) => {
+                            e.preventDefault();
+                            setImg3(response.secure_url)
+                        });
+                }
             } catch (error) {
                 console.log(error);
             }
@@ -142,7 +169,6 @@ export default function Product() {
         } else {
             console.error("oversized file");
         }
-
     }
 
     const handleSearch = (e) => {
@@ -181,6 +207,8 @@ export default function Product() {
         tenSP: yup.string().required("Vui Lòng Điền Tên Sản Phẩm"),
         moTa: yup.string().required("Vui Lòng Điền Mô Tả Sản Phẩm"),
         hinhAnh: yup.mixed().required("Vui Lòng Chọn 1 Hình"),
+        hinhAnh2: yup.mixed().required("Vui Lòng Chọn 1 Hình"),
+        hinhAnh3: yup.mixed().required("Vui Lòng Chọn 1 Hình"),
 
         SLSizeS: yup.number().required("Vui Lòng Điền Số Lượng Size S"),
         giaSizeS: yup.number().when("SLSizeS", {
@@ -257,6 +285,12 @@ export default function Product() {
                 .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
         }),
     })
+
+    useEffect(() => {
+        getAllProduct();
+        getAllCategory();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [listProduct?.length, statusProduct, infoProduct, pageProduct, img1, img2, img3])
 
     return (
         <>
@@ -362,6 +396,7 @@ export default function Product() {
                     {/* /.container-fluid */}
                 </div>
             </div>
+
             <Modal show={show} onHide={handleClose} size={'xl'} fullscreen={true}>
                 <Modal.Header closeButton>
                     <Modal.Title>Thêm Sản Phẩm</Modal.Title>
@@ -375,8 +410,11 @@ export default function Product() {
                             } else if (values.SLSizeS === 0 && values.SLSizeM === 0 && values.SLSizeL === 0 && values.SLSizeXL === 0 && values.SLSizeXXL === 0) {
                                 alert("Không Thể Thêm Sản Phẩm Với Tổng Số Lượng Bằng 0 !!!\nPhải Có Ít Nhất 1 Size Có Số Lượng !!!");
                             } else {
+                                console.log(values)
                                 values.maTL = cate[index].maTL;
-                                values.hinhAnh = imgProduct;
+                                values.hinhAnh = img1;
+                                values.hinhAnh2 = img2;
+                                values.hinhAnh3 = img3;
                                 values.maNV = JSON.parse(localStorage.getItem("infoUser"))?.maNguoiDung;
                                 values.tenSP = (values.tenSP.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
                                 values.moTa = (values.moTa.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
@@ -388,7 +426,6 @@ export default function Product() {
                                     handleClose();
                                     getAllProduct();
                                     resetForm();
-                                    setImgProduct();
                                     alert("Thêm Sản Phẩm Thành Công");
                                 }).catch((err) => {
                                     console.log("err", err)
@@ -401,6 +438,8 @@ export default function Product() {
                             tenSP: "",
                             maTL: "",
                             hinhAnh: "",
+                            hinhAnh2: "",
+                            hinhAnh3: "",
                             maNV: JSON.parse(localStorage.getItem("infoUser"))?.maNguoiDung,
 
                             SLSizeS: 0,
@@ -430,42 +469,74 @@ export default function Product() {
                         }) => (
                             <Form onSubmit={handleSubmit} style={{ color: "black", fontSize: "18px" }}>
                                 <Row>
-                                    < Col >
-                                        <Form.Label>Tên Sản Phẩm</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="tenSP"
-                                            onChange={handleChange}
-                                            isValid={touched.tenSP && !errors.tenSP}
-                                            isInvalid={!!errors.tenSP}
-                                        />
-                                        <Form.Control.Feedback type="invalid" tooltip>
-                                            {errors.tenSP}
-                                        </Form.Control.Feedback>
-                                    </Col>
-                                    <Col>
-                                        <Form.Label>Hình Ảnh</Form.Label>
-                                        <Form.Control type='file' name="hinhAnh"
-                                            onChange={e => {
-                                                imageUpload(e)
-                                                handleChange(e)
-                                            }}
-                                            isValid={touched.hinhAnh && !errors.hinhAnh}
-                                            isInvalid={!!errors.hinhAnh}
-                                        />
-                                        <Form.Control.Feedback type="invalid" tooltip>
-                                            {errors.hinhAnh}
-                                        </Form.Control.Feedback>
-                                    </Col>
-                                    <Col>
-                                        <Form.Label>Thể Loại</Form.Label>
-                                        <Form.Select onChange={handleChange} name="maTL">
-                                            <option>Vui Lòng Chọn Thể Loại</option>
-                                            {cate.map((item, index) => {
-                                                return (<option name="maTL" key={item.maTL}>{item.tenTL}</option>)
-                                            })}
-                                        </Form.Select>
-                                    </Col>
+                                    <Row>
+                                        <Col>
+                                            <Form.Label>Tên Sản Phẩm</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="tenSP"
+                                                onChange={handleChange}
+                                                isValid={touched.tenSP && !errors.tenSP}
+                                                isInvalid={!!errors.tenSP}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.tenSP}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label>Thể Loại</Form.Label>
+                                            <Form.Select onChange={handleChange} name="maTL">
+                                                <option>Vui Lòng Chọn Thể Loại</option>
+                                                {cate.map((item, index) => {
+                                                    return (<option name="maTL" key={item.maTL}>{item.tenTL}</option>)
+                                                })}
+                                            </Form.Select>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col>
+                                            <Form.Label>Hình Ảnh 1</Form.Label>
+                                            <Form.Control type='file' name="hinhAnh"
+                                                onChange={e => {
+                                                    imageUpload(e, 1)
+                                                    handleChange(e)
+                                                }}
+                                                isValid={touched.hinhAnh && !errors.hinhAnh}
+                                                isInvalid={!!errors.hinhAnh}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.hinhAnh}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label>Hình Ảnh 2</Form.Label>
+                                            <Form.Control type='file' name="hinhAnh2"
+                                                onChange={e => {
+                                                    imageUpload(e, 2)
+                                                    handleChange(e)
+                                                }}
+                                                isValid={touched.hinhAnh2 && !errors.hinhAnh2}
+                                                isInvalid={!!errors.hinhAnh2}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.hinhAnh2}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label>Hình Ảnh 3</Form.Label>
+                                            <Form.Control type='file' name="hinhAnh3"
+                                                onChange={e => {
+                                                    imageUpload(e, 3)
+                                                    handleChange(e)
+                                                }}
+                                                isValid={touched.hinhAnh3 && !errors.hinhAnh3}
+                                                isInvalid={!!errors.hinhAnh3}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.hinhAnh3}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                    </Row>
                                     <Row style={{ paddingTop: "20px" }}>
                                         <Col>
                                             <Form.Label>Mô Tả</Form.Label>
@@ -479,11 +550,11 @@ export default function Product() {
                                         </Col>
                                     </Row>
                                 </Row>
-
                                 <Tabs
                                     defaultActiveKey="sizeS"
                                     id="uncontrolled-tab-example"
                                     className="mb-3"
+                                    style={{ paddingTop: "20px" }}
                                 >
                                     <Tab eventKey="sizeS" title="Size S">
                                         <Row style={{ paddingTop: "10px" }}>
@@ -657,6 +728,11 @@ export default function Product() {
                                         </Row>
                                     </Tab>
                                 </Tabs>
+                                <div style={{ paddingTop: "20px" }}>
+                                    <img src={img1} alt="Img1" style={{ height: "20%", width: "20%", paddingRight: "15px" }}></img>
+                                    <img src={img2} alt="Img2" style={{ height: "20%", width: "20%", paddingRight: "15px" }}></img>
+                                    <img src={img3} alt="Img3" style={{ height: "20%", width: "20%", paddingRight: "15px" }}></img>
+                                </div>
                                 <Button type="submit" style={{ marginTop: "15px" }} > Thêm Sản Phẩm</Button>
                             </Form>
                         )}
@@ -674,21 +750,26 @@ export default function Product() {
                 <Modal.Body>
                     <Formik
                         onSubmit={values => {
-                            if (typeof (values.maTL) === "string") {
-                                var index = cate.map(item => item.tenTL).indexOf(`${values.maTL}`)
-                                values.maTL = cate[index].maTL;
+                            if (img1 !== undefined) {
+                                values.hinhAnh = img1;
                             }
-                            if (imgProduct !== undefined) {
-                                values.hinhAnh = imgProduct;
+                            if (img2 !== undefined) {
+                                values.hinhAnh2 = img2;
                             }
+                            if (img3 !== undefined) {
+                                values.hinhAnh3 = img3;
+                            }
+                            values.maTL = parseInt(values.maTL);
                             values.maNV = JSON.parse(localStorage.getItem("infoUser")).maNguoiDung;
                             values.tenSP = (values.tenSP.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
                             values.moTa = (values.moTa.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
+                            console.log(values)
                             axios({
                                 method: 'post',
                                 url: `http://localhost:3001/product/edit`,
                                 data: values
                             }).then((data) => {
+                                alert("Cập Nhật Thông Tin Sản Phẩm Thành Công!!!");
                                 handleClose1();
                                 getAllProduct();
                             }).catch((err) => {
@@ -702,6 +783,8 @@ export default function Product() {
                             tenSP: infoProduct.tenSP,
                             maTL: infoProduct.maTL,
                             hinhAnh: infoProduct.hinhAnh,
+                            hinhAnh2: infoProduct.hinhAnh2,
+                            hinhAnh3: infoProduct.hinhAnh3,
                             maNV: "",
 
                             SLSizeS: infoProduct.SLSizeS || 0,
@@ -733,42 +816,74 @@ export default function Product() {
                         }) => (
                             <Form onSubmit={handleSubmit} style={{ color: "black", fontSize: "18px" }}>
                                 <Row>
-                                    < Col >
-                                        <Form.Label>Tên Sản Phẩm</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="tenSP"
-                                            onChange={handleChange}
-                                            value={values.tenSP}
-                                            isValid={touched.tenSP && !errors.tenSP}
-                                            isInvalid={!!errors.tenSP}
-                                        />
-                                        <Form.Control.Feedback type="invalid" tooltip>
-                                            {errors.tenSP}
-                                        </Form.Control.Feedback>
-                                    </Col>
-                                    <Col>
-                                        <Form.Label>Hình Ảnh</Form.Label>
-                                        <Form.Control type='file' name="hinhAnh"
-                                            onChange={e => {
-                                                imageUpload(e)
-                                                handleChange(e)
-                                            }}
-                                            isValid={touched.hinhAnh && !errors.hinhAnh}
-                                            isInvalid={!!errors.hinhAnh}
-                                        />
-                                        <Form.Control.Feedback type="invalid" tooltip>
-                                            {errors.hinhAnh}
-                                        </Form.Control.Feedback>
-                                    </Col>
-                                    <Col>
-                                        <Form.Label>Thể Loại</Form.Label>
-                                        <Form.Select onChange={handleChange} name="maTL" defaultValue={values.maTL}>
-                                            {cate.map((item) => {
-                                                return (<option name="maTL" key={item.maTL} value={item.maTL}>{item.tenTL}</option>)
-                                            })}
-                                        </Form.Select>
-                                    </Col>
+                                    <Row>
+                                        <Col>
+                                            <Form.Label>Tên Sản Phẩm</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="tenSP"
+                                                onChange={handleChange}
+                                                value={values.tenSP}
+                                                isValid={touched.tenSP && !errors.tenSP}
+                                                isInvalid={!!errors.tenSP}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.tenSP}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label>Thể Loại</Form.Label>
+                                            <Form.Select onChange={handleChange} name="maTL" defaultValue={values.maTL}>
+                                                {cate.map((item, index) => {
+                                                    return (<option name="maTL" key={item.maTL} value={item.maTL}>{item.tenTL}</option>)
+                                                })}
+                                            </Form.Select>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col>
+                                            <Form.Label>Hình Ảnh 1</Form.Label>
+                                            <Form.Control type='file' name="hinhAnh"
+                                                onChange={e => {
+                                                    imageUpload(e, 1)
+                                                    handleChange(e)
+                                                }}
+                                                isValid={touched.hinhAnh && !errors.hinhAnh}
+                                                isInvalid={!!errors.hinhAnh}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.hinhAnh}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label>Hình Ảnh 2</Form.Label>
+                                            <Form.Control type='file' name="hinhAnh2"
+                                                onChange={e => {
+                                                    imageUpload(e, 2)
+                                                    handleChange(e)
+                                                }}
+                                                isValid={touched.hinhAnh2 && !errors.hinhAnh2}
+                                                isInvalid={!!errors.hinhAnh2}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.hinhAnh2}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label>Hình Ảnh 3</Form.Label>
+                                            <Form.Control type='file' name="hinhAnh3"
+                                                onChange={e => {
+                                                    imageUpload(e, 3)
+                                                    handleChange(e)
+                                                }}
+                                                isValid={touched.hinhAnh3 && !errors.hinhAnh3}
+                                                isInvalid={!!errors.hinhAnh3}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.hinhAnh3}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                    </Row>
                                     <Row style={{ paddingTop: "20px" }}>
                                         <Col>
                                             <Form.Label>Mô Tả</Form.Label>
@@ -962,7 +1077,9 @@ export default function Product() {
                                 </Tabs>
                                 <Form.Label style={{ marginTop: "25px", color: "red" }}>Chỉnh Sửa Lần Cuối : {values.ngayCapNhat.substring(0, 10).substring(0, 10)}</Form.Label>
                                 <Form.Label style={{ marginTop: "25px", color: "red", display: "flex" }}>
-                                    <img src={imgProduct || values.hinhAnh} alt="Old Img" style={{ height: "20%", width: "20%" }}></img>
+                                    <img src={img1 || values.hinhAnh} alt="Old Img" style={{ height: "20%", width: "20%", paddingRight: "15px" }}></img>
+                                    <img src={img2 || values.hinhAnh2} alt="Old Img" style={{ height: "20%", width: "20%", paddingRight: "15px" }}></img>
+                                    <img src={img3 || values.hinhAnh3} alt="Old Img" style={{ height: "20%", width: "20%", paddingRight: "15px" }}></img>
                                 </Form.Label>
                                 {values.trangThai === 0 ? (<Button type="button" variant='success' onClick={() => activateProduct(`${values.maSP}`)} style={{ marginTop: "15px" }} >Bán Lại</Button>) : (<></>)}
                                 <Button type="submit" variant='success' style={{ marginTop: "15px", float: "right" }} >Chỉnh Sửa Sản Phẩm</Button>

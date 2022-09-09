@@ -530,7 +530,7 @@ export default function Managerser() {
                             fcCheckEmail(values.maNguoiDung, values.email)
                             fcCheckId(values.maNguoiDung, values.cmnd)
                             if (checkPhone === true && checkEmail === true && checkId === true) {
-                                if (window.confirm("Chỉnh Sửa Nhân Viên ?") === true) {
+                                if (window.confirm("Chỉnh Sửa Thông Tin Người Dùng ?") === true) {
                                     if (typeof (values.trangThai) === 'string') {
                                         var index = status.map(item => item.status).indexOf(`${values.trangThai}`)
                                         values.trangThai = status[index].idStatus;
@@ -586,7 +586,7 @@ export default function Managerser() {
                                             required
                                             type="text"
                                             name="hoTen"
-                                            value={values?.hoTen}
+                                            defaultValue={values?.hoTen}
                                             onChange={handleChange}
                                             isValid={touched.hoTen && !errors.hoTen}
                                             isInvalid={!!errors.hoTen}
@@ -600,7 +600,7 @@ export default function Managerser() {
                                         <Form.Control
                                             name="sdt"
                                             onChange={handleChange}
-                                            value={values?.sdt}
+                                            defaultValue={values?.sdt}
                                             isValid={touched.sdt && !errors.sdt}
                                             isInvalid={!!errors.sdt} />
                                         <Form.Control.Feedback type="invalid" tooltip>
@@ -627,7 +627,7 @@ export default function Managerser() {
                                         <Form.Control
                                             type="email"
                                             name="email"
-                                            value={values?.email}
+                                            defaultValue={values?.email}
                                             onChange={handleChange}
                                             isValid={touched.email && !errors.email}
                                             isInvalid={!!errors.email}
@@ -642,7 +642,7 @@ export default function Managerser() {
                                         <Form.Control
                                             name="diaChi"
                                             onChange={handleChange}
-                                            value={values?.diaChi}
+                                            defaultValue={values?.diaChi}
                                             isValid={touched.diaChi && !errors.diaChi}
                                             isInvalid={!!errors.diaChi} />
                                         <Form.Control.Feedback type="invalid" tooltip>
@@ -655,7 +655,7 @@ export default function Managerser() {
                                         <Form.Control
                                             name="cmnd"
                                             onChange={handleChange}
-                                            value={values?.cmnd}
+                                            defaultValue={values?.cmnd}
                                             isValid={touched.cmnd && !errors.cmnd}
                                             isInvalid={!!errors.cmnd} />
                                         <Form.Control.Feedback type="invalid" tooltip>

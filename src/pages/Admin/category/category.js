@@ -87,8 +87,6 @@ export default function Category() {
                 alert("Tên Thể Loại Đã Tồn Tại !!!")
                 return;
             } else {
-                setStatusCategory(0)
-                setStatusCategory(1)
                 setNameAfterUpdate("");
                 handleClose1();
             }
@@ -100,7 +98,7 @@ export default function Category() {
     useEffect(() => {
         getAllCategory();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [listCategory.length, statusCategory])
+    }, [listCategory.length, statusCategory, show1, show])
 
     return (
         <>
@@ -175,7 +173,7 @@ export default function Category() {
                     <Form.Control
                         type="text"
                         id="tenTL"
-                        onChange={e => setNameCategory((e.target.value.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim())}
+                        onChange={e => setNameCategory(((e.target.value).toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim())}
                     />
                 </Modal.Body>
                 <Modal.Footer>
@@ -205,7 +203,8 @@ export default function Category() {
                         type="text"
                         id="tenMoi"
                         onChange={e => {
-                            const temp = (e.target.value.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
+                            var temp = e.target.value;
+                            temp = (temp.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
                             setNameAfterUpdate(temp)
                         }}
                     />
