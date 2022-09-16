@@ -23,7 +23,7 @@ export default function Category() {
     const handleClose1 = () => setShow1(false);
 
     const updateStatusCategory = async (trangThai, maTL) => {
-        var text = trangThai === 0 ? 'Xoá Thể Loại ?' : "Kích Hoạt Thể Loại?";
+        var text = (trangThai === 0 ? 'Xoá Thể Loại ?' : "Kích Hoạt Thể Loại?");
         if (window.confirm(text) === true) {
             axios({
                 method: 'delete',
@@ -37,8 +37,7 @@ export default function Category() {
                 console.log("err")
             })
         }
-        setStatusCategory(0)
-        setStatusCategory(1)
+        window.location.href = '/admin/category'
     }
 
     const getAllCategory = async () => {
@@ -173,7 +172,7 @@ export default function Category() {
                     <Form.Control
                         type="text"
                         id="tenTL"
-                        onChange={e => setNameCategory(((e.target.value).toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim())}
+                        onChange={e => setNameCategory(((e.target.value.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()).charAt(0).toUpperCase() + ((e.target.value.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()).slice(1))}
                     />
                 </Modal.Body>
                 <Modal.Footer>
@@ -204,7 +203,7 @@ export default function Category() {
                         id="tenMoi"
                         onChange={e => {
                             var temp = e.target.value;
-                            temp = (temp.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
+                            temp = ((temp.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()).charAt(0).toUpperCase() + ((temp.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()).slice(1)
                             setNameAfterUpdate(temp)
                         }}
                     />

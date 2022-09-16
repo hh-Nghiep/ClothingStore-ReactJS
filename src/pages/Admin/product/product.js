@@ -167,7 +167,7 @@ export default function Product() {
             }
 
         } else {
-            console.error("oversized file");
+            alert("file Quá Lớn");
         }
     }
 
@@ -207,38 +207,38 @@ export default function Product() {
         tenSP: yup.string().required("Vui Lòng Điền Tên Sản Phẩm"),
         moTa: yup.string().required("Vui Lòng Điền Mô Tả Sản Phẩm"),
         hinhAnh: yup.mixed().required("Vui Lòng Chọn 1 Hình"),
-        hinhAnh2: yup.mixed().required("Vui Lòng Chọn 1 Hình"),
-        hinhAnh3: yup.mixed().required("Vui Lòng Chọn 1 Hình"),
+        // hinhAnh2: yup.mixed().required("Vui Lòng Chọn 1 Hình"),
+        // hinhAnh3: yup.mixed().required("Vui Lòng Chọn 1 Hình"),
 
-        SLSizeS: yup.number().required("Vui Lòng Điền Số Lượng Size S"),
+        SLSizeS: yup.number().required("Vui Lòng Điền Số Lượng Size S").min(0),
         giaSizeS: yup.number().when("SLSizeS", {
             is: value => value && value > 0,
             then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
                 .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
         }),
 
-        SLSizeM: yup.number().required("Vui Lòng Điền Số Lượng Size M"),
+        SLSizeM: yup.number().required("Vui Lòng Điền Số Lượng Size M").min(0),
         giaSizeM: yup.number().when("SLSizeM", {
             is: value => value && value > 0,
             then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
                 .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
         }),
 
-        SLSizeL: yup.number().required("Vui Lòng Điền Số Lượng Size L"),
+        SLSizeL: yup.number().required("Vui Lòng Điền Số Lượng Size L").min(0),
         giaSizeL: yup.number().when("SLSizeL", {
             is: value => value && value > 0,
             then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
                 .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
         }),
 
-        SLSizeXL: yup.number().required("Vui Lòng Điền Số Lượng Size XL"),
+        SLSizeXL: yup.number().required("Vui Lòng Điền Số Lượng Size XL").min(0),
         giaSizeXL: yup.number().when("SLSizeXL", {
             is: value => value && value > 0,
             then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
                 .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
         }),
 
-        SLSizeXXL: yup.number().required("Vui Lòng Điền Số Lượng Size XXL"),
+        SLSizeXXL: yup.number().required("Vui Lòng Điền Số Lượng Size XXL").min(0),
         giaSizeXXL: yup.number().when("SLSizeXXL", {
             is: value => value && value > 0,
             then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
@@ -250,35 +250,35 @@ export default function Product() {
         tenSP: yup.string().required("Vui Lòng Điền Tên Sản Phẩm"),
         moTa: yup.string().required("Vui Lòng Điền Mô Tả Sản Phẩm"),
 
-        SLSizeS: yup.number().required("Vui Lòng Điền Số Lượng Size S"),
+        SLSizeS: yup.number().required("Vui Lòng Điền Số Lượng Size S").min(0),
         giaSizeS: yup.number().when("SLSizeS", {
             is: value => value && value > 0,
             then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
                 .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
         }),
 
-        SLSizeM: yup.number().required("Vui Lòng Điền Số Lượng Size M"),
+        SLSizeM: yup.number().required("Vui Lòng Điền Số Lượng Size M").min(0),
         giaSizeM: yup.number().when("SLSizeM", {
             is: value => value && value > 0,
             then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
                 .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
         }),
 
-        SLSizeL: yup.number().required("Vui Lòng Điền Số Lượng Size L"),
+        SLSizeL: yup.number().required("Vui Lòng Điền Số Lượng Size L").min(0),
         giaSizeL: yup.number().when("SLSizeL", {
             is: value => value && value > 0,
             then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
                 .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
         }),
 
-        SLSizeXL: yup.number().required("Vui Lòng Điền Số Lượng Size XL"),
+        SLSizeXL: yup.number().required("Vui Lòng Điền Số Lượng Size XL").min(0),
         giaSizeXL: yup.number().when("SLSizeXL", {
             is: value => value && value > 0,
             then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
                 .test('len', 'Giá Tiền Không Thể Bằng 0 Khi Số Lượng Khác 0', val => val > 0)
         }),
 
-        SLSizeXXL: yup.number().required("Vui Lòng Điền Số Lượng Size XXL"),
+        SLSizeXXL: yup.number().required("Vui Lòng Điền Số Lượng Size XXL").min(0),
         giaSizeXXL: yup.number().when("SLSizeXXL", {
             is: value => value && value > 0,
             then: yup.number().required("Có Số Lượng Thì Giá Tiền Không Thể Bằng 0 !!!")
@@ -416,8 +416,8 @@ export default function Product() {
                                 values.hinhAnh2 = img2;
                                 values.hinhAnh3 = img3;
                                 values.maNV = JSON.parse(localStorage.getItem("infoUser"))?.maNguoiDung;
-                                values.tenSP = (values.tenSP.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
-                                values.moTa = (values.moTa.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
+                                values.tenSP = ((values.tenSP.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()).charAt(0).toUpperCase() + ((values.tenSP.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()).slice(1)
+                                values.moTa = ((values.moTa.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()).charAt(0).toUpperCase() + ((values.moTa.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()).slice(1)
                                 axios({
                                     method: 'post',
                                     url: `http://localhost:3001/product/add`,
@@ -761,7 +761,7 @@ export default function Product() {
                             }
                             values.maTL = parseInt(values.maTL);
                             values.maNV = JSON.parse(localStorage.getItem("infoUser")).maNguoiDung;
-                            values.tenSP = (values.tenSP.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
+                            values.tenSP = ((values.tenSP.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()).charAt(0).toUpperCase() + ((values.tenSP.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()).slice(1)
                             values.moTa = (values.moTa.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
                             console.log(values)
                             axios({

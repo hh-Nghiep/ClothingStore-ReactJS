@@ -397,12 +397,12 @@ export default function Order() {
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Hình Ảnh - Mã SP</th>
+                                <th style={{ width: "23%" }}>Hình Ảnh - Mã SP</th>
                                 <th>Tên SP</th>
                                 <th>Giá</th>
                                 <th>Size</th>
                                 <th>Số Lượng</th>
-                                <th>Mã KM</th>
+                                {/* <th>Mã KM</th> */}
                                 <th>Thành Tiền</th>
                             </tr>
                         </thead>
@@ -416,7 +416,7 @@ export default function Order() {
                                         <td>{formatPrice(item.gia)}</td>
                                         <td>{listSize[`${item.maSize - 1}`].size}</td>
                                         <td>{item.soLuong}</td>
-                                        <td></td>
+                                        {/* <td></td> */}
                                         <td>{formatPrice(item.gia * item.soLuong)}</td>
                                     </tr>
                                 )

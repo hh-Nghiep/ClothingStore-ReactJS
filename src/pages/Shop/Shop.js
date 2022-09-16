@@ -127,6 +127,7 @@ export default function Shop() {
         getArrProduct();
         getArrCate();
         getAllSale();
+        console.log(arrProduct)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [arrProduct?.length, filterCate, filterPrice, pageProduct])
 
@@ -236,7 +237,7 @@ export default function Shop() {
                                                         {/* <h6 className="text-muted ml-2"><del>{item.giaCaoNhat?.toLocaleString()}</del></h6> */}
                                                     </div>
                                                     <div className="d-flex align-items-center justify-content-center mb-1">
-                                                        {getSale(item.maSP)}
+                                                        {getSale(item.maSP)} {item.tongSLTon === 0 ? <strong style={{ color: "red" }}>Hết Hàng</strong> : <></>}
                                                     </div>
                                                 </div>
                                             </div>

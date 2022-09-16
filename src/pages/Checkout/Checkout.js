@@ -13,6 +13,7 @@ export default function Checkout() {
     const [infoUser, setInfoUser] = useState(JSON.parse(localStorage.getItem("infoUser")));
     const carts = useSelector(state => state.cart.carts)
     const [listProductSale, setListProductSale] = useState([]);
+    const [checkValue, setCheckValue] = useState(true)
 
     const getAllSale = async () => {
         await axios({
@@ -87,7 +88,8 @@ export default function Checkout() {
                 }).then((data) => {
                     if (data.data[0][0].soLuongTon < item.SL) {
                         alert(`Sản Phẩm ${item.tenSP} Chỉ Còn ${data.data[0][0].soLuongTon}`)
-                        return;
+
+                        setCheckValue(false)
                     }
                 }).catch((err) => {
                     console.log("Lỗi lấy Số Lượng Sản Phẩm :", err)
@@ -95,45 +97,48 @@ export default function Checkout() {
                 })
             });
 
-            axios({
-                method: 'post',
-                url: `http://localhost:3001/order/add`,
-                data: values
-            }).then((data) => {
-                var maDH = data.data[0][0].maDH;
-                try {
-                    carts.forEach(item => {
-                        var payload = {
-                            maDH: maDH,
-                            maCTSP: item.maCT,
-                            soLuong: item.SL,
-                            gia: getNumPriceSale(item.maCT, item.gia, 1)
-                        }
+            if (checkValue) {
+                axios({
+                    method: 'post',
+                    url: `http://localhost:3001/order/add`,
+                    data: values
+                }).then((data) => {
+                    var maDH = data.data[0][0].maDH;
+                    try {
+                        carts.forEach(item => {
+                            var payload = {
+                                maDH: maDH,
+                                maCTSP: item.maCT,
+                                soLuong: item.SL,
+                                gia: getNumPriceSale(item.maCT, item.gia, 1)
+                            }
 
-                        axios({
-                            method: 'post',
-                            url: `http://localhost:3001/order/addDetail`,
-                            data: payload
-                        }).then((data) => {
+                            axios({
+                                method: 'post',
+                                url: `http://localhost:3001/order/addDetail`,
+                                data: payload
+                            }).then((data) => {
 
-                        }).catch((err) => {
-                            console.log("Lỗi lấy Số Lượng Sản Phẩm :", err)
-                            return;
+                            }).catch((err) => {
+                                console.log("Lỗi lấy Số Lượng Sản Phẩm :", err)
+                                return;
+                            })
                         })
+                    } catch (error) {
+                        console.log("Lỗi Thêm Đơn Hàng", error)
+                        return;
+                    }
+                    dispatch({
+                        type: 'DONE',
+                        payload: {}
                     })
-                } catch (error) {
-                    console.log("Lỗi Thêm Đơn Hàng", error)
-                    return;
-                }
-                dispatch({
-                    type: 'DONE',
-                    payload: {}
+                    localStorage.setItem("CART:" + JSON.parse(localStorage.getItem("infoUser")).maNguoiDung, JSON.stringify([]))
+                    navigate('/order');
+                }).catch((err) => {
+                    console.log("Lỗi Tạo Đơn Hàng", err)
                 })
-                localStorage.setItem("CART:" + JSON.parse(localStorage.getItem("infoUser")).maNguoiDung, JSON.stringify([]))
-                navigate('/order');
-            }).catch((err) => {
-                console.log("Lỗi Tạo Đơn Hàng", err)
-            })
+            }
+
         }
     })
 
@@ -147,6 +152,11 @@ export default function Checkout() {
         //     console.log("Lỗi lấy Số Lượng Sản Phẩm :", err)
         //     return;
         // })
+        if (carts.length < 1) {
+            alert("Giỏ Hàng Không Có Sản Phẩm. Phải Có Ít Nhất 1 Sản Phẩm Mới Được Đặt Hàng !!!!")
+            navigate('/shop')
+            return;
+        }
         getAllSale();
     }, [])
 

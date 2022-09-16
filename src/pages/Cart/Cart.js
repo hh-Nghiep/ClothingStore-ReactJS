@@ -117,6 +117,24 @@ export default function Cart() {
     }
 
     const handleClick = () => {
+        cart.forEach(item => {
+            axios({
+                method: 'get',
+                url: `http://localhost:3001/product/amount/${item.maCT}`
+            }).then((data) => {
+                if (data.data[0][0].soLuongTon < item.SL) {
+                    alert(`Sản Phẩm ${item.tenSP} Chỉ Còn ${data.data[0][0].soLuongTon}`)
+                    dispatch({
+                        type: 'DELETE_CART',
+                        payload: { maCT: item.maCT }
+                    })
+                }
+            }).catch((err) => {
+                console.log("Lỗi lấy Số Lượng Sản Phẩm :", err)
+                return;
+            })
+        });
+
         if (cart.length < 1) {
             alert("Giỏ Hàng Không Có Sản Phẩm.\nPhải Có Ít Nhất 1 Sản Phẩm Mới Có Thể Thanh Toán !!!!")
         } else {

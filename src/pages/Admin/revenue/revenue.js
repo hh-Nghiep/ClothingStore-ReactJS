@@ -149,11 +149,6 @@ export default function Revenue() {
             alert("Bạn Không Có Quyền Vào Site Này !!!!!")
             navigate('/admin')
         }
-        console.log({
-            trangThai: statusOrder,
-            ngayBatDau: dayStart,
-            ngayKetThuc: dayEnd
-        })
         getListOrder();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dayStart, dayEnd, statusOrder, pageOrder])

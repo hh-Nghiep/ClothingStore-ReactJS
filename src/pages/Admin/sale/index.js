@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
@@ -16,7 +16,8 @@ export default function Index() {
     const [check, setCheck] = useState(false);
     const [listSale, setListSale] = useState([]);
     const [statusSale, setStatusSale] = useState(0);
-    const [arrProdcutSearch, setArrProductSearch] = useState([]);
+    const [arrProductSearch, setArrProductSearch] = useState([]);
+    const [arrSaleSearch, setArrSaleSearch] = useState([])
     const [pageSale, setpageSale] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
     const [showDrop, setShowDrop] = useState("");
@@ -27,7 +28,13 @@ export default function Index() {
 
     const [valueSearch, setValueSearch] = useState("");
     const [infoProduct, setInfoProduct] = useState({});
+    const [infoSale, setInfoSale] = useState({});
 
+    const [show1, setShow1] = useState(false);
+    const handleShow1 = (item) => { getInfoProduct(item); };
+    const handleClose1 = () => {
+        setShow1(false);
+    };
 
     const listSize = [
         {
@@ -105,6 +112,33 @@ export default function Index() {
         handleSearch("")
     }
 
+    const getInfoSale = (item) => {
+        setInfoSale({
+            hinhAnh: item.hinhAnh1,
+            tenSP: item.tenSP,
+            maSP: item.maSP,
+            ngayApDung: item.ngayApDung,
+            ngayHetHan: item.ngayHetHan,
+            phanTramGiam: item.phanTramGiam,
+            moTa: item.moTa,
+            maSize: item.maSize,
+            maKM: item.maKM
+        })
+        setShow1(true)
+        handleSearch("")
+    }
+
+    const getDetailSale = async (maKM) => {
+        axios({
+            method: 'get',
+            url: `http://localhost:3001/sale/find/${maKM}`,
+        }).then((data) => {
+            getInfoSale(data.data);
+        }).catch((err) => {
+            console.log("Lỗi lấy thể loại :", err)
+        })
+    }
+
     const handleSearch = (e) => {
         setValueSearch(e)
         if (e !== "") {
@@ -117,6 +151,26 @@ export default function Index() {
                 }
             }).then((data) => {
                 setArrProductSearch(data.data)
+            }).catch((err) => {
+                console.log("Lỗi lấy thể loại :", err)
+            })
+            setShowDrop("block")
+        } else {
+            setShowDrop("")
+        }
+    }
+
+    const handleSearchSale = (e) => {
+        setValueSearch(e)
+        if (e !== "") {
+            axios({
+                method: 'POST',
+                url: `http://localhost:3001/sale/find`,
+                data: {
+                    tenSP: e,
+                }
+            }).then((data) => {
+                setArrSaleSearch(data.data[0])
             }).catch((err) => {
                 console.log("Lỗi lấy thể loại :", err)
             })
@@ -145,6 +199,7 @@ export default function Index() {
                     method: 'POST',
                     url: `http://localhost:3001/sale/check`,
                     data: {
+                        maKM: values.maKM,
                         ngayApDung: values.ngayApDung,
                         ngayHetHan: values.ngayHetHan,
                         maSP: parseInt(infoProduct.maSP),
@@ -157,7 +212,7 @@ export default function Index() {
                         return;
                     }
                 }).catch((err) => {
-                    console.log("Lỗi lấy thể loại :", err)
+                    console.log("Lỗi Kiểm Tra Sale :", err)
                 })
             })
         } catch (error) {
@@ -168,6 +223,11 @@ export default function Index() {
     }
 
     const schema = yup.object().shape({
+        moTa: yup.string().required("Vui Lòng Điền Mô Tả Sản Phẩm"),
+        phanTramGiam: yup.number().required("Vui Lòng Nhập Phần Trăm Giảm Giá")
+    })
+
+    const schema2 = yup.object().shape({
         moTa: yup.string().required("Vui Lòng Điền Mô Tả Sản Phẩm"),
         phanTramGiam: yup.number().required("Vui Lòng Nhập Phần Trăm Giảm Giá")
     })
@@ -189,14 +249,39 @@ export default function Index() {
                         {/* DataTales Example */}
                         <div className="card shadow mb-4">
                             <div className="card-header py-3" style={{ marginBottom: "5px" }}>
-                                <h6 className="m-0 font-weight-bold text-primary">
-                                    <Form.Select onChange={e => setStatusSale(parseInt(e.target.value))} name="status" style={{ width: "300px" }}>
+                                <h6 className="m-0 font-weight-bold text-primary" style={{ display: "flex", justifyContent: "space-between" }}>
+                                    <Form.Select onChange={e => { setStatusSale(parseInt(e.target.value)); setpageSale(1) }} name="status" style={{ width: "300px" }}>
                                         <option value="0">Tất Cả Khuyến Mãi</option>
                                         <option value="1">Khuyến Mãi Đang Có Hiệu Lực</option>
                                         <option value="2">Khuyến Mãi Chưa Có Hiệu Lực</option>
                                         <option value="-1">Khuyến Mãi Đã Hết Hiệu Lực</option>
                                     </Form.Select>
-                                    <Button variant="success" onClick={handleShow} style={{ position: "absolute", top: "8px", right: "10px" }}>Thêm Khuyến Mãi Mới</Button>
+                                    <div className="col-lg-4 col-6 text-left" style={{ width: "30%" }}>
+                                        <form>
+                                            <div className="input-group">
+                                                <input type="text" onChange={e => handleSearchSale(e.target.value)} className="form-control" placeholder="Tìm Theo Tên Sản Phẩm" style={{ float: "right" }} />
+                                                <div className="input-group-append">
+                                                    <span className="input-group-text bg-transparent text-primary">
+                                                        <i className="fa fa-search" />
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <ul className='dropdown_search' style={{ display: `${showDrop}` }}>
+                                            {arrSaleSearch?.map((item, index) => {
+                                                return (
+                                                    <li key={index} style={{ height: "70px", display: "flex", alignItems: "center" }}>
+                                                        <img src={item?.hinhAnh1} alt="imageProduct" style={{ width: "20%", height: "100%" }}></img>
+                                                        <div>
+                                                            <div style={{ color: "black", overflow: "hidden", cursor: "pointer" }} onClick={() => getInfoSale(item)}>{item?.tenSP}- Size:{listSize[item?.maSize - 1].size}</div>
+                                                            <div><u>{item?.ngayApDung.slice(0, 10)} ~ {item?.ngayHetHan.slice(0, 10)}</u></div>
+                                                        </div>
+                                                    </li>
+                                                )
+                                            })}
+                                        </ul>
+                                    </div>
+                                    <Button variant="success" onClick={handleShow} style={{ top: "8px", right: "10px" }}>Thêm Khuyến Mãi Mới</Button>
                                 </h6>
                             </div>
                             <div className="card-body">
@@ -229,7 +314,10 @@ export default function Index() {
                                                         <td>{item.ngayApDung.slice(0, 10)}</td>
                                                         <td>{item.ngayHetHan.slice(0, 10)}</td>
                                                         <td>{item.phanTramGiam}%</td>
-                                                        <td><button onClick={() => { deleteSale(item.maKM) }} ><FontAwesomeIcon icon={faTrash} style={{ color: "red", cursor: "pointer" }} /></button></td>
+                                                        <td>
+                                                            <button onClick={() => getDetailSale(item.maKM)} style={{ marginRight: "10px" }}><FontAwesomeIcon icon={faPenToSquare} style={{ color: "green", cursor: "pointer" }} /></button>
+                                                            <button onClick={() => { deleteSale(item.maKM) }} ><FontAwesomeIcon icon={faTrash} style={{ color: "red", cursor: "pointer" }} /></button>
+                                                        </td>
                                                     </tr>
                                                 )
                                             })}
@@ -253,6 +341,8 @@ export default function Index() {
                                     </div>
                                 </div>
                             </div>
+
+
                         </div>
                     </div>
                     {/* /.container-fluid */}
@@ -261,13 +351,12 @@ export default function Index() {
 
             <Modal show={show} onHide={handleClose} size={'xl'} fullscreen={true}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Thêm Sản Phẩm</Modal.Title>
+                    <Modal.Title>Thêm Khuyến Mãi</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Formik
                         onSubmit={async (values, { resetForm }) => {
                             values.maSP = parseInt(infoProduct.maSP);
-
                             if (isNaN(values.maSP)) {
                                 alert("Vui Lòng Chọn Sản Phẩm !!!");
                             } else if (arrSize.length < 1) {
@@ -276,7 +365,6 @@ export default function Index() {
                             } else {
                                 if (values.ngayHetHan >= values.ngayApDung) {
                                     checkSaleExists(values);
-
                                     if (check === true) {
                                         try {
                                             arrSize.forEach((item, index) => {
@@ -304,7 +392,6 @@ export default function Index() {
                                         alert("Thêm Khuyến Mãi Thành Công !!!")
                                         window.location.href = '/admin/sale'
                                     }
-
                                 } else {
                                     alert("Ngày Hết Hạn Phải Sau Ngày Bắt Đầu !!!")
                                 }
@@ -319,7 +406,8 @@ export default function Index() {
                             moTa: "Không có mô tả.",
                             maSP: 0,
                             maSize: 0,
-                            phanTramGiam: ""
+                            phanTramGiam: "",
+                            maKM: 0
                         }}
                     >
                         {({
@@ -348,7 +436,7 @@ export default function Index() {
                                                 </div>
                                             </div>
                                             <ul className='dropdown_search' style={{ display: `${showDrop}` }}>
-                                                {arrProdcutSearch.map((item, index) => {
+                                                {arrProductSearch?.map((item, index) => {
                                                     return (
                                                         <li key={index} style={{ height: "70px", display: "flex", alignItems: "center" }}>
                                                             <img src={item.hinhAnh1} alt="imageProduct" style={{ width: "20%", height: "100%" }}></img>
@@ -471,6 +559,154 @@ export default function Index() {
                                     </Row>
                                 </Row>
                                 <Button type="submit" variant="success" style={{ marginTop: "15px", float: "right" }} > Thêm Khuyến Mãi</Button>
+                            </Form>
+                        )}
+                    </Formik>
+                </Modal.Body >
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>Huỷ</Button>
+                </Modal.Footer>
+            </Modal >
+
+            <Modal show={show1} onHide={handleClose1} size={'xl'} fullscreen={true}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Chỉnh Sửa Khuyến Mãi</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Formik
+                        onSubmit={async (values, { resetForm }) => {
+                            values.maSP = parseInt(infoProduct.maSP);
+                            checkSaleExists(values);
+                            console.log(values)
+                            if (values.ngayHetHan >= values.ngayApDung) {
+                                checkSaleExists(values);
+                                if (check === true) {
+                                    try {
+                                        axios({
+                                            method: 'POST',
+                                            url: `http://localhost:3001/sale/edit`,
+                                            data: {
+                                                maKM: values.maKM,
+                                                ngayApDung: values.ngayApDung,
+                                                ngayHetHan: values.ngayHetHan,
+                                                moTa: values.moTa,
+                                                phanTramGiam: values.phanTramGiam,
+                                                maNV: JSON.parse(localStorage.getItem("infoUser"))?.maNguoiDung
+                                            }
+                                        }).then((data) => {
+                                        }).catch((err) => {
+                                            console.log("Lỗi Chỉnh Sửa Khuyến Mãi :", err)
+                                        })
+                                    } catch (error) {
+                                        console.log(error)
+                                    }
+                                    alert("Chỉnh Sửa Khuyến Mãi Thành Công !!!")
+                                    window.location.href = '/admin/sale'
+                                }
+                            } else {
+                                alert("Ngày Hết Hạn Phải Sau Ngày Bắt Đầu !!!")
+                            }
+                        }}
+                        enableReinitialize={true}
+                        validationSchema={schema2}
+                        initialValues={{
+                            maNV: JSON.parse(localStorage.getItem("infoUser"))?.maNguoiDung,
+                            ngayApDung: infoSale.ngayApDung,
+                            ngayHetHan: infoSale.ngayHetHan,
+                            moTa: infoSale.moTa,
+                            maSP: infoSale.maSP,
+                            maSize: infoSale.maSize,
+                            phanTramGiam: infoSale.phanTramGiam,
+                            tenSP: infoSale.tenSP,
+                            hinhAnh: infoSale.hinhAnh,
+                            maKM: infoSale.maKM
+                        }}
+                    >
+                        {({
+                            handleSubmit,
+                            handleChange,
+                            handleBlur,
+                            resetForm,
+                            values,
+                            touched,
+                            isValid,
+                            errors,
+                        }) => (
+                            <Form onSubmit={handleSubmit} style={{ color: "black", fontSize: "18px" }}>
+                                <Row>
+                                    <Row>
+                                        <Col>
+                                            <Form.Label>Tên Sản Phẩm - Mã SP: <strong>{values.tenSP} - {values.maSP}</strong> </Form.Label>
+                                            <img src={values.hinhAnh} alt='Hình Ảnh' style={{ width: "50%" }}></img>
+                                        </Col>
+                                        <Col>
+                                            <Form.Label><strong>Size : {listSize[values.maSize].size}</strong></Form.Label>
+                                        </Col>
+                                    </Row>
+                                    <Row style={{ paddingTop: "20px" }}>
+                                        <Col>
+                                            <Form.Label>Ngày Bắt Đầu</Form.Label>
+                                            <Form.Control
+                                                required
+                                                type="date"
+                                                name="ngayApDung"
+                                                min={values.ngayApDung.slice(0, 10)}
+                                                defaultValue={values.ngayApDung.slice(0, 10)}
+                                                onChange={handleChange}
+                                                isValid={touched.ngayApDung && !errors.ngayApDung}
+                                                isInvalid={!!errors.ngayApDung}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.ngayApDung}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                        < Col >
+                                            <Form.Label>Ngày Kết Thúc</Form.Label>
+                                            <Form.Control
+                                                required
+                                                type="date"
+                                                name="ngayHetHan"
+                                                min={values.ngayHetHan.slice(0, 10)}
+                                                defaultValue={values.ngayHetHan.slice(0, 10)}
+                                                onChange={handleChange}
+                                                isValid={touched.ngayHetHan && !errors.ngayHetHan}
+                                                isInvalid={!!errors.ngayHetHan}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.ngayHetHan}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                        < Col >
+                                            <Form.Label>Phần Trăm Giảm</Form.Label>
+                                            <Form.Control
+                                                type="number"
+                                                name="phanTramGiam"
+                                                min="0"
+                                                max="100"
+                                                value={values.phanTramGiam}
+                                                onChange={handleChange}
+                                                isValid={touched.phanTramGiam && !errors.phanTramGiam}
+                                                isInvalid={!!errors.phanTramGiam}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.phanTramGiam}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                    </Row>
+                                    <Row style={{ paddingTop: "20px" }}>
+                                        <Col>
+                                            <Form.Label>Mô Tả</Form.Label>
+                                            <Form.Control name="moTa" defaultValue={values.moTa} onChange={handleChange} as="textarea" aria-label="With textarea"
+                                                isValid={touched.moTa && !errors.moTa}
+                                                isInvalid={!!errors.moTa}
+                                            />
+                                            <Form.Control.Feedback type="invalid" tooltip>
+                                                {errors.moTa}
+                                            </Form.Control.Feedback>
+                                        </Col>
+                                    </Row>
+                                </Row>
+                                <Button type="submit" variant="success" style={{ marginTop: "15px", float: "right" }} > Chỉnh Sửa Khuyến Mãi</Button>
                             </Form>
                         )}
                     </Formik>
