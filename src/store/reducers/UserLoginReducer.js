@@ -1,6 +1,6 @@
 const stateDefault = {
     userLogin: localStorage.getItem('isLogin'),
-    role: JSON.parse(localStorage.getItem("infoUser")).role,
+    role: JSON.parse(localStorage.getItem("infoUser"))?.role,
     infoUser: JSON.parse(localStorage.getItem("infoUser")),
 }
 
@@ -16,7 +16,6 @@ export const UserReducer = (state = stateDefault, action) => {
         }
         case "SET_INFO": {
             var info = action.payload.info;
-            console.log(info)
             return { ...state };
         }
         default:
