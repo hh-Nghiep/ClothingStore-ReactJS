@@ -4,7 +4,8 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
+import axios from 'axios'
+import { DOMAIN } from '~/util/setting/config';
 import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -31,7 +32,6 @@ export default function Index() {
     const [infoSale, setInfoSale] = useState({});
 
     const [show1, setShow1] = useState(false);
-    const handleShow1 = (item) => { getInfoProduct(item); };
     const handleClose1 = () => {
         setShow1(false);
     };

@@ -3,7 +3,8 @@ import { NavLink } from 'react-router-dom'
 import { Formik } from 'formik';
 import Button from 'react-bootstrap/Button';
 import * as yup from 'yup';
-import axios from 'axios';
+import axios from 'axios'
+import { DOMAIN } from '~/util/setting/config';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -19,7 +20,7 @@ export default function Register() {
 
 
     const fcCheckPhone = async (sdt) => {
-        const response = await axios({
+        await axios({
             method: 'post',
             url: `${DOMAIN}/user/checkPhone`,
             data: {
@@ -38,7 +39,7 @@ export default function Register() {
     }
 
     const fcCheckEmail = async (email) => {
-        const response = await axios({
+         await axios({
             method: 'post',
             url: `${DOMAIN}/user/checkEmail`,
             data: {
@@ -57,7 +58,7 @@ export default function Register() {
     }
 
     const fcCheckId = async (cmnd) => {
-        const response = await axios({
+        await axios({
             method: 'post',
             url: `${DOMAIN}/user/checkPhone`,
             data: {

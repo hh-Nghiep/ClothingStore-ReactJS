@@ -5,7 +5,8 @@ import Alert from 'react-bootstrap/Alert';
 import Form from 'react-bootstrap/Form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClipboardCheck, faTrash, faEye, faTruckFast, faBan } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
+import axios from 'axios'
+import { DOMAIN } from '~/util/setting/config';
 
 export default function Order() {
     const [listOrder, setListOrder] = useState([]);

@@ -3,7 +3,8 @@ import { NavLink } from 'react-router-dom'
 import { Formik } from 'formik';
 import Button from 'react-bootstrap/Button';
 import * as yup from 'yup';
-import axios from 'axios';
+import axios from 'axios'
+import { DOMAIN } from '~/util/setting/config';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';

@@ -4,7 +4,8 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
+import axios from 'axios'
+import { DOMAIN } from '~/util/setting/config';
 import Table from 'react-bootstrap/Table';
 
 export default function Category() {

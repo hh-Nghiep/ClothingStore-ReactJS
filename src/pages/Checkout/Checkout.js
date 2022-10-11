@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react'
 import { useFormik } from 'formik'
 import axios from 'axios'
+import { DOMAIN } from '~/util/setting/config'
 import { useState } from 'react'
 import { useEffect } from 'react';
 import iconSale from './../../assets/img/sale.png';
@@ -10,7 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 export default function Checkout() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [infoUser, setInfoUser] = useState(JSON.parse(localStorage.getItem("infoUser")));
+    const infoUser = JSON.parse(localStorage.getItem("infoUser"));
     const carts = useSelector(state => state.cart.carts)
     const [listProductSale, setListProductSale] = useState([]);
     const [checkValue, setCheckValue] = useState(true)

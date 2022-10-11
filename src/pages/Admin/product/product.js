@@ -4,7 +4,8 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
+import axios from 'axios'
+import { DOMAIN } from '~/util/setting/config';
 import Table from 'react-bootstrap/Table';
 import Col from 'react-bootstrap/Col';
 import { Formik } from 'formik'
@@ -132,7 +133,7 @@ export default function Product() {
             formData.append("mode", 'no-cors')
             try {
                 if (idImg === 1) {
-                    let res = await fetch('https://api.cloudinary.com/v1_1/nghiephh/image/upload', {
+                    await fetch('https://api.cloudinary.com/v1_1/nghiephh/image/upload', {
                         method: 'POST',
                         body: formData,
                     })
@@ -142,7 +143,7 @@ export default function Product() {
                             setImg1(response.secure_url)
                         });
                 } else if (idImg === 2) {
-                    let res = await fetch('https://api.cloudinary.com/v1_1/nghiephh/image/upload', {
+                    await fetch('https://api.cloudinary.com/v1_1/nghiephh/image/upload', {
                         method: 'POST',
                         body: formData,
                     })
@@ -152,7 +153,7 @@ export default function Product() {
                             setImg2(response.secure_url)
                         });
                 } else if (idImg === 3) {
-                    let res = await fetch('https://api.cloudinary.com/v1_1/nghiephh/image/upload', {
+                    await fetch('https://api.cloudinary.com/v1_1/nghiephh/image/upload', {
                         method: 'POST',
                         body: formData,
                     })

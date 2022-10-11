@@ -4,12 +4,11 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
-import axios from 'axios';
-import { DOMAIN } from '~/util/setting/config'
+import axios from 'axios'
+import { DOMAIN } from '~/util/setting/config';
 
 export default function Account() {
     const [validated, setValidated] = useState(false);
-    const [idUser, setIdUser] = useState(1);
     const [infoUser, setInfoUser] = useState([]);
 
     const handleSubmit = (event) => {
@@ -22,7 +21,7 @@ export default function Account() {
     };
 
     const getInfoUser = async (id) => {
-        const response = await axios({
+        await axios({
             method: 'get',
             url: `${DOMAIN}/users/${id}`,
         }).then((data) => {

@@ -3,13 +3,14 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
-import axios from 'axios';
+import axios from 'axios'
+import { DOMAIN } from '~/util/setting/config';
 import { Formik } from 'formik';
 import Container from 'react-bootstrap/Container';
 import * as yup from 'yup'
 
 export default function Index() {
-    const [infoUser, setInfoUser] = useState(JSON.parse(localStorage.getItem("infoUser")));
+    const infoUser = JSON.parse(localStorage.getItem("infoUser"));
     const [checkPhone, setCheckPhone] = useState(false);
     const [checkEmail, setCheckEmail] = useState(false);
     const [checkId, setCheckId] = useState(false);

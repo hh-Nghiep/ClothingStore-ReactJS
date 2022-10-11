@@ -6,8 +6,9 @@ import Form from 'react-bootstrap/Form';
 import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faTrash, faKey } from '@fortawesome/free-solid-svg-icons'
-import axios from 'axios';
+import { faPenToSquare, faKey } from '@fortawesome/free-solid-svg-icons'
+import axios from 'axios'
+import { DOMAIN } from '~/util/setting/config';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
@@ -112,7 +113,7 @@ export default function Managerser() {
     }
 
     const getUserById = async (id) => {
-        const response = await axios({
+        await axios({
             method: 'post',
             url: `${DOMAIN}/user/id`,
             data: {
@@ -141,7 +142,7 @@ export default function Managerser() {
     }
 
     const fcCheckPhone = async (id, sdt) => {
-        const response = await axios({
+        await axios({
             method: 'post',
             url: `${DOMAIN}/user/checkPhone`,
             data: {
@@ -161,7 +162,7 @@ export default function Managerser() {
     }
 
     const fcCheckEmail = async (id, email) => {
-        const response = await axios({
+        await axios({
             method: 'post',
             url: `${DOMAIN}/user/checkEmail`,
             data: {

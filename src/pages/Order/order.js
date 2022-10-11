@@ -3,7 +3,8 @@ import Table from 'react-bootstrap/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEye } from '@fortawesome/free-solid-svg-icons'
 import Alert from 'react-bootstrap/Alert';
-import axios from 'axios';
+import axios from 'axios'
+import { DOMAIN } from '~/util/setting/config';
 import Modal from 'react-bootstrap/Modal';
 
 export default function Order() {

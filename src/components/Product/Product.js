@@ -19,7 +19,7 @@ export default function Product() {
         })
     }
     const getProduct = async () => {
-        const response = await axios({
+        await axios({
             method: 'get',
             url: `${DOMAIN}/product`,
             data: product

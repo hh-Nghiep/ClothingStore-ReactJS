@@ -1,7 +1,7 @@
 import axios from 'axios'
+import { DOMAIN } from '~/util/setting/config'
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { DOMAIN } from '~/util/setting/config'
 import cate1 from '../../assets/img/cat-1.jpg'
 
 
@@ -12,7 +12,7 @@ export default function Categories() {
     useEffect(() => {
         axios({
             method: 'get',
-            url: `localhost:3000/cate`,
+            url: `${DOMAIN}/cate`,
             data: cate
         }).then((data) => {
             dispatch({
