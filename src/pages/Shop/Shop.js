@@ -186,7 +186,7 @@ export default function Shop() {
                                         <input type="radio" name='Cate' className="custom-control-input" defaultChecked id="cate-all" value="all" onChange={() => { setFilterCate(0); setPageProduct(1) }} />
                                         <label className="custom-control-label" htmlFor="cate-all">All Category</label>
                                     </div>
-                                    {arrCate.map((item, index) => {
+                                    {arrCate?.map((item, index) => {
                                         return (
                                             <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3" key={index}>
                                                 <input type="radio" name='Cate' className="custom-control-input" id={item.tenTL} value={item.maTL} onChange={() => { setFilterCate(item.maTL); setPageProduct(1) }} />
