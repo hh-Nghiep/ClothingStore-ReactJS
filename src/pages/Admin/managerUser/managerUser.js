@@ -98,7 +98,7 @@ export default function Managerser() {
     const getUsers = async () => {
         await axios({
             method: 'post',
-            url: `http://localhost:3001/users?page=${pageProduct}`,
+            url: `${DOMAIN}/users?page=${pageProduct}`,
             data: {
                 maQuyen: idRole,
                 trangThai: statusUser
@@ -114,7 +114,7 @@ export default function Managerser() {
     const getUserById = async (id) => {
         const response = await axios({
             method: 'post',
-            url: `http://localhost:3001/user/id`,
+            url: `${DOMAIN}/user/id`,
             data: {
                 maNguoiDung: id
             }
@@ -129,7 +129,7 @@ export default function Managerser() {
     const disableUser = async (id) => {
         await axios({
             method: 'delete',
-            url: `http://localhost:3001/user/disable`,
+            url: `${DOMAIN}/user/disable`,
             data: {
                 maNguoiDung: id
             }
@@ -143,7 +143,7 @@ export default function Managerser() {
     const fcCheckPhone = async (id, sdt) => {
         const response = await axios({
             method: 'post',
-            url: `http://localhost:3001/user/checkPhone`,
+            url: `${DOMAIN}/user/checkPhone`,
             data: {
                 maNguoiDung: id,
                 sdt: sdt
@@ -163,7 +163,7 @@ export default function Managerser() {
     const fcCheckEmail = async (id, email) => {
         const response = await axios({
             method: 'post',
-            url: `http://localhost:3001/user/checkEmail`,
+            url: `${DOMAIN}/user/checkEmail`,
             data: {
                 maNguoiDung: id,
                 email: email
@@ -183,7 +183,7 @@ export default function Managerser() {
     const fcCheckId = async (id, cmnd) => {
         await axios({
             method: 'post',
-            url: `http://localhost:3001/user/checkId`,
+            url: `${DOMAIN}/user/checkId`,
             data: {
                 maNguoiDung: id,
                 cmnd: cmnd
@@ -204,7 +204,7 @@ export default function Managerser() {
         if (e !== "") {
             axios({
                 method: 'GET',
-                url: `http://localhost:3001/user/find/${e}`,
+                url: `${DOMAIN}/user/find/${e}`,
             }).then((data) => {
                 setArrUserSearch(data.data[0])
             }).catch((err) => {
@@ -368,7 +368,7 @@ export default function Managerser() {
                                 values.diaChi = (values.diaChi.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
                                 axios({
                                     method: 'post',
-                                    url: `http://localhost:3001/user/add`,
+                                    url: `${DOMAIN}/user/add`,
                                     data: values
                                 }).then((data) => {
                                     alert("Tạo Tài Khoản Thành Công")
@@ -543,7 +543,7 @@ export default function Managerser() {
                                     values.diaChi = (values.diaChi.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()
                                     axios({
                                         method: 'post',
-                                        url: `http://localhost:3001/user/edit`,
+                                        url: `${DOMAIN}/user/edit`,
                                         data: values
                                     }).then((data) => {
                                         alert("Cập Nhật Thông Tin Người Dùng Thành Công")
@@ -697,7 +697,7 @@ export default function Managerser() {
                         onSubmit={values => {
                             axios({
                                 method: 'post',
-                                url: `http://localhost:3001/user/updatePassword`,
+                                url: `${DOMAIN}/user/updatePassword`,
                                 data: {
                                     email: values.email,
                                     password: values.password

@@ -65,7 +65,7 @@ export default function Header() {
         if (e !== "") {
             axios({
                 method: 'POST',
-                url: `http://localhost:3001/product/find`,
+                url: `${DOMAIN}/product/find`,
                 data: {
                     tenSP: e,
                     trangThai: 1

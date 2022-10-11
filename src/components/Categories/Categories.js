@@ -12,7 +12,7 @@ export default function Categories() {
     useEffect(() => {
         axios({
             method: 'get',
-            url: `${DOMAIN}/cate`,
+            url: `localhost:3000/cate`,
             data: cate
         }).then((data) => {
             dispatch({

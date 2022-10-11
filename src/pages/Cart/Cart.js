@@ -13,7 +13,7 @@ export default function Cart() {
     const getAllSale = async () => {
         await axios({
             method: 'post',
-            url: `http://localhost:3001/sales?page=0`,
+            url: `${DOMAIN}/sales?page=0`,
             data: {
                 trangThai: 1
             }
@@ -86,7 +86,7 @@ export default function Cart() {
         var check = cart.map(itcart => itcart.maCT).indexOf(parseInt(maCT));
         axios({
             method: 'get',
-            url: `http://localhost:3001/product/amount/${maCT}`
+            url: `${DOMAIN}/product/amount/${maCT}`
         }).then((data) => {
             if (check > -1) {
                 if (calc === true) {
@@ -120,7 +120,7 @@ export default function Cart() {
         cart.forEach(item => {
             axios({
                 method: 'get',
-                url: `http://localhost:3001/product/amount/${item.maCT}`
+                url: `${DOMAIN}/product/amount/${item.maCT}`
             }).then((data) => {
                 if (data.data[0][0].soLuongTon < item.SL) {
                     alert(`Sản Phẩm ${item.tenSP} Chỉ Còn ${data.data[0][0].soLuongTon}`)

@@ -48,7 +48,7 @@ export default function Forgotpassword() {
                                         onSubmit={values => {
                                             axios({
                                                 method: 'post',
-                                                url: `http://localhost:3001/user/checkInfo`,
+                                                url: `${DOMAIN}/user/checkInfo`,
                                                 data: values
                                             }).then((data) => {
                                                 if (data.data === 1) {
@@ -152,7 +152,7 @@ export default function Forgotpassword() {
                             console.log(emailUser)
                             axios({
                                 method: 'post',
-                                url: `http://localhost:3001/user/updatePassword`,
+                                url: `${DOMAIN}/user/updatePassword`,
                                 data: {
                                     email: emailUser,
                                     password: values.password

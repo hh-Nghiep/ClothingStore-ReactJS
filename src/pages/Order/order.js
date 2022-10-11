@@ -65,7 +65,7 @@ export default function Order() {
             if (window.confirm(`Xác Nhận Huỷ Đơn Hàng ${idOrder} ?`) === true) {
                 await axios({
                     method: 'post',
-                    url: `http://localhost:3001/order/update`,
+                    url: `${DOMAIN}/order/update`,
                     data: {
                         trangThai: statusOrder,
                         maDH: idOrder
@@ -80,7 +80,7 @@ export default function Order() {
             if (window.confirm(`Xác Nhận Đã Nhận Được Đơn Hàng ${idOrder} ?`) === true) {
                 await axios({
                     method: 'post',
-                    url: `http://localhost:3001/order/update`,
+                    url: `${DOMAIN}/order/update`,
                     data: {
                         trangThai: statusOrder,
                         maDH: idOrder
@@ -99,7 +99,7 @@ export default function Order() {
     const getDetailOrder = async (id) => {
         axios({
             method: 'get',
-            url: `http://localhost:3001/order/detail/${id}`,
+            url: `${DOMAIN}/order/detail/${id}`,
         }).then((data) => {
             setDetailOrder(data.data[0]);
             setLgShow(true);
@@ -123,7 +123,7 @@ export default function Order() {
     const getListOrder = async (id) => {
         await axios({
             method: 'post',
-            url: `http://localhost:3001/order/id?page=${pageOrder}`,
+            url: `${DOMAIN}/order/id?page=${pageOrder}`,
             data: {
                 maNguoiDung: JSON.parse(localStorage.getItem("infoUser")).maNguoiDung
             }

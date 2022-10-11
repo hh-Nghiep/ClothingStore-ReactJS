@@ -57,7 +57,7 @@ export default function Index() {
     const getAllSale = async () => {
         await axios({
             method: 'post',
-            url: `http://localhost:3001/sales?page=${pageSale}`,
+            url: `${DOMAIN}/sales?page=${pageSale}`,
             data: {
                 trangThai: statusSale
             }
@@ -73,7 +73,7 @@ export default function Index() {
         if (window.confirm("Bạn Muốn Xoá Khuyến Mãi ?") === true) {
             await axios({
                 method: 'delete',
-                url: `http://localhost:3001/sale/delete/${id}`
+                url: `${DOMAIN}/sale/delete/${id}`
             }).then((data) => {
                 alert("Xoá Thành Công!!!");
                 getAllSale();
@@ -131,7 +131,7 @@ export default function Index() {
     const getDetailSale = async (maKM) => {
         axios({
             method: 'get',
-            url: `http://localhost:3001/sale/find/${maKM}`,
+            url: `${DOMAIN}/sale/find/${maKM}`,
         }).then((data) => {
             getInfoSale(data.data);
         }).catch((err) => {
@@ -144,7 +144,7 @@ export default function Index() {
         if (e !== "") {
             axios({
                 method: 'POST',
-                url: `http://localhost:3001/product/find`,
+                url: `${DOMAIN}/product/find`,
                 data: {
                     tenSP: e,
                     trangThai: 1
@@ -165,7 +165,7 @@ export default function Index() {
         if (e !== "") {
             axios({
                 method: 'POST',
-                url: `http://localhost:3001/sale/find`,
+                url: `${DOMAIN}/sale/find`,
                 data: {
                     tenSP: e,
                 }
@@ -197,7 +197,7 @@ export default function Index() {
             arrSize.forEach(item => {
                 axios({
                     method: 'POST',
-                    url: `http://localhost:3001/sale/check`,
+                    url: `${DOMAIN}/sale/check`,
                     data: {
                         maKM: values.maKM,
                         ngayApDung: values.ngayApDung,
@@ -370,7 +370,7 @@ export default function Index() {
                                             arrSize.forEach((item, index) => {
                                                 axios({
                                                     method: 'POST',
-                                                    url: `http://localhost:3001/sale/add`,
+                                                    url: `${DOMAIN}/sale/add`,
                                                     data: {
                                                         maNV: JSON.parse(localStorage.getItem("infoUser"))?.maNguoiDung,
                                                         ngayApDung: values.ngayApDung,
@@ -584,7 +584,7 @@ export default function Index() {
                                     try {
                                         axios({
                                             method: 'POST',
-                                            url: `http://localhost:3001/sale/edit`,
+                                            url: `${DOMAIN}/sale/edit`,
                                             data: {
                                                 maKM: values.maKM,
                                                 ngayApDung: values.ngayApDung,

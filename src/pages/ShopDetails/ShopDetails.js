@@ -103,7 +103,7 @@ export default function ShopDetails() {
     const getAllSale = async () => {
         await axios({
             method: 'post',
-            url: `http://localhost:3001/sales?page=0`,
+            url: `${DOMAIN}/sales?page=0`,
             data: {
                 trangThai: 1
             }
@@ -138,7 +138,7 @@ export default function ShopDetails() {
     const getShopDetails = async () => {
         await axios({
             method: 'get',
-            url: `http://localhost:3001/product/${params.id}`,
+            url: `${DOMAIN}/product/${params.id}`,
             data: IDProduct
         }).then((data) => {
             setProductID(data.data[0][0])

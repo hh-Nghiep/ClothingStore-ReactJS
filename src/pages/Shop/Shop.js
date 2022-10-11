@@ -48,7 +48,7 @@ export default function Shop() {
     const getArrCate = async () => {
         axios({
             method: 'GET',
-            url: `http://localhost:3001/cate/1`,
+            url: `${DOMAIN}/cate/1`,
         }).then((data) => {
             setArrCate(data.data[0])
         }).catch((err) => {
@@ -59,7 +59,7 @@ export default function Shop() {
     const getArrProduct = async () => {
         axios({
             method: 'post',
-            url: `http://localhost:3001/products?page=${pageProduct}`,
+            url: `${DOMAIN}/products?page=${pageProduct}`,
             data: {
                 trangThai: 1,
                 maTL: filterCate,
@@ -102,7 +102,7 @@ export default function Shop() {
     const getAllSale = async () => {
         await axios({
             method: 'post',
-            url: `http://localhost:3001/sales?page=0`,
+            url: `${DOMAIN}/sales?page=0`,
             data: {
                 trangThai: 1
             }

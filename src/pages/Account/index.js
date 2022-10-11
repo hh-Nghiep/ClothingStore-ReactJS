@@ -30,7 +30,7 @@ export default function Index() {
         setCheckPhone(false);
         await axios({
             method: 'post',
-            url: `http://localhost:3001/user/checkPhone`,
+            url: `${DOMAIN}/user/checkPhone`,
             data: {
                 maNguoiDung: infoUser.maNguoiDung,
                 sdt: sdt
@@ -51,7 +51,7 @@ export default function Index() {
         setCheckEmail(false);
         await axios({
             method: 'post',
-            url: `http://localhost:3001/user/checkEmail`,
+            url: `${DOMAIN}/user/checkEmail`,
             data: {
                 maNguoiDung: infoUser.maNguoiDung,
                 email: email
@@ -72,7 +72,7 @@ export default function Index() {
         setCheckId(false);
         await axios({
             method: 'post',
-            url: `http://localhost:3001/user/checkId`,
+            url: `${DOMAIN}/user/checkId`,
             data: {
                 maNguoiDung: infoUser.maNguoiDung,
                 cmnd: cmnd
@@ -100,7 +100,7 @@ export default function Index() {
                         if (checkPhone === true && checkEmail === true && checkId === true) {
                             axios({
                                 method: 'post',
-                                url: `http://localhost:3001/user/updateinfo`,
+                                url: `${DOMAIN}/user/updateinfo`,
                                 data: values
                             }).then((data) => {
                                 alert("Cập Nhật Thông Tin Người Dùng Thành Công")

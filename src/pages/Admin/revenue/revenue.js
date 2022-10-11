@@ -85,7 +85,7 @@ export default function Revenue() {
     const getListOrder = async () => {
         axios({
             method: 'post',
-            url: `http://localhost:3001/orders/day?page=${pageOrder}`,
+            url: `${DOMAIN}/orders/day?page=${pageOrder}`,
             data: {
                 trangThai: statusOrder,
                 ngayBatDau: dayStart,
@@ -119,7 +119,7 @@ export default function Revenue() {
     const getDetailOrder = async (id) => {
         axios({
             method: 'get',
-            url: `http://localhost:3001/order/detail/${id}`,
+            url: `${DOMAIN}/order/detail/${id}`,
         }).then((data) => {
             setDetailOrder(data.data[0]);
             setLgShow(true);

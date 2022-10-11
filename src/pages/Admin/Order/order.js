@@ -66,7 +66,7 @@ export default function Order() {
     const getDetailOrder = async (id) => {
         axios({
             method: 'get',
-            url: `http://localhost:3001/order/detail/${id}`,
+            url: `${DOMAIN}/order/detail/${id}`,
         }).then((data) => {
             setDetailOrder(data.data[0]);
             setLgShow(true);
@@ -82,7 +82,7 @@ export default function Order() {
             if (window.confirm(`Huỷ Đơn Hàng ${idOrder} ?`) === true) {
                 axios({
                     method: 'post',
-                    url: `http://localhost:3001/order/update`,
+                    url: `${DOMAIN}/order/update`,
                     data: {
                         maNVDuyet: JSON.parse(localStorage.getItem("infoUser")).maNguoiDung,
                         maDH: idOrder,
@@ -95,7 +95,7 @@ export default function Order() {
                         arrProduct.forEach((item, index) => {
                             axios({
                                 method: 'post',
-                                url: `http://localhost:3001/order/return`,
+                                url: `${DOMAIN}/order/return`,
                                 data: {
                                     maPhieuTra: maPT,
                                     maCTSP: item.maCTSP,
@@ -122,7 +122,7 @@ export default function Order() {
             if (window.confirm(`Đã Lên Đơn Hàng ${idOrder} ?`) === true) {
                 axios({
                     method: 'post',
-                    url: `http://localhost:3001/order/update`,
+                    url: `${DOMAIN}/order/update`,
                     data: {
                         maNVDuyet: JSON.parse(localStorage.getItem("infoUser")).maNguoiDung,
                         maDH: idOrder,
@@ -142,7 +142,7 @@ export default function Order() {
             if (window.confirm(`Xác Nhận Giao Đơn Hàng ${idOrder} Thành Công ?`) === true) {
                 axios({
                     method: 'post',
-                    url: `http://localhost:3001/order/update`,
+                    url: `${DOMAIN}/order/update`,
                     data: {
                         maNVDuyet: JSON.parse(localStorage.getItem("infoUser")).maNguoiDung,
                         maDH: idOrder,
@@ -155,7 +155,7 @@ export default function Order() {
                         arrProduct.forEach((item, index) => {
                             axios({
                                 method: 'post',
-                                url: `http://localhost:3001/order/return`,
+                                url: `${DOMAIN}/order/return`,
                                 data: {
                                     maPhieuTra: maPT,
                                     maCTSP: item.maCTSP,
@@ -213,7 +213,7 @@ export default function Order() {
     const getListOrder = async () => {
         axios({
             method: 'get',
-            url: `http://localhost:3001/order/status/${statusOrder}?page=${pageOrder}`,
+            url: `${DOMAIN}/order/status/${statusOrder}?page=${pageOrder}`,
         }).then((data) => {
             setListOrder(data?.data.data);
             setTotalPage(data.data.totalPage);
@@ -232,7 +232,7 @@ export default function Order() {
         if (e !== "") {
             axios({
                 method: 'GET',
-                url: `http://localhost:3001/order/find/${e}`,
+                url: `${DOMAIN}/order/find/${e}`,
             }).then((data) => {
                 setArrOrderSearch(data.data[0])
             }).catch((err) => {

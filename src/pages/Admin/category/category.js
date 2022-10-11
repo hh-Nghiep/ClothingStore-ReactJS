@@ -27,7 +27,7 @@ export default function Category() {
         if (window.confirm(text) === true) {
             axios({
                 method: 'delete',
-                url: `http://localhost:3001/cate/status`,
+                url: `${DOMAIN}/cate/status`,
                 data: {
                     trangThai: trangThai,
                     maTL: maTL,
@@ -43,7 +43,7 @@ export default function Category() {
     const getAllCategory = async () => {
         await axios({
             method: 'get',
-            url: `http://localhost:3001/cate/${statusCategory}`
+            url: `${DOMAIN}/cate/${statusCategory}`
         }).then((data) => {
             setListCategory(data.data?.[0])
         }).catch((err) => {
@@ -54,7 +54,7 @@ export default function Category() {
     const addCategory = async () => {
         axios({
             method: 'post',
-            url: `http://localhost:3001/cate/add`,
+            url: `${DOMAIN}/cate/add`,
             data: {
                 tenTL: nameCategory
             }
@@ -76,7 +76,7 @@ export default function Category() {
     const updateCategory = async () => {
         axios({
             method: 'post',
-            url: `http://localhost:3001/cate/update`,
+            url: `${DOMAIN}/cate/update`,
             data: {
                 tenTL: nameAfterUpdate,
                 maTL: infoBeforUpdate.maTL

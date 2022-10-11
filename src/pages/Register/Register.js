@@ -21,7 +21,7 @@ export default function Register() {
     const fcCheckPhone = async (sdt) => {
         const response = await axios({
             method: 'post',
-            url: `http://localhost:3001/user/checkPhone`,
+            url: `${DOMAIN}/user/checkPhone`,
             data: {
                 sdt: sdt
             }
@@ -40,7 +40,7 @@ export default function Register() {
     const fcCheckEmail = async (email) => {
         const response = await axios({
             method: 'post',
-            url: `http://localhost:3001/user/checkEmail`,
+            url: `${DOMAIN}/user/checkEmail`,
             data: {
                 email: email
             }
@@ -59,7 +59,7 @@ export default function Register() {
     const fcCheckId = async (cmnd) => {
         const response = await axios({
             method: 'post',
-            url: `http://localhost:3001/user/checkPhone`,
+            url: `${DOMAIN}/user/checkPhone`,
             data: {
                 cmnd: cmnd
             }
@@ -109,7 +109,7 @@ export default function Register() {
                                             console.log(values)
                                             axios({
                                                 method: 'post',
-                                                url: `http://localhost:3001/user/add`,
+                                                url: `${DOMAIN}/user/add`,
                                                 data: values
                                             }).then((data) => {
                                                 alert("Tạo Tài Khoản Thành Công")

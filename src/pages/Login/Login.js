@@ -28,7 +28,7 @@ export default function Login() {
         onSubmit: async (values) => {
             await axios({
                 method: 'post',
-                url: `http://localhost:3001/user/login`,
+                url: `${DOMAIN}/user/login`,
                 data: values
             }).then((values2) => {
                 if (values2.data !== 0) {

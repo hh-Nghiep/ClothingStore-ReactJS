@@ -48,7 +48,7 @@ export default function Product() {
     const getAllCategory = async () => {
         await axios({
             method: 'get',
-            url: `http://localhost:3001/cate/1`,
+            url: `${DOMAIN}/cate/1`,
         }).then((data) => {
             setCate(data.data?.[0])
         }).catch((err) => {
@@ -60,7 +60,7 @@ export default function Product() {
         if (window.confirm("Xoá Sản Phẩm ?") === true) {
             await axios({
                 method: 'delete',
-                url: `http://localhost:3001/product/delete`,
+                url: `${DOMAIN}/product/delete`,
                 data: {
                     maSP: maSP
                 }
@@ -76,7 +76,7 @@ export default function Product() {
     const getAllProduct = async () => {
         await axios({
             method: 'post',
-            url: `http://localhost:3001/products?page=${pageProduct}`,
+            url: `${DOMAIN}/products?page=${pageProduct}`,
             data: {
                 trangThai: statusProduct,
                 maTL: 0,
@@ -93,7 +93,7 @@ export default function Product() {
     const getInfoProduct = async (maSP) => {
         await axios({
             method: 'get',
-            url: `http://localhost:3001/product/${maSP}`,
+            url: `${DOMAIN}/product/${maSP}`,
         }).then((data) => {
             setInfoProduct(data.data[0][0])
             setShow1(true)
@@ -106,7 +106,7 @@ export default function Product() {
         if (window.confirm("Bán Lại Sản Phẩm ?") === true) {
             await axios({
                 method: 'post',
-                url: `http://localhost:3001/product/activate`,
+                url: `${DOMAIN}/product/activate`,
                 data: {
                     maSP: maSP
                 }
@@ -175,7 +175,7 @@ export default function Product() {
         if (e !== "") {
             axios({
                 method: 'POST',
-                url: `http://localhost:3001/product/find`,
+                url: `${DOMAIN}/product/find`,
                 data: {
                     tenSP: e,
                     trangThai: statusProduct
@@ -420,7 +420,7 @@ export default function Product() {
                                 values.moTa = ((values.moTa.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()).charAt(0).toUpperCase() + ((values.moTa.toLowerCase().replace(/  +/g, ' ')).replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()).trim()).slice(1)
                                 axios({
                                     method: 'post',
-                                    url: `http://localhost:3001/product/add`,
+                                    url: `${DOMAIN}/product/add`,
                                     data: values
                                 }).then((data) => {
                                     handleClose();
@@ -766,7 +766,7 @@ export default function Product() {
                             console.log(values)
                             axios({
                                 method: 'post',
-                                url: `http://localhost:3001/product/edit`,
+                                url: `${DOMAIN}/product/edit`,
                                 data: values
                             }).then((data) => {
                                 alert("Cập Nhật Thông Tin Sản Phẩm Thành Công!!!");
